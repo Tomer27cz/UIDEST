@@ -1,0 +1,37 @@
+<h2>Steganography</h2>
+<p>Let's understand what is steganography, digital images, pixels, and color models.</p>
+<h3>What is steganography?</h3>
+<blockquote>
+<p><a href="https://en.wikipedia.org/wiki/Steganography">Steganography</a> is the practice of concealing a file, message, image, or video within another file, message, image, or video.</p>
+</blockquote>
+<h3>What is the advantage of steganography over cryptography?</h3>
+<blockquote>
+<p>The advantage of steganography over <a href="https://en.wikipedia.org/wiki/Cryptography">cryptography</a> alone is that the intended secret message does not attract attention to itself as an object of scrutiny. Plainly visible encrypted messages, no matter how unbreakable they are, arouse interest and may in themselves be incriminating in countries in which <a href="https://en.wikipedia.org/wiki/Encryption">encryption</a> is illegal.</p>
+</blockquote>
+<p>In other words, steganography is more discreet than cryptography when we want to send a secret information. On the other hand, the hidden message is easier to extract.</p>
+<h3>What is a digital image?</h3>
+<p>Ok, now that we know the basics of steganography, let's learn some simple image processing concepts.</p>
+<p>Before understanding how can we hide an image inside another, we need to understand what a digital image is.</p>
+<p>We can describe a <strong>digital image</strong> as a finite set of digital values, called pixels. Pixels are the smallest individual element of an image, holding values that represent the brightness of a given color at any specific point. So we can think of an image as a matrix (or a two-dimensional array) of pixels which contains a fixed number of rows and columns.</p>
+<p><img alt="" src="https://cdn-images-1.medium.com/max/2000/1*-Vreo05sajRL8dRibXIWXA.png"></p>
+<p>When using the "<strong>digital image</strong>" term here, we are referencing to the "<strong>raster graphics</strong>", which are basically a dot matrix data structure, representing a grid of pixels, which in turn can be stored in image files with varying formats. You can read more about <a href="https://en.wikipedia.org/wiki/Digital_image">digital images</a>, <a href="https://en.wikipedia.org/wiki/Raster_graphics">raster graphics</a>, and <a href="https://en.wikipedia.org/wiki/Bitmap">bitmaps</a> at the <a href="https://en.wikipedia.org/wiki/Main_Page">Wikipedia</a> website.</p>
+<h3>Pixel concept and color models</h3>
+<p>As already mentioned, pixels are the smallest individual element of an image. So, each pixel is a sample of an original image. It means, more samples provide more accurate representations of the original. The <a href="https://en.wikipedia.org/wiki/Intensity_(physics)">intensity</a> of each pixel is variable. In color imaging systems, a color is typically represented by three or four component intensities such as <a href="https://en.wikipedia.org/wiki/RGB_color_model">red, green, and blue</a>, or <a href="https://en.wikipedia.org/wiki/CMYK_color_model">cyan, magenta, yellow, and black</a>.</p>
+<p>Here, we will work with the <a href="https://en.wikipedia.org/wiki/RGB_color_model">RGB color model</a>. As you can imagine, the RGB color model has 3 channels, red, green and blue.</p>
+<blockquote>
+<p>The <strong>RGB color model</strong> is an additive <a href="https://en.wikipedia.org/wiki/Color_model">color model</a> in which red, green and blue light are added together in various ways to reproduce a broad array of colors. The name of the model comes from the initials of the three additive primary colors, red, green, and blue. The main purpose of the RGB color model is for the sensing, representation and display of images in electronic systems, such as televisions and computers, though it has also been used in conventional <a href="https://en.wikipedia.org/wiki/Photography">photography</a>.</p>
+</blockquote>
+<p><img alt="" src="https://cdn-images-1.medium.com/max/2000/1*tcTa2Cst3FXkDpxTg-_1mA.jpeg"></p>
+<p>So, each pixel from the image is composed of 3 values (red, green, blue) which are <a href="https://en.wikipedia.org/wiki/8-bit">8-bit</a> values (the range is 0-255).</p>
+<p><img alt="" src="https://cdn-images-1.medium.com/max/2000/1*Mt3yDPhS3aq_spPfWTW9BA.png"></p>
+<p>As we can see in the image above, for each pixel we have three values, which can be represented in <a href="https://en.wikipedia.org/wiki/Binary_code">binary code</a> (the computer language).</p>
+<p>When working with binary codes, we have more significant bits and less significant bits, as you can see in the image below.</p>
+<p><img alt="" src="https://cdn-images-1.medium.com/max/2000/1*YQGZLBpDn2U9Bu8sZphzXQ.jpeg"></p>
+<p>The <strong>leftmost</strong> bit is the <strong>most significant bit</strong>. If we change the leftmost bit it will have a large impact on the final value. For example, if we change the leftmost bit from <strong>1</strong> to <strong>0</strong> (<strong>11111111</strong> to <strong>01111111</strong>) it will change the decimal value from <strong>255</strong> to <strong>127</strong>.</p>
+<p>On the other hand, the <strong>rightmost</strong> bit is the <strong>least significant bit</strong>. If we change the rightmost bit it will have less impact on the final value. For example, if we change the leftmost bit from <strong>1</strong> to <strong>0</strong> (<strong>11111111</strong> to <strong>11111110</strong>) it will change the decimal value from <strong>255</strong> to <strong>254</strong>. Note that the rightmost bit will change only 1 in a range of 256 (it represents less than 1%).</p>
+<p><strong>Summarizing:</strong> each pixel has three values (RGB), each RGB value is 8-bit (it means we can store 8 binary values) and the rightmost bits are least significant. So, if we change the rightmost bits it will have a small visual impact on the final image. This is the steganography key to hide an image inside another. Change the least significant bits from an image and include the most significant bits from the other image.</p>
+<p><img alt="" src="https://cdn-images-1.medium.com/max/2000/1*kpDa0jt6ftSce4b4DQA2MQ.png"></p>
+<p><strong>You can check out the result in the following image</strong>:</p>
+<p>The left upper image is the image that will hide the right upper image. The left lower image is the two images merged and the right lower image is the extracted (unmerged) image.</p>
+<p><img alt="" src="https://cdn-images-1.medium.com/max/2000/1*4paRMea_BGeNpJ2VzFGCoA.png"></p>
+<p>As you can see in the image above, we lost some image quality in the process, but this does not interfere with image comprehension.</p>
