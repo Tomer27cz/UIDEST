@@ -80,7 +80,7 @@ class TextSteganography:
                 txt = txt_bin_list_x[iteration] if is_valid() else blank_spot # If the current pixel is valid, use the text. If not, use a blank spot
                 new_map[i, j] = self._merge_rgb(rgb, txt, x) # NOQA
 
-        return new_image
+        return new_image, x
 
     def decode(self, layer, image):
         """Decode an image. The image must be merged with this program."""
@@ -94,114 +94,109 @@ class TextSteganography:
 
         return self.bin_to_str(''.join(binary_list))
 
+class TextSteganographyLayered:
 
+    def str_to_bin(self, s):
+        """Convert a string to binary."""
+        if type(s) == list: return s
+        binary_list = [format(ord(x), 'b').zfill(8) for x in s]
+        for x in range(16):
+            binary_list.append('00000011') # Add 16 "end of text" bytes to the end of the string
+        return binary_list
 
-# slowwwwwwww
+    def is_ascii(self, s):
+        """Check if a string is ASCII."""
+        if type(s) == list: return True
+        return all(ord(c) < 128 for c in s)
 
-# class TextSteganographyLayered:
-#
-#     def str_to_bin(self, s):
-#         """Convert a string to binary."""
-#         if type(s) == list: return s
-#         binary_list = [format(ord(x), 'b').zfill(8) for x in s]
-#         for x in range(16):
-#             binary_list.append('00000011') # Add 16 "end of text" bytes to the end of the string
-#         return binary_list
-#
-#     def is_ascii(self, s):
-#         """Check if a string is ASCII."""
-#         if type(s) == list: return True
-#         return all(ord(c) < 128 for c in s)
-#
-#     def div(self, n, x):
-#         """Check if length of string is divisible by X. If not, add a 0 to it until it is."""
-#         if len(n) % x == 0: return n
-#         else: return self.div(n + '0', x)
-#
-#     def bin_list_to_3_str_list(self, bin_list):
-#         """Convert a list of binary strings to a string. Then a list of 3 digit binary strings."""
-#         bin_str = ''.join(bin_list)
-#         bin_str = self.div(bin_str, 3)
-#         return [bin_str[i:i + 3] for i in range(0, len(bin_str), 3)]
-#
-#     def bin_to_str(self, s):
-#         """Convert a binary string to a string."""
-#         s = s[:s.index('00000011'*16)]
-#         return ''.join(chr(int(s[i * 8:i * 8 + 8], 2)) for i in range(len(s) // 8)) # get the text between the start of string and 16 "end of text" bytes
-#
-#     def _int_to_bin(self, rgb):
-#         """Convert an integer tuple to binary."""
-#         if len(rgb) == 4: r, g, b, a = rgb
-#         else: r, g, b = rgb
-#         return f'{r:08b}', f'{g:08b}', f'{b:08b}'
-#
-#     def _bin_to_int(self, rgb):
-#         """Convert a binary tuple to an integer tuple."""
-#         r, g, b = rgb
-#         return int(r, 2), int(g, 2), int(b, 2)
-#
-#     def _merge_rgb(self, rgb, txt, x):
-#         """Merge RGB with text. The text is 3 digits long."""
-#         r1, g1, b1 = self._int_to_bin(rgb)
-#         rgb = r1[:(8-x)] + txt[0] + r1[(8-x)+1:], g1[:(8 - x)] + txt[1] + g1[(8 - x) + 1:], b1[:(8 - x)] + txt[2] + b1[(8 - x) + 1:]
-#         return self._bin_to_int(rgb)
-#
-#     def _decode_rgb(self, rgb, x):
-#         """Unmerge RGB. Into a 3 digit binary string."""
-#         r, g, b = self._int_to_bin(rgb)
-#         return r[7-x] + g[7-x] + b[7-x]
-#
-#     def encode(self, image, text, layer=1):
-#         """Encode an image with text. The text must be ASCII."""
-#         blank_spot = "000"
-#
-#         # Check if the text will be shorter than image
-#         if type(text) != list and len(text) > (image.size[0]*image.size[1])*3: raise ValueError('Text is too long for this image.')
-#         # check if the text is ascii
-#         if not self.is_ascii(text): raise ValueError('The text must be ASCII.')
-#
-#         # Get the pixel map of the image
-#         map1 = image.load()
-#         # Convert every character in the text to binary and put it in a list
-#         # Convert the list of binary strings to a list of 3 digit binary strings
-#         txt_bin_list = self.bin_list_to_3_str_list(self.str_to_bin(text))
-#         list_len = len(txt_bin_list)
-#
-#         new_image = Image.new(image.mode, image.size)
-#         new_map = new_image.load()
-#
-#         for i in range(image.size[0]):
-#             for j in range(image.size[1]):
-#                 iteration = (i * image.size[1]) + j
-#                 rgb = map1[i ,j]
-#
-#                 if iteration < list_len: # If the current pixel is valid, use the text. If not, use a blank spot
-#                     txt = txt_bin_list[iteration]
-#                 else:
-#                     txt = blank_spot
-#                 new_map[i, j] = self._merge_rgb(rgb, txt, layer) # NOQA
-#
-#         bin_list_left = txt_bin_list[image.size[0]*image.size[1]:]
-#         if len(bin_list_left) > 0:
-#             new_image = self.encode(new_image, bin_list_left, layer+1)
-#
-#         return new_image
-#
-#     def decode(self, image):
-#         """Decode an image. The image must be merged with this program."""
-#         pixel_map = image.load()
-#
-#         layer_list = []
-#         for layer in range(8):
-#             binary_list = []
-#             for i in range(image.size[0]):
-#                 for j in range(image.size[1]):
-#                     binary_list.append(self._decode_rgb(pixel_map[i, j], layer))
-#             layer_list.append(''.join(binary_list))
-#
-#         return self.bin_to_str(''.join(layer_list))
+    def div(self, n, x):
+        """Check if length of string is divisible by X. If not, add a 0 to it until it is."""
+        if len(n) % x == 0: return n
+        else: return self.div(n + '0', x)
 
+    def bin_list_to_3_str_list(self, bin_list):
+        """Convert a list of binary strings to a string. Then a list of 3 digit binary strings."""
+        bin_str = ''.join(bin_list)
+        bin_str = self.div(bin_str, 3)
+        return [bin_str[i:i + 3] for i in range(0, len(bin_str), 3)]
 
+    def bin_to_str(self, s):
+        """Convert a binary string to a string."""
+        s = s[:s.index('00000011'*16)]
+        return ''.join(chr(int(s[i * 8:i * 8 + 8], 2)) for i in range(len(s) // 8)) # get the text between the start of string and 16 "end of text" bytes
+
+    def _int_to_bin(self, rgb):
+        """Convert an integer tuple to binary."""
+        if len(rgb) == 4: r, g, b, a = rgb
+        else: r, g, b = rgb
+        return f'{r:08b}', f'{g:08b}', f'{b:08b}'
+
+    def _bin_to_int(self, rgb):
+        """Convert a binary tuple to an integer tuple."""
+        r, g, b = rgb
+        return int(r, 2), int(g, 2), int(b, 2)
+
+    def _merge_rgb(self, rgb, txt, x):
+        """Merge RGB with text. The text is 3 digits long."""
+        r1, g1, b1 = self._int_to_bin(rgb)
+        rgb = r1[:(8-x)] + txt[0] + r1[(8-x)+1:], g1[:(8 - x)] + txt[1] + g1[(8 - x) + 1:], b1[:(8 - x)] + txt[2] + b1[(8 - x) + 1:]
+        return self._bin_to_int(rgb)
+
+    def _decode_rgb(self, rgb, x):
+        """Unmerge RGB. Into a 3 digit binary string."""
+        r, g, b = self._int_to_bin(rgb)
+        return r[7-x] + g[7-x] + b[7-x]
+
+    def encode(self, image, text, layer=1):
+        """Encode an image with text. The text must be ASCII."""
+        blank_spot = "000"
+
+        # Check if the text will be shorter than image
+        if type(text) != list and len(text) > (image.size[0]*image.size[1])*3: raise ValueError('Text is too long for this image.')
+        # check if the text is ascii
+        if not self.is_ascii(text): raise ValueError('The text must be ASCII.')
+
+        # Get the pixel map of the image
+        map1 = image.load()
+        # Convert every character in the text to binary and put it in a list
+        # Convert the list of binary strings to a list of 3 digit binary strings
+        txt_bin_list = self.bin_list_to_3_str_list(self.str_to_bin(text))
+        list_len = len(txt_bin_list)
+
+        new_image = Image.new(image.mode, image.size)
+        new_map = new_image.load()
+
+        for i in range(image.size[0]):
+            for j in range(image.size[1]):
+                iteration = (i * image.size[1]) + j
+                rgb = map1[i ,j]
+
+                if iteration < list_len: # If the current pixel is valid, use the text. If not, use a blank spot
+                    txt = txt_bin_list[iteration]
+                else:
+                    txt = blank_spot
+                new_map[i, j] = self._merge_rgb(rgb, txt, layer) # NOQA
+
+        bin_list_left = txt_bin_list[image.size[0]*image.size[1]:]
+        layers = layer+1
+        if len(bin_list_left) > 0:
+            new_image, layers = self.encode(new_image, bin_list_left, layers)
+
+        return new_image, layers
+
+    def decode(self, image):
+        """Decode an image. The image must be merged with this program."""
+        pixel_map = image.load()
+
+        layer_list = []
+        for layer in range(8):
+            binary_list = []
+            for i in range(image.size[0]):
+                for j in range(image.size[1]):
+                    binary_list.append(self._decode_rgb(pixel_map[i, j], layer))
+            layer_list.append(''.join(binary_list))
+
+        return self.bin_to_str(''.join(layer_list))
 
 class TextSteganographyLayeredDynamic:
     def str_to_bin(self, s, bits=8):
@@ -214,7 +209,6 @@ class TextSteganographyLayeredDynamic:
             binary_list.append(format(char, 'b').zfill(bits))
         for x in range(16):
             binary_list.append(('0' * (bits - 2) + '11') * 16)  # Add 16 "end of text" bytes to the end of the string
-        print(binary_list[:8])
         return binary_list
 
     def div(self, n, x):
@@ -260,7 +254,6 @@ class TextSteganographyLayeredDynamic:
         if type(text) != list and len(text) > ((image.size[0]*image.size[1])*3)/2: raise ValueError('Text is too long for this image.')
 
         if not bits: bits = max(ord(x) for x in text).bit_length()
-        print(bits)
 
         map1 = image.load()
         txt_bin_list = self.bin_list_to_3_str_list(self.str_to_bin(text, bits))
@@ -281,10 +274,11 @@ class TextSteganographyLayeredDynamic:
                 new_map[i, j] = self._merge_rgb(rgb, txt, layer) # NOQA
 
         bin_list_left = txt_bin_list[image.size[0]*image.size[1]:]
+        layers = layer+1
         if len(bin_list_left) > 0:
-            new_image = self.encode(new_image, bin_list_left, bits=bits, layer=layer+1)
+            new_image, not_important, layers = self.encode(new_image, bin_list_left, bits=bits, layer=layers)
 
-        return new_image
+        return new_image, bits, layers
 
     def decode(self, image, bits=None):
         """Decode an image. The image must be merged with this program."""
@@ -302,7 +296,7 @@ class TextSteganographyLayeredDynamic:
                     bits = int(layer_list[0][:8], 2)
                 layer_list[0] = layer_list[0][8:]
 
-        return self.bin_to_str(''.join(layer_list), bits=bits)
+        return self.bin_to_str(''.join(layer_list), bits=bits), bits
 
 
 

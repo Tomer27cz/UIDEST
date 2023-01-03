@@ -7,11 +7,11 @@ from tkhtmlview import HTMLScrolledText
 import customtkinter
 import os
 
-from UIDEST.Features.Image.ImageScramble import new_scramble_algorithm
-from UIDEST.Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
-from UIDEST.Features.Image.Text.TextSteganography import TextSteganographyLayeredDynamic
-from UIDEST.Features.Image.Text.TextToImage import TextToImage
-from UIDEST.Features.tkinter.ToolTip import CreateToolTip
+from Features.Image.ImageScramble import new_scramble_algorithm
+from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
+from Features.Image.Text.TextSteganography import TextSteganographyLayeredDynamic, TextSteganography, TextSteganographyLayered
+from Features.Image.Text.TextToImage import TextToImage
+from Features.tkinter.ToolTip import CreateToolTip
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -26,8 +26,8 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
+        self.grid_columnconfigure((2, 3), weight=0) # NOQA
+        self.grid_rowconfigure((0, 1, 2), weight=1) # NOQA
 
         # configure misc
 
@@ -52,7 +52,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.st_output_type_var = tkinter.StringVar(value="PNG")
         self.st_action_type_var = tkinter.StringVar(value="Merge")
         #-----------------------------------------------
-        self.stt_type_var = tkinter.StringVar(value="Layered")
+        self.stt_type_var = tkinter.StringVar(value="Layered8")
         self.stt_output_type_var = tkinter.StringVar(value="PNG")
         self.stt_action_type_var = tkinter.StringVar(value="Encode")
         self.stt_encoding_type_var = tkinter.StringVar(value="ASCII")
@@ -62,7 +62,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="UIDEST 1.0\n by @TheRealMysticSword", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="UIDEST 1.0\nALPHA", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Image Scrambler", command=self.sidebar_button_event_frame_0)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
@@ -307,16 +307,16 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # console
         self.stt_console = customtkinter.CTkTextbox(self.frame2, width=100, height=20)
-        self.stt_console.grid(row=7, column=2, columnspan=3, sticky="we", padx=20)
+        self.stt_console.grid(row=6, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
 
         # file name entry
         self.stt_output_name_ent = customtkinter.CTkEntry(self.frame2, placeholder_text="Output filename", width=100)
-        self.stt_output_name_ent.grid(row=5, column=0, padx=20, pady=50, columnspan=1, sticky="ew")
+        self.stt_output_name_ent.grid(row=5, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
 
         # drop down menus
         self.stt_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=self.output_type_list_lossless, variable=self.stt_output_type_var)
-        self.stt_output_type_dropdown.grid(row=6, column=0, padx=20, pady=(10, 10))
-        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered", "Sequential", "LayeredDynamic"], variable=self.stt_type_var)
+        self.stt_output_type_dropdown.grid(row=6, column=0, padx=20, pady=10)
+        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic"], variable=self.stt_type_var)
         self.stt_type_dropdown.grid(row=7, column=0, padx=20, pady=10)
         self.stt_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Encode", "Decode"], variable=self.stt_action_type_var, command=self.stt_action_type_dropdown_event)
         self.stt_action_type_dropdown.grid(row=8, column=0, padx=20, pady=10)
@@ -365,47 +365,17 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.my_notebook.select(2)
 
 
+    # ------------------------------------ FUNCTIONS -------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def open_input_dialog_event(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog:", dialog.get_input())
-
-    def change_appearance_mode_event(self, new_appearance_mode: str):
+    def change_appearance_mode_event(self, new_appearance_mode: str): # NOQA
         customtkinter.set_appearance_mode(new_appearance_mode)
-
-    def change_scaling_event(self, new_scaling: str):
-        new_scaling_float = int(new_scaling.replace("%", "")) / 100
-        customtkinter.set_widget_scaling(new_scaling_float)
-
 
     # Sidebar functions ------------------------------------------------------------------------------------------------
 
     def sidebar_button_event_frame_0(self): self.my_notebook.select(0)
     def sidebar_button_event_frame_1(self): self.my_notebook.select(1)
     def sidebar_button_event_frame_2(self): self.my_notebook.select(2)
-
-    def sidebar_button_event(self): print("Sidebar button clicked")
-
-
 
     # Image Scrambler functions ----------------------------------------------------------------------------------------
 
@@ -422,7 +392,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sc_ent1.insert(0, filename)
 
         CreateToolTip(self.sc_ent1, )
-
 
     def sc_seed_loop_checkbox_event(self):
         self.sc_to_seed_ent.configure(state="normal" if self.sc_loop_checkbox1.get() else "disabled",
@@ -497,7 +466,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.sc_start_button.configure(text="Working...")
 
             # print info to console
-            self.print_to_sc_console("-" * 75 + "START" + "-" * 77)
+            self.print_to_sc_console("-" * 72 + "START" + "-" * 73)
             self.print_to_sc_console(f"Seed: {seed} | Size: {size} | Action: {action_type} | Output: {output_type} | Output filename: {file_name}_({seed}_{size}) |Image: {image_path.split('/')[-1]}")
             self.print_to_sc_console(f"Seed loop: False | Size loop: False")
             self.print_to_sc_console("Folder: " + folder_path + "\n")
@@ -795,37 +764,137 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.stt_ent2.configure(state="normal", border_width=2)
             self.stt_sidebar_button_2.configure(state="normal")
             self.stt_output_type_dropdown.configure(state="normal")
+            self.stt_output_name_ent.configure(state="normal", border_width=2)
         if new_action_type == "Decode":
             self.stt_ent2.configure(state="disabled", border_width=0)
             self.stt_sidebar_button_2.configure(state="disabled")
             self.stt_output_type_dropdown.configure(state="disabled")
+            self.stt_output_name_ent.configure(state="disabled", border_width=0)
 
     def stt_encoding_type_dropdown_event(self, new_type: str):
+        if new_type == "UNICODE":
+            self.stt_type_dropdown.set("LayeredDynamic")
+            self.stt_type_dropdown.configure(state="disabled")
         if new_type == "ASCII":
-            self.stt_ent3.configure(state="normal", border_width=2)
+            self.stt_type_dropdown.configure(state="normal")
 
+    def stt_start_button_event(self):
+        ent1 = self.stt_ent1.get()
+        ent2 = self.stt_ent2.get()
+        ent3 = self.stt_ent3.get(index1="0.0", index2="end")
+        output_to_text = True
+        output_name = self.stt_output_name_ent.get()
+        st_type = self.stt_type_dropdown.get() # Steganography Type: Layered, Sequential, etc.
+        encoding_type = self.stt_encoding_type_dropdown.get() # Encoding Type: UNICODE, ASCII
+        action_type_dropdown = self.stt_action_type_dropdown.get() # Action Type: Encode, Decode
+        output_type_dropdown = self.stt_output_type_dropdown.get() # Output Type: PNG, GIF, etc. (Only for encoding - only lossless formats)
 
-    def stt_start_button_event(self): print("Start button event")
+        # folder/file path
+        if action_type_dropdown == "Encode" or output_to_text:
+            if not ent2: return self.print_to_stt_console("Output folder not specified", error=True)
+            if ent2[-1] != "/" or ent2[-1] != "\\":
+                if "\\" in ent2: ent2 += "\\"
+                else: ent2 += "/"
+        if not output_name: output_name = "TextSteganographyOutput"
+        path = f"{ent2}{output_name}.{output_type_dropdown.lower()}"
 
+        # image
+        if not ent1: return self.print_to_stt_console("Please select an image.", error=True)
+        try: im = Image.open(ent1)
+        except Exception as e: return self.print_to_stt_console(f"Error opening image: {e}", error=True)
 
+        # text
+        if ent3.isascii() == False and encoding_type == "ASCII": return self.print_to_stt_console("Text contains non-ASCII characters.\n\nSwitch to LayeredDynamic and UNICODE", error=True)
 
+        # start
+        if action_type_dropdown == "Encode":
+            if not ent3: return self.print_to_stt_console("Please enter text.", error=True)
+
+            if st_type == "Layered8":
+                if encoding_type == "UNICODE":
+                    return self.print_to_stt_console("UNICODE encoding is not supported for Layered. Please select LayeredDynamic", error=True)
+                if encoding_type == "ASCII":
+                    try:
+                        image, layers = TextSteganographyLayered().encode(image=im, text=ent3)
+                        image.save(path)
+                        self.print_to_stt_console(f"Layered8 | Bits: 8 | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nSaved to: '{path}'")
+                    except ValueError as e: return self.print_to_stt_console(e)
+
+            if st_type == "Sequential8":
+                if encoding_type == "UNICODE":
+                    return self.print_to_stt_console("UNICODE encoding is not supported for Sequential. Please select LayeredDynamic", error=True)
+                if encoding_type == "ASCII":
+                    try:
+                        image, layers = TextSteganography().encode(image=im, text=ent3)
+                        image.save(path)
+                        self.print_to_stt_console(f"Sequential8 | Bits: 8 | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nSaved to: '{path}'")
+                    except ValueError as e: return self.print_to_stt_console(e)
+
+            if st_type == "LayeredDynamic":
+                try:
+                    image, bits, layers = TextSteganographyLayeredDynamic().encode(image=im, text=ent3)
+                    image.save(path)
+                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nSaved to: '{path}'")
+                except ValueError as e: return self.print_to_stt_console(e)
+
+        if action_type_dropdown == "Decode":
+            if st_type == "Layered8":
+                try:
+                    text = TextSteganographyLayered().decode(image=im)
+                    self.print_to_stt_textbox(text)
+                    self.print_to_stt_console(f"Layered8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in textbox")
+                except ValueError as e: return self.print_to_stt_console(e)
+
+            if st_type == "Sequential8":
+                try:
+                    text = TextSteganography().decode(image=im, layer=1)
+                    self.print_to_stt_textbox(text)
+                    self.print_to_stt_console(f"Sequential8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in textbox")
+                except ValueError as e: return self.print_to_stt_console(e)
+
+            if st_type == "LayeredDynamic":
+                try:
+                    text, bits = TextSteganographyLayeredDynamic().decode(image=im)
+                    self.print_to_stt_textbox(text)
+                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown}\n\nOutput in textbox")
+                except ValueError as e: return self.print_to_stt_console(e)
 
 
     # Console Functions ------------------------------------------------------------------------------------------------
 
-    def print_to_sc_console(self, text):
+    def print_to_sc_console(self, text, error=False):
         self.sc_console.configure(state="normal")
         self.sc_console.insert(customtkinter.END, text + "\n")
         self.sc_console.configure(state="disabled")
         self.sc_console.see("end")
+        if error: self.sc_console.configure(border_width=2, border_color="#1F6AA5")
+        else: self.sc_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
 
-    def print_to_st_console(self, text):
+    def print_to_st_console(self, text, error=False):
         self.st_console.configure(state="normal")
         self.st_console.delete("1.0", "end")
         self.st_console.insert(customtkinter.END, text)
         self.st_console.configure(state="disabled")
+        if error: self.st_console.configure(border_width=2, border_color="#1F6AA5")
+        else: self.st_console.configure(border_width=0)
+        self.update_idletasks()
+        self.update()
+
+    def print_to_stt_console(self, text, error=False):
+        self.stt_console.configure(state="normal")
+        self.stt_console.delete("1.0", "end")
+        self.stt_console.insert(customtkinter.END, text)
+        self.stt_console.configure(state="disabled")
+        if error: self.stt_console.configure(border_width=2, border_color="#1F6AA5")
+        else: self.stt_console.configure(border_width=0)
+        self.update_idletasks()
+        self.update()
+
+    def print_to_stt_textbox(self, text):
+        self.stt_ent3.delete("0.0", "end")
+        self.stt_ent3.insert(customtkinter.END, text)
         self.update_idletasks()
         self.update()
 
