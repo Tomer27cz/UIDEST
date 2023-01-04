@@ -299,8 +299,105 @@ class TextSteganographyLayeredDynamic:
         return self.bin_to_str(''.join(layer_list), bits=bits), bits
 
 
+class TextSteganographyLayeredDynamicTransparent:
+    def str_to_bin(self, s, bits=8):
+        """Convert a string to binary."""
+        if type(s) == list: return s
+        binary_list = [format(bits, 'b').zfill(8)]
+        for x in s:
+            char = ord(x)
+            if char > 2 ** bits - 1: raise ValueError(f"Character {x} cannot be encoded with {bits} bits.")
+            binary_list.append(format(char, 'b').zfill(bits))
+        for x in range(16):
+            binary_list.append(('0' * (bits - 2) + '11') * 16)  # Add 16 "end of text" bytes to the end of the string
+        return binary_list
+
+    def div(self, n, x):
+        """Check if length of string is divisible by X. If not, add a 0 to it until it is."""
+        if len(n) % x == 0: return n
+        else: return self.div(n + '0', x)
+
+    def bin_list_to_4_str_list(self, bin_list):
+        """Convert a list of binary strings to a string. Then a list of 3 digit binary strings."""
+        bin_str = ''.join(bin_list)
+        bin_str = self.div(bin_str, 4)
+        return [bin_str[i:i + 4] for i in range(0, len(bin_str), 4)]
+
+    def bin_to_str(self, s, bits=8):
+        """Convert a binary string to a string."""
+        s = s[:s.index(('0'*(bits-2)+'11')*16)]
+        return ''.join(chr(int(s[i * bits:i * bits + bits], 2)) for i in range(len(s) // bits)) # get the text between the start of string and 16 "end of text" bytes
+
+    def _int_to_bin(self, rgb):
+        """Convert an integer tuple to binary."""
+        r, g, b, a = rgb
+        return f'{r:08b}', f'{g:08b}', f'{b:08b}', f'{a:08b}'
+
+    def _bin_to_int(self, rgb):
+        """Convert a binary tuple to an integer tuple."""
+        r, g, b, a = rgb
+        return int(r, 2), int(g, 2), int(b, 2), int(a, 2)
+
+    def _merge_rgb(self, rgb, txt, x):
+        """Merge RGB with text. The text is 3 digits long."""
+        r1, g1, b1, a1 = self._int_to_bin(rgb)
+        rgb = r1[:(8-x)] + txt[0] + r1[(8-x)+1:], g1[:(8-x)] + txt[1] + g1[(8-x)+1:], b1[:(8-x)] + txt[2] + b1[(8-x)+1:], a1[:(8-x)] + txt[3] + a1[(8-x)+1:]
+        return self._bin_to_int(rgb)
+
+    def _decode_rgb(self, rgb, x):
+        """Unmerge RGB. Into a 3 digit binary string."""
+        r, g, b, a = self._int_to_bin(rgb)
+        return r[7-x] + g[7-x] + b[7-x] + a[7-x]
+
+    def encode(self, image, text, bits=None, layer=1):
+        """Encode an image with text. The text must be ASCII."""
+        if not bits: bits = max(ord(x) for x in text).bit_length()
+
+        if type(text) != list and len(text)*bits > (image.size[0]*image.size[1])*4*8: raise ValueError('Text is too long for this image.')
 
 
+        map1 = image.load()
+        txt_bin_list = self.bin_list_to_4_str_list(self.str_to_bin(text, bits))
+        list_len = len(txt_bin_list)
+
+        new_image = Image.new(image.mode, image.size)
+        new_map = new_image.load()
+
+        for i in range(image.size[0]):
+            for j in range(image.size[1]):
+                iteration = (i * image.size[1]) + j
+                rgb = map1[i ,j]
+
+                if iteration < list_len: # If the current pixel is valid, use the text. If not, use a blank spot
+                    txt = txt_bin_list[iteration]
+                else:
+                    txt = "0001" # 1 is the alpha channel, so it will not be transparent
+                new_map[i, j] = self._merge_rgb(rgb, txt, layer) # NOQA
+
+        bin_list_left = txt_bin_list[image.size[0]*image.size[1]:]
+        layers = layer+1
+        if len(bin_list_left) > 0:
+            new_image, not_important, layers = self.encode(new_image, bin_list_left, bits=bits, layer=layers)
+
+        return new_image, bits, layers
+
+    def decode(self, image, bits=None):
+        """Decode an image. The image must be merged with this program."""
+        pixel_map = image.load()
+
+        layer_list = []
+        for layer in range(8):
+            binary_list = []
+            for i in range(image.size[0]):
+                for j in range(image.size[1]):
+                    binary_list.append(self._decode_rgb(pixel_map[i, j], layer))
+            layer_list.append(''.join(binary_list))
+            if layer == 0:
+                if not bits:
+                    bits = int(layer_list[0][:8], 2)
+                layer_list[0] = layer_list[0][8:]
+
+        return self.bin_to_str(''.join(layer_list), bits=bits), bits
 
 
 if __name__ == '__main__':
@@ -308,23 +405,27 @@ if __name__ == '__main__':
     from time import time
     filename1 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP1.png"
     filename2 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\Text_Steganography_Output_yes.png"
+    filename3 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\bee_movie_script12.txt"
 
     # text = bee_movie_script*5
     # print(len(text))
     #
     # text = "Hello World!"
 
-    text = bee_movie_script*2
+    text = bee_movie_script*12
     print(len(text))
 
+    with open(filename3, 'w') as f:
+        f.write(text)
+
     # start = time()
-    # output = TextSteganographyLayeredDynamic().encode(Image.open(filename1), text, bits=8)
+    # output, bits, layers = TextSteganographyLayeredDynamicTransparent().encode(Image.open(filename1), text, bits=8)
     # end = time()
     # print(f"Encoding took {end-start} seconds.")
     # output.save(filename2)
 
     start = time()
-    output = TextSteganographyLayeredDynamic().decode(Image.open(filename2))
+    output, bits = TextSteganographyLayeredDynamicTransparent().decode(Image.open(filename2))
     end = time()
     print(output)
     print(f"Decoding took {end-start} seconds.")

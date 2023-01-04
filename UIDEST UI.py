@@ -56,6 +56,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_output_type_var = tkinter.StringVar(value="PNG")
         self.stt_action_type_var = tkinter.StringVar(value="Encode")
         self.stt_encoding_type_var = tkinter.StringVar(value="ASCII")
+        self.stt_text_output_checkbox_var = tkinter.IntVar(value=0)
 
         # create sidebar
 
@@ -307,38 +308,40 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # console
         self.stt_console = customtkinter.CTkTextbox(self.frame2, width=100, height=20)
-        self.stt_console.grid(row=6, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
+        self.stt_console.grid(row=8, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
 
         # file name entry
         self.stt_output_name_ent = customtkinter.CTkEntry(self.frame2, placeholder_text="Output filename", width=100)
-        self.stt_output_name_ent.grid(row=5, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.stt_output_name_ent.grid(row=7, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.stt_text_output_checkbox = customtkinter.CTkCheckBox(self.frame2, text="Output text to file", variable=self.stt_text_output_checkbox_var, state="disabled", command=self.stt_text_output_checkbox_event)
+        self.stt_text_output_checkbox.grid(row=6, column=0, padx=20, pady=10, columnspan=1, sticky="w")
 
         # drop down menus
         self.stt_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=self.output_type_list_lossless, variable=self.stt_output_type_var)
-        self.stt_output_type_dropdown.grid(row=6, column=0, padx=20, pady=10)
-        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic"], variable=self.stt_type_var)
-        self.stt_type_dropdown.grid(row=7, column=0, padx=20, pady=10)
+        self.stt_output_type_dropdown.grid(row=8, column=0, padx=20, pady=10)
+        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic", "LayeredDynamicTransparent"], variable=self.stt_type_var)
+        self.stt_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
         self.stt_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Encode", "Decode"], variable=self.stt_action_type_var, command=self.stt_action_type_dropdown_event)
-        self.stt_action_type_dropdown.grid(row=8, column=0, padx=20, pady=10)
+        self.stt_action_type_dropdown.grid(row=10, column=0, padx=20, pady=10)
         self.stt_encoding_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["ASCII", "UNICODE"], variable=self.stt_encoding_type_var, command=self.stt_encoding_type_dropdown_event)
         self.stt_encoding_type_dropdown.grid(row=3, column=0, padx=20, pady=10)
 
         # info marker
         self.stt_info_marker_1 = customtkinter.CTkLabel(self.frame2, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
-        self.stt_info_marker_1.grid(row=6, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        self.stt_info_marker_1.grid(row=8, column=1, padx=0, pady=0, ipadx=2, ipady=5)
         self.stt_info_marker_2 = customtkinter.CTkLabel(self.frame2, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
-        self.stt_info_marker_2.grid(row=7, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        self.stt_info_marker_2.grid(row=9, column=1, padx=0, pady=0, ipadx=2, ipady=5)
         self.stt_info_marker_3 = customtkinter.CTkLabel(self.frame2, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
-        self.stt_info_marker_3.grid(row=8, column=1, padx=0, pady=0, ipadx=2, ipady=5)
-        CreateToolTip(self.stt_info_marker_1, "The output type is the file type of the output image.\nOnly Lossless image formats are supported for this program\n(others may not work because of compression of the data)\nDefault: 'PNG' - Lossless encoding for better quality when decoding.", height=75, width=400)
+        self.stt_info_marker_3.grid(row=10, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        CreateToolTip(self.stt_info_marker_1, "The output type is the file type of the output image.\nOnly Lossless image formats are supported for this program\n(others may not work because of compression of the data)\n\nDefault: 'PNG' - Lossless encoding for better quality when decoding.", height=90, width=400)
         CreateToolTip(self.stt_info_marker_2, "This is the folder you want to save the output to")
         CreateToolTip(self.stt_info_marker_3, "This is the type of output you want to get\n\nLayered - The program will encode the text into the image\nand save the output image in the output folder\n\nSequential - The program will encode the text into the image\nand save the output image in the output folder\n\nLayeredDynamic - The program will encode the text into the image\nand save the output image in the output folder")
         CreateToolTip(self.stt_output_name_ent, "Default: 'output' - The name of the output file\n\nNote: The file extension will be added automatically\nbased on the output type", height=75, width=300)
-
+        CreateToolTip(self.stt_text_output_checkbox, "If checked, the program will output the text to a text file\nin the output folder with the output filename(UTF-8 encoding)\n\nDefault: 'False'", height=75, width=360)
 
         # start button
         self.stt_start_button = customtkinter.CTkButton(self.frame2, command=self.stt_start_button_event, text="Run Text Steganographer")
-        self.stt_start_button.grid(row=8, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
+        self.stt_start_button.grid(row=10, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
 
         #---------------------------------------------------------------------------------------------------------------
@@ -360,6 +363,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.st_folder_checkbox_event()
         #------------------------------------Text - IM Steganography ---------------------------------------------------
         self.stt_console.configure(state="disabled")
+        self.stt_type_dropdown.set("LayeredDynamic")
         #------------------------------------------ Other --------------------------------------------------------------
         self.appearance_mode_optionemenu.set("System")
         self.my_notebook.select(2)
@@ -764,11 +768,17 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.stt_ent2.configure(state="normal", border_width=2)
             self.stt_sidebar_button_2.configure(state="normal")
             self.stt_output_type_dropdown.configure(state="normal")
+            self.stt_text_output_checkbox.configure(state="disabled")
+            self.stt_text_output_checkbox.deselect()
+            self.stt_text_output_checkbox_event()
             self.stt_output_name_ent.configure(state="normal", border_width=2)
+
         if new_action_type == "Decode":
             self.stt_ent2.configure(state="disabled", border_width=0)
             self.stt_sidebar_button_2.configure(state="disabled")
             self.stt_output_type_dropdown.configure(state="disabled")
+            self.stt_text_output_checkbox.configure(state="normal")
+            self.stt_text_output_checkbox_event()
             self.stt_output_name_ent.configure(state="disabled", border_width=0)
 
     def stt_encoding_type_dropdown_event(self, new_type: str):
@@ -778,11 +788,19 @@ class App(customtkinter.CTk, tkinter.Tk):
         if new_type == "ASCII":
             self.stt_type_dropdown.configure(state="normal")
 
+    def stt_text_output_checkbox_event(self):
+        if self.stt_text_output_checkbox.get():
+            self.stt_output_name_ent.configure(state="normal", border_width=2)
+            self.stt_output_type_dropdown.set("TXT")
+        else:
+            self.stt_output_name_ent.configure(state="disabled", border_width=0)
+            self.stt_output_type_dropdown.set("PNG")
+
     def stt_start_button_event(self):
         ent1 = self.stt_ent1.get()
         ent2 = self.stt_ent2.get()
         ent3 = self.stt_ent3.get(index1="0.0", index2="end")
-        output_to_text = True
+        output_text_to_file = self.stt_text_output_checkbox.get()
         output_name = self.stt_output_name_ent.get()
         st_type = self.stt_type_dropdown.get() # Steganography Type: Layered, Sequential, etc.
         encoding_type = self.stt_encoding_type_dropdown.get() # Encoding Type: UNICODE, ASCII
@@ -790,13 +808,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         output_type_dropdown = self.stt_output_type_dropdown.get() # Output Type: PNG, GIF, etc. (Only for encoding - only lossless formats)
 
         # folder/file path
-        if action_type_dropdown == "Encode" or output_to_text:
+        if action_type_dropdown == "Encode" or output_text_to_file:
             if not ent2: return self.print_to_stt_console("Output folder not specified", error=True)
             if ent2[-1] != "/" or ent2[-1] != "\\":
                 if "\\" in ent2: ent2 += "\\"
                 else: ent2 += "/"
         if not output_name: output_name = "TextSteganographyOutput"
         path = f"{ent2}{output_name}.{output_type_dropdown.lower()}"
+        if output_text_to_file: output_to = f"{ent2}{output_name}.txt"
+        else: output_to = "TextBox"
 
         # image
         if not ent1: return self.print_to_stt_console("Please select an image.", error=True)
@@ -841,22 +861,22 @@ class App(customtkinter.CTk, tkinter.Tk):
             if st_type == "Layered8":
                 try:
                     text = TextSteganographyLayered().decode(image=im)
-                    self.print_to_stt_textbox(text)
-                    self.print_to_stt_console(f"Layered8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in textbox")
+                    self.print_to_stt_textbox(text, output_to)
+                    self.print_to_stt_console(f"Layered8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
                 except ValueError as e: return self.print_to_stt_console(e)
 
             if st_type == "Sequential8":
                 try:
                     text = TextSteganography().decode(image=im, layer=1)
-                    self.print_to_stt_textbox(text)
-                    self.print_to_stt_console(f"Sequential8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in textbox")
+                    self.print_to_stt_textbox(text, output_to)
+                    self.print_to_stt_console(f"Sequential8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
                 except ValueError as e: return self.print_to_stt_console(e)
 
             if st_type == "LayeredDynamic":
                 try:
                     text, bits = TextSteganographyLayeredDynamic().decode(image=im)
-                    self.print_to_stt_textbox(text)
-                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown}\n\nOutput in textbox")
+                    self.print_to_stt_textbox(text, output_to)
+                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
                 except ValueError as e: return self.print_to_stt_console(e)
 
 
@@ -892,11 +912,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_idletasks()
         self.update()
 
-    def print_to_stt_textbox(self, text):
-        self.stt_ent3.delete("0.0", "end")
-        self.stt_ent3.insert(customtkinter.END, text)
-        self.update_idletasks()
-        self.update()
+    def print_to_stt_textbox(self, text, output_to):
+        if output_to == "TextBox":
+            self.stt_ent3.delete("0.0", "end")
+            self.stt_ent3.insert(customtkinter.END, text)
+            self.update_idletasks()
+            self.update()
+        else:
+            with open(output_to, "w", encoding="utf-8") as f:
+                f.write(text)
 
 
 
