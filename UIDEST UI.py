@@ -9,7 +9,7 @@ import os
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
-from Features.Image.Text.TextSteganography import TextSteganographyLayeredDynamic, TextSteganography, TextSteganographyLayered
+from Features.Image.Text.TextSteganography import TextSteganographyLayeredDynamic, TextSteganography, TextSteganographyLayered, TextSteganographyLayeredDynamicTransparent
 from Features.Image.Text.TextToImage import TextToImage
 from Features.tkinter.ToolTip import CreateToolTip
 
@@ -319,7 +319,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         # drop down menus
         self.stt_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=self.output_type_list_lossless, variable=self.stt_output_type_var)
         self.stt_output_type_dropdown.grid(row=8, column=0, padx=20, pady=10)
-        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic", "LayeredDynamicTransparent"], variable=self.stt_type_var)
+        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic", "LayeredDynamicTransparent"], variable=self.stt_type_var, command=self.stt_type_dropdown_event)
         self.stt_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
         self.stt_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Encode", "Decode"], variable=self.stt_action_type_var, command=self.stt_action_type_dropdown_event)
         self.stt_action_type_dropdown.grid(row=10, column=0, padx=20, pady=10)
@@ -767,7 +767,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         if new_action_type == "Encode":
             self.stt_ent2.configure(state="normal", border_width=2)
             self.stt_sidebar_button_2.configure(state="normal")
-            self.stt_output_type_dropdown.configure(state="normal")
+            if self.stt_type_dropdown.get() == "LayeredDynamicTransparent":
+                self.stt_output_type_dropdown.configure(state="disabled")
+            else:
+                self.stt_output_type_dropdown.configure(state="normal")
             self.stt_text_output_checkbox.configure(state="disabled")
             self.stt_text_output_checkbox.deselect()
             self.stt_text_output_checkbox_event()
@@ -795,6 +798,14 @@ class App(customtkinter.CTk, tkinter.Tk):
         else:
             self.stt_output_name_ent.configure(state="disabled", border_width=0)
             self.stt_output_type_dropdown.set("PNG")
+
+    def stt_type_dropdown_event(self, new_type: str):
+        if new_type == "LayeredDynamicTransparent":
+            self.stt_output_type_dropdown.set("PNG")
+            self.stt_output_type_dropdown.configure(state="disabled")
+        else:
+            self.stt_output_type_dropdown.configure(state="normal")
+
 
     def stt_start_button_event(self):
         ent1 = self.stt_ent1.get()
@@ -878,6 +889,14 @@ class App(customtkinter.CTk, tkinter.Tk):
                     self.print_to_stt_textbox(text, output_to)
                     self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
                 except ValueError as e: return self.print_to_stt_console(e)
+
+            if st_type == "LayeredDynamicTransparent":
+                try:
+                    text, bits = TextSteganographyLayeredDynamicTransparent().decode(image=im)
+                    self.print_to_stt_textbox(text, output_to)
+                    self.print_to_stt_console(f"LayeredDynamicTransparent | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
+                except ValueError as e: return self.print_to_stt_console(e)
+
 
 
     # Console Functions ------------------------------------------------------------------------------------------------
