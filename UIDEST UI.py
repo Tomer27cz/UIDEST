@@ -64,7 +64,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.sidebar_frame.grid_rowconfigure(8, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="UIDEST 1.0\nALPHA", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Image Scrambler", command=self.sidebar_button_event_frame_0)
@@ -73,12 +73,14 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Image - Text\nSteganography", command=self.sidebar_button_event_frame_2)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
+        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="Text - Image\nGenerator", command=self.sidebar_button_event_frame_3)
+        self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
+        self.appearance_mode_label.grid(row=9, column=0, padx=20, pady=(10, 0))
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame,
                                                                        values=["System", "Light", "Dark"],
                                                                        command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
+        self.appearance_mode_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 10))
         # self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
         # self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
         # self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame,
@@ -352,6 +354,94 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
 
+        # ------------------------------------Text - IM Generator --------------------------------------------------
+
+
+        self.frame3 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
+        self.frame3.grid(row=0, column=1, rowspan=4, sticky="snew")
+        self.frame3.grid_rowconfigure(5, weight=1)
+        self.frame3.grid_columnconfigure(2, weight=1)
+
+        # logo
+        self.tti_logo_label = customtkinter.CTkLabel(self.frame3, text="Image - Text Generator", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.tti_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+
+        # entries
+        self.tti_ent1 = customtkinter.CTkEntry(self.frame3, placeholder_text="Input text file path here", width=100)
+        self.tti_ent1.grid(row=1, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+
+        # buttons
+        self.tti_sidebar_button_1 = customtkinter.CTkButton(self.frame3, command=self.tti_open_text, image=self.folder_button_icon, text="Open text file")
+        self.tti_sidebar_button_1.grid(row=2, column=0, padx=20, pady=5)
+
+        # text entry
+        self.tti_ent3 = customtkinter.CTkTextbox(self.frame3, width=100)
+        self.tti_ent3.grid(row=4, column=1, padx=20, pady=10, columnspan=3, rowspan=3, sticky="ewsn")
+
+        # console
+        self.tti_console = customtkinter.CTkTextbox(self.frame3, width=100, height=20)
+        self.tti_console.grid(row=9, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
+
+        # file name entry
+        self.tti_output_name_ent = customtkinter.CTkEntry(self.frame3, placeholder_text="Output filename", width=100)
+        self.tti_output_name_ent.grid(row=8, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.tti_text_output_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Output text to file",
+                                                                  variable=self.tti_text_output_checkbox_var,
+                                                                  state="disabled",
+                                                                  command=self.tti_text_output_checkbox_event)
+        self.tti_text_output_checkbox.grid(row=7, column=0, padx=20, pady=0, columnspan=1, sticky="w")
+        self.tti_text_input_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Input text from file",
+                                                                 variable=self.tti_text_input_checkbox_var,
+                                                                 command=self.tti_text_input_checkbox_event)
+        self.tti_text_input_checkbox.grid(row=6, column=0, padx=20, pady=5, columnspan=1, sticky="w")
+
+        # drop down menus
+        self.tti_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=self.output_type_list_lossless,
+                                                                    variable=self.tti_output_type_var)
+        self.tti_output_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
+        self.tti_type_dropdown = customtkinter.CTkOptionMenu(self.frame3,
+                                                             values=["Layered8", "Sequential8", "LayeredDynamic",
+                                                                     "LayeredDynamic\nTransparent"],
+                                                             variable=self.tti_type_var,
+                                                             command=self.tti_type_dropdown_event)
+        self.tti_type_dropdown.grid(row=10, column=0, padx=20, pady=10)
+        self.tti_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["Encode", "Decode"],
+                                                                    variable=self.tti_action_type_var,
+                                                                    command=self.tti_action_type_dropdown_event)
+        self.tti_action_type_dropdown.grid(row=11, column=0, padx=20, pady=10)
+        self.tti_encoding_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["ASCII", "UNICODE"],
+                                                                      variable=self.tti_encoding_type_var,
+                                                                      command=self.tti_encoding_type_dropdown_event)
+        self.tti_encoding_type_dropdown.grid(row=4, column=0, padx=20, pady=10)
+
+        # info marker
+        self.tti_info_marker_1 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,
+                                                        height=20, bg_color="#1F6AA5")
+        self.tti_info_marker_1.grid(row=9, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        self.tti_info_marker_2 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,
+                                                        height=20, bg_color="#1F6AA5")
+        self.tti_info_marker_2.grid(row=10, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        self.tti_info_marker_3 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,
+                                                        height=20, bg_color="#1F6AA5")
+        self.tti_info_marker_3.grid(row=11, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        CreateToolTip(self.tti_info_marker_1,
+                      "The output type is the file type of the output image.\nOnly Lossless image formats are supported for this program\n(others may not work because of compression of the data)\n\nDefault: 'PNG' - Lossless encoding for better quality when decoding.",
+                      height=90, width=400)
+        CreateToolTip(self.tti_info_marker_2, "This is the folder you want to save the output to")
+        CreateToolTip(self.tti_info_marker_3,
+                      "This is the type of output you want to get\n\nLayered - The program will encode the text into the image\nand save the output image in the output folder\n\nSequential - The program will encode the text into the image\nand save the output image in the output folder\n\nLayeredDynamic - The program will encode the text into the image\nand save the output image in the output folder")
+        CreateToolTip(self.tti_output_name_ent,
+                      "Default: 'output' - The name of the output file\n\nNote: The file extension will be added automatically\nbased on the output type",
+                      height=75, width=300)
+        CreateToolTip(self.tti_text_output_checkbox,
+                      "If checked, the program will output the text to a text file\nin the output folder with the output filename(UTF-8 encoding)\n\nDefault: 'False'",
+                      height=75, width=360)
+
+        # start button
+        self.tti_start_button = customtkinter.CTkButton(self.frame3, command=self.tti_start_button_event,
+                                                        text="Run Text Steganographer")
+        self.tti_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
+
         #---------------------------------------------------------------------------------------------------------------
 
         # add frames to notebook
@@ -359,6 +449,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.my_notebook.add(self.frame0, text="Tab 1")
         self.my_notebook.add(self.frame1, text="Tab 2")
         self.my_notebook.add(self.frame2, text="Tab 3")
+        self.my_notebook.add(self.frame3, text="Tab 4")
 
         # set default values
         #------------------------------------ Image Scrambler ----------------------------------------------------------
@@ -389,6 +480,7 @@ class App(customtkinter.CTk, tkinter.Tk):
     def sidebar_button_event_frame_0(self): self.my_notebook.select(0)
     def sidebar_button_event_frame_1(self): self.my_notebook.select(1)
     def sidebar_button_event_frame_2(self): self.my_notebook.select(2)
+    def sidebar_button_event_frame_3(self): self.my_notebook.select(3)
 
     # Image Scrambler functions ----------------------------------------------------------------------------------------
 
