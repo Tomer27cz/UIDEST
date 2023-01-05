@@ -6,6 +6,7 @@ from tkinter import filedialog
 from tkhtmlview import HTMLScrolledText
 import customtkinter
 import os
+from time import time
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
@@ -57,6 +58,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_action_type_var = tkinter.StringVar(value="Encode")
         self.stt_encoding_type_var = tkinter.StringVar(value="ASCII")
         self.stt_text_output_checkbox_var = tkinter.IntVar(value=0)
+        self.stt_text_input_checkbox_var = tkinter.IntVar(value=0)
 
         # create sidebar
 
@@ -283,7 +285,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.frame2 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
         self.frame2.grid(row=0, column=1, rowspan=4, sticky="snew")
-        self.frame2.grid_rowconfigure(4, weight=1)
+        self.frame2.grid_rowconfigure(5, weight=1)
         self.frame2.grid_columnconfigure(2, weight=1)
 
         # logo
@@ -294,45 +296,51 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_ent1 = customtkinter.CTkEntry(self.frame2, placeholder_text="Input image path here", width=100)
         self.stt_ent1.grid(row=1, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
         self.stt_ent2 = customtkinter.CTkEntry(self.frame2, placeholder_text="Output folder path here", width=100)
-        self.stt_ent2.grid(row=2, column=1, padx=20, pady=10, columnspan=3, sticky="ew")
+        self.stt_ent2.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.stt_ent4 = customtkinter.CTkEntry(self.frame2, placeholder_text="Input text file path here", width=100)
+        self.stt_ent4.grid(row=2, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.stt_sidebar_button_1 = customtkinter.CTkButton(self.frame2, command=self.stt_open_image, image=self.folder_button_icon, text="Open Image")
         self.stt_sidebar_button_1.grid(row=1, column=0, padx=20, pady=5)
         self.stt_sidebar_button_2 = customtkinter.CTkButton(self.frame2, command=self.stt_open_folder, image=self.folder_button_icon, text="Open folder")
-        self.stt_sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
+        self.stt_sidebar_button_2.grid(row=3, column=0, padx=20, pady=5)
+        self.stt_sidebar_button_4 = customtkinter.CTkButton(self.frame2, command=self.stt_open_text, image=self.folder_button_icon, text="Open text file")
+        self.stt_sidebar_button_4.grid(row=2, column=0, padx=20, pady=5)
 
         # text entry
         self.stt_ent3 = customtkinter.CTkTextbox(self.frame2, width=100)
-        self.stt_ent3.grid(row=3, column=1, padx=20, pady=10, columnspan=3, rowspan=3, sticky="ewsn")
+        self.stt_ent3.grid(row=4, column=1, padx=20, pady=10, columnspan=3, rowspan=3, sticky="ewsn")
 
         # console
         self.stt_console = customtkinter.CTkTextbox(self.frame2, width=100, height=20)
-        self.stt_console.grid(row=8, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
+        self.stt_console.grid(row=9, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
 
         # file name entry
         self.stt_output_name_ent = customtkinter.CTkEntry(self.frame2, placeholder_text="Output filename", width=100)
-        self.stt_output_name_ent.grid(row=7, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.stt_output_name_ent.grid(row=8, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
         self.stt_text_output_checkbox = customtkinter.CTkCheckBox(self.frame2, text="Output text to file", variable=self.stt_text_output_checkbox_var, state="disabled", command=self.stt_text_output_checkbox_event)
-        self.stt_text_output_checkbox.grid(row=6, column=0, padx=20, pady=10, columnspan=1, sticky="w")
+        self.stt_text_output_checkbox.grid(row=7, column=0, padx=20, pady=0, columnspan=1, sticky="w")
+        self.stt_text_input_checkbox = customtkinter.CTkCheckBox(self.frame2, text="Input text from file", variable=self.stt_text_input_checkbox_var, command=self.stt_text_input_checkbox_event)
+        self.stt_text_input_checkbox.grid(row=6, column=0, padx=20, pady=5, columnspan=1, sticky="w")
 
         # drop down menus
         self.stt_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=self.output_type_list_lossless, variable=self.stt_output_type_var)
-        self.stt_output_type_dropdown.grid(row=8, column=0, padx=20, pady=10)
-        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic", "LayeredDynamicTransparent"], variable=self.stt_type_var, command=self.stt_type_dropdown_event)
-        self.stt_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
+        self.stt_output_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
+        self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic", "LayeredDynamic\nTransparent"], variable=self.stt_type_var, command=self.stt_type_dropdown_event)
+        self.stt_type_dropdown.grid(row=10, column=0, padx=20, pady=10)
         self.stt_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Encode", "Decode"], variable=self.stt_action_type_var, command=self.stt_action_type_dropdown_event)
-        self.stt_action_type_dropdown.grid(row=10, column=0, padx=20, pady=10)
+        self.stt_action_type_dropdown.grid(row=11, column=0, padx=20, pady=10)
         self.stt_encoding_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["ASCII", "UNICODE"], variable=self.stt_encoding_type_var, command=self.stt_encoding_type_dropdown_event)
-        self.stt_encoding_type_dropdown.grid(row=3, column=0, padx=20, pady=10)
+        self.stt_encoding_type_dropdown.grid(row=4, column=0, padx=20, pady=10)
 
         # info marker
         self.stt_info_marker_1 = customtkinter.CTkLabel(self.frame2, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
-        self.stt_info_marker_1.grid(row=8, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        self.stt_info_marker_1.grid(row=9, column=1, padx=0, pady=0, ipadx=2, ipady=5)
         self.stt_info_marker_2 = customtkinter.CTkLabel(self.frame2, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
-        self.stt_info_marker_2.grid(row=9, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        self.stt_info_marker_2.grid(row=10, column=1, padx=0, pady=0, ipadx=2, ipady=5)
         self.stt_info_marker_3 = customtkinter.CTkLabel(self.frame2, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
-        self.stt_info_marker_3.grid(row=10, column=1, padx=0, pady=0, ipadx=2, ipady=5)
+        self.stt_info_marker_3.grid(row=11, column=1, padx=0, pady=0, ipadx=2, ipady=5)
         CreateToolTip(self.stt_info_marker_1, "The output type is the file type of the output image.\nOnly Lossless image formats are supported for this program\n(others may not work because of compression of the data)\n\nDefault: 'PNG' - Lossless encoding for better quality when decoding.", height=90, width=400)
         CreateToolTip(self.stt_info_marker_2, "This is the folder you want to save the output to")
         CreateToolTip(self.stt_info_marker_3, "This is the type of output you want to get\n\nLayered - The program will encode the text into the image\nand save the output image in the output folder\n\nSequential - The program will encode the text into the image\nand save the output image in the output folder\n\nLayeredDynamic - The program will encode the text into the image\nand save the output image in the output folder")
@@ -341,7 +349,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # start button
         self.stt_start_button = customtkinter.CTkButton(self.frame2, command=self.stt_start_button_event, text="Run Text Steganographer")
-        self.stt_start_button.grid(row=10, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
+        self.stt_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
 
         #---------------------------------------------------------------------------------------------------------------
@@ -364,6 +372,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         #------------------------------------Text - IM Steganography ---------------------------------------------------
         self.stt_console.configure(state="disabled")
         self.stt_type_dropdown.set("LayeredDynamic")
+        self.stt_text_input_checkbox_event()
         #------------------------------------------ Other --------------------------------------------------------------
         self.appearance_mode_optionemenu.set("System")
         self.my_notebook.select(2)
@@ -386,7 +395,6 @@ class App(customtkinter.CTk, tkinter.Tk):
     def sc_open_folder(self):
         self.sc_ent2.delete(0, "end")
         self.sc_ent2.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
-
     def sc_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         with Image.open(filename) as image:
@@ -406,7 +414,6 @@ class App(customtkinter.CTk, tkinter.Tk):
             state="normal" if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else "disabled",
             border_width=2 if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else 0,
             placeholder_text="Output Folder Name" if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else "")
-
     def sc_size_loop_checkbox_event(self):
         self.sc_to_size_ent.configure(state="normal" if self.sc_loop_checkbox2.get() else "disabled",
                                    placeholder_text="To" if self.sc_loop_checkbox2.get() else "",
@@ -756,40 +763,63 @@ class App(customtkinter.CTk, tkinter.Tk):
     def stt_open_folder(self):
         self.stt_ent2.delete(0, "end")
         self.stt_ent2.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
-
     def stt_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.stt_ent1.delete(0, "end")
         self.stt_ent1.insert(0, filename)
         CreateToolTip(self.stt_ent1, filename=filename)
+    def stt_open_text(self):
+        filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title="Select text file", filetypes=[("text files", ["*.txt"])])
+        self.stt_ent4.delete(0, "end")
+        self.stt_ent4.insert(0, filename)
 
     def stt_action_type_dropdown_event(self, new_action_type: str):
         if new_action_type == "Encode":
+            # ent2
             self.stt_ent2.configure(state="normal", border_width=2)
             self.stt_sidebar_button_2.configure(state="normal")
+            # output type dropdown
             if self.stt_type_dropdown.get() == "LayeredDynamicTransparent":
                 self.stt_output_type_dropdown.configure(state="disabled")
             else:
                 self.stt_output_type_dropdown.configure(state="normal")
+            # output text checkbox
             self.stt_text_output_checkbox.configure(state="disabled")
             self.stt_text_output_checkbox.deselect()
             self.stt_text_output_checkbox_event()
+            # output name ent
             self.stt_output_name_ent.configure(state="normal", border_width=2)
+            # output text checkbox
+            self.stt_text_input_checkbox.configure(state="normal")
+            self.stt_text_input_checkbox_event()
 
         if new_action_type == "Decode":
+            # ent2
             self.stt_ent2.configure(state="disabled", border_width=0)
             self.stt_sidebar_button_2.configure(state="disabled")
+            # output type dropdown
             self.stt_output_type_dropdown.configure(state="disabled")
+            # output text checkbox
             self.stt_text_output_checkbox.configure(state="normal")
             self.stt_text_output_checkbox_event()
+            # output name ent
             self.stt_output_name_ent.configure(state="disabled", border_width=0)
-
+            # input text checkbox
+            self.stt_text_input_checkbox.configure(state="disabled")
+            self.stt_text_input_checkbox.deselect()
+            self.stt_text_input_checkbox_event()
     def stt_encoding_type_dropdown_event(self, new_type: str):
         if new_type == "UNICODE":
+            self.stt_type_dropdown.configure(values=["LayeredDynamic", "LayeredDynamic\nTransparent"])
             self.stt_type_dropdown.set("LayeredDynamic")
-            self.stt_type_dropdown.configure(state="disabled")
         if new_type == "ASCII":
-            self.stt_type_dropdown.configure(state="normal")
+            self.stt_type_dropdown.configure(state="normal", values=["Layered8", "Sequential8", "LayeredDynamic", "LayeredDynamic\nTransparent"])
+    def stt_type_dropdown_event(self, new_type: str):
+        if new_type == "LayeredDynamic\nTransparent":
+            self.stt_output_type_dropdown.set("PNG")
+            self.stt_output_type_dropdown.configure(state="disabled")
+        else:
+            self.stt_output_type_dropdown.configure(state="normal")
 
     def stt_text_output_checkbox_event(self):
         if self.stt_text_output_checkbox.get():
@@ -798,25 +828,32 @@ class App(customtkinter.CTk, tkinter.Tk):
         else:
             self.stt_output_name_ent.configure(state="disabled", border_width=0)
             self.stt_output_type_dropdown.set("PNG")
-
-    def stt_type_dropdown_event(self, new_type: str):
-        if new_type == "LayeredDynamicTransparent":
-            self.stt_output_type_dropdown.set("PNG")
-            self.stt_output_type_dropdown.configure(state="disabled")
+    def stt_text_input_checkbox_event(self):
+        if self.stt_text_input_checkbox.get():
+            self.stt_ent4.configure(state="normal", border_width=2)
+            self.stt_sidebar_button_4.configure(state="normal")
         else:
-            self.stt_output_type_dropdown.configure(state="normal")
-
+            self.stt_ent4.configure(state="disabled", border_width=0)
+            self.stt_sidebar_button_4.configure(state="disabled")
 
     def stt_start_button_event(self):
+        start_time = time()
         ent1 = self.stt_ent1.get()
         ent2 = self.stt_ent2.get()
         ent3 = self.stt_ent3.get(index1="0.0", index2="end")
+        ent4 = self.stt_ent4.get()
         output_text_to_file = self.stt_text_output_checkbox.get()
+        input_text_from_file = self.stt_text_input_checkbox.get()
         output_name = self.stt_output_name_ent.get()
         st_type = self.stt_type_dropdown.get() # Steganography Type: Layered, Sequential, etc.
         encoding_type = self.stt_encoding_type_dropdown.get() # Encoding Type: UNICODE, ASCII
         action_type_dropdown = self.stt_action_type_dropdown.get() # Action Type: Encode, Decode
         output_type_dropdown = self.stt_output_type_dropdown.get() # Output Type: PNG, GIF, etc. (Only for encoding - only lossless formats)
+
+        # Render start button as disabled
+        self.stt_start_button.configure(state="disabled", text="Running...")
+        self.update_idletasks()
+        self.update()
 
         # folder/file path
         if action_type_dropdown == "Encode" or output_text_to_file:
@@ -835,67 +872,80 @@ class App(customtkinter.CTk, tkinter.Tk):
         except Exception as e: return self.print_to_stt_console(f"Error opening image: {e}", error=True)
 
         # text
-        if ent3.isascii() == False and encoding_type == "ASCII": return self.print_to_stt_console("Text contains non-ASCII characters.\n\nSwitch to LayeredDynamic and UNICODE", error=True)
+        if input_text_from_file:
+            try:
+                with open(ent4, "r") as f: ent3 = f.read()
+            except Exception as e: return self.print_to_stt_console(f"Error opening text file: {e}", error=True)
 
         # start
         if action_type_dropdown == "Encode":
             if not ent3: return self.print_to_stt_console("Please enter text.", error=True)
+            if ent3.isascii() == False and encoding_type == "ASCII": return self.print_to_stt_console("Text contains non-ASCII characters.\n\nSwitch to UNICODE", error=True)
 
             if st_type == "Layered8":
                 if encoding_type == "UNICODE":
-                    return self.print_to_stt_console("UNICODE encoding is not supported for Layered. Please select LayeredDynamic", error=True)
+                    return self.print_to_stt_console("UNICODE encoding is not supported for Layered. Please select LayeredDynamic or LayeredDynamicTransparent", error=True)
                 if encoding_type == "ASCII":
                     try:
                         image, layers = TextSteganographyLayered().encode(image=im, text=ent3)
                         image.save(path)
-                        self.print_to_stt_console(f"Layered8 | Bits: 8 | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nSaved to: '{path}'")
-                    except ValueError as e: return self.print_to_stt_console(e)
+                        self.print_to_stt_console(f"Layered8 | Bits: 8 | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nSaved to: '{path}'")
+                    except ValueError as e: return self.print_to_stt_console(e, error=True)
 
             if st_type == "Sequential8":
                 if encoding_type == "UNICODE":
-                    return self.print_to_stt_console("UNICODE encoding is not supported for Sequential. Please select LayeredDynamic", error=True)
+                    return self.print_to_stt_console("UNICODE encoding is not supported for Sequential. Please select LayeredDynamic or LayeredDynamicTransparent", error=True)
                 if encoding_type == "ASCII":
                     try:
                         image, layers = TextSteganography().encode(image=im, text=ent3)
                         image.save(path)
-                        self.print_to_stt_console(f"Sequential8 | Bits: 8 | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nSaved to: '{path}'")
-                    except ValueError as e: return self.print_to_stt_console(e)
+                        self.print_to_stt_console(f"Sequential8 | Bits: 8 | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nSaved to: '{path}'")
+                    except ValueError as e: return self.print_to_stt_console(e, error=True)
 
             if st_type == "LayeredDynamic":
                 try:
                     image, bits, layers = TextSteganographyLayeredDynamic().encode(image=im, text=ent3)
                     image.save(path)
-                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nSaved to: '{path}'")
-                except ValueError as e: return self.print_to_stt_console(e)
+                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nSaved to: '{path}'")
+                except ValueError as e: return self.print_to_stt_console(e, error=True)
+
+            if st_type == "LayeredDynamic\nTransparent":
+                if im.format != "PNG": return self.print_to_stt_console("LayeredDynamicTransparent only supports PNG images. Please select a PNG image.", error=True)
+                try:
+                    image, bits, layers = TextSteganographyLayeredDynamicTransparent().encode(image=im, text=ent3)
+                    image.save(path)
+                    self.print_to_stt_console(f"LayeredDynamicTransparent | Bits: {bits} | Layers: {layers} | Characters: {len(ent3)} | Type: {encoding_type} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nSaved to: '{path}'")
+                except ValueError as e: return self.print_to_stt_console(e, error=True)
 
         if action_type_dropdown == "Decode":
             if st_type == "Layered8":
                 try:
                     text = TextSteganographyLayered().decode(image=im)
                     self.print_to_stt_textbox(text, output_to)
-                    self.print_to_stt_console(f"Layered8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
-                except ValueError as e: return self.print_to_stt_console(e)
+                    self.print_to_stt_console(f"Layered8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
+                except ValueError as e: return self.print_to_stt_console(e, error=True)
 
             if st_type == "Sequential8":
                 try:
                     text = TextSteganography().decode(image=im, layer=1)
                     self.print_to_stt_textbox(text, output_to)
-                    self.print_to_stt_console(f"Sequential8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
-                except ValueError as e: return self.print_to_stt_console(e)
+                    self.print_to_stt_console(f"Sequential8 | Bits: 8 | Characters: {len(text)} | Type: {encoding_type} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
+                except ValueError as e: return self.print_to_stt_console(e, error=True)
 
             if st_type == "LayeredDynamic":
                 try:
                     text, bits = TextSteganographyLayeredDynamic().decode(image=im)
                     self.print_to_stt_textbox(text, output_to)
-                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
-                except ValueError as e: return self.print_to_stt_console(e)
+                    self.print_to_stt_console(f"LayeredDynamic | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
+                except ValueError as e: return self.print_to_stt_console(e, error=True)
 
-            if st_type == "LayeredDynamicTransparent":
+            if st_type == "LayeredDynamic\nTransparent":
+                if im.format != "PNG": return self.print_to_stt_console("LayeredDynamicTransparent only supports PNG images. Please select a PNG image.", error=True)
                 try:
                     text, bits = TextSteganographyLayeredDynamicTransparent().decode(image=im)
                     self.print_to_stt_textbox(text, output_to)
-                    self.print_to_stt_console(f"LayeredDynamicTransparent | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown}\n\nOutput in: {output_to}")
-                except ValueError as e: return self.print_to_stt_console(e)
+                    self.print_to_stt_console(f"LayeredDynamicTransparent | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
+                except ValueError as e: return self.print_to_stt_console(e, error=True)
 
 
 
@@ -928,6 +978,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_console.configure(state="disabled")
         if error: self.stt_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.stt_console.configure(border_width=0)
+        self.stt_start_button.configure(state="normal", text="Run Text Steganographer")
         self.update_idletasks()
         self.update()
 

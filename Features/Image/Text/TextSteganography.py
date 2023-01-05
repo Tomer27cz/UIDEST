@@ -149,7 +149,6 @@ class TextSteganographyLayered:
 
     def encode(self, image, text, layer=1):
         """Encode an image with text. The text must be ASCII."""
-        blank_spot = "000"
 
         # Check if the text will be shorter than image
         if type(text) != list and len(text) > (image.size[0]*image.size[1])*3: raise ValueError('Text is too long for this image.')
@@ -173,9 +172,9 @@ class TextSteganographyLayered:
 
                 if iteration < list_len: # If the current pixel is valid, use the text. If not, use a blank spot
                     txt = txt_bin_list[iteration]
+                    new_map[i, j] = self._merge_rgb(rgb, txt, layer)  # NOQA
                 else:
-                    txt = blank_spot
-                new_map[i, j] = self._merge_rgb(rgb, txt, layer) # NOQA
+                    new_map[i, j] = rgb # NOQA
 
         bin_list_left = txt_bin_list[image.size[0]*image.size[1]:]
         layers = layer+1
@@ -216,11 +215,11 @@ class TextSteganographyLayeredDynamic:
         if len(n) % x == 0: return n
         else: return self.div(n + '0', x)
 
-    def bin_list_to_3_str_list(self, bin_list):
+    def bin_list_to_x_str_list(self, bin_list, x):
         """Convert a list of binary strings to a string. Then a list of 3 digit binary strings."""
         bin_str = ''.join(bin_list)
-        bin_str = self.div(bin_str, 3)
-        return [bin_str[i:i + 3] for i in range(0, len(bin_str), 3)]
+        bin_str = self.div(bin_str, x)
+        return [bin_str[i:i + x] for i in range(0, len(bin_str), x)]
 
     def bin_to_str(self, s, bits=8):
         """Convert a binary string to a string."""
@@ -251,12 +250,12 @@ class TextSteganographyLayeredDynamic:
 
     def encode(self, image, text, bits=None, layer=1):
         """Encode an image with text. The text must be ASCII."""
-        if type(text) != list and len(text) > ((image.size[0]*image.size[1])*3)/2: raise ValueError('Text is too long for this image.')
-
         if not bits: bits = max(ord(x) for x in text).bit_length()
 
+        if type(text) != list and len(text)*bits > (image.size[0]*image.size[1])*3*3: raise ValueError('Text is too long for this image.')
+
         map1 = image.load()
-        txt_bin_list = self.bin_list_to_3_str_list(self.str_to_bin(text, bits))
+        txt_bin_list = self.bin_list_to_x_str_list(self.str_to_bin(text, bits), 3)
         list_len = len(txt_bin_list)
 
         new_image = Image.new(image.mode, image.size)
@@ -269,9 +268,9 @@ class TextSteganographyLayeredDynamic:
 
                 if iteration < list_len: # If the current pixel is valid, use the text. If not, use a blank spot
                     txt = txt_bin_list[iteration]
+                    new_map[i, j] = self._merge_rgb(rgb, txt, layer)  # NOQA
                 else:
-                    txt = "000"
-                new_map[i, j] = self._merge_rgb(rgb, txt, layer) # NOQA
+                    new_map[i, j] = rgb # NOQA
 
         bin_list_left = txt_bin_list[image.size[0]*image.size[1]:]
         layers = layer+1
@@ -317,11 +316,11 @@ class TextSteganographyLayeredDynamicTransparent:
         if len(n) % x == 0: return n
         else: return self.div(n + '0', x)
 
-    def bin_list_to_4_str_list(self, bin_list):
+    def bin_list_to_x_str_list(self, bin_list, x):
         """Convert a list of binary strings to a string. Then a list of 3 digit binary strings."""
         bin_str = ''.join(bin_list)
-        bin_str = self.div(bin_str, 4)
-        return [bin_str[i:i + 4] for i in range(0, len(bin_str), 4)]
+        bin_str = self.div(bin_str, x)
+        return [bin_str[i:i + x] for i in range(0, len(bin_str), x)]
 
     def bin_to_str(self, s, bits=8):
         """Convert a binary string to a string."""
@@ -357,7 +356,7 @@ class TextSteganographyLayeredDynamicTransparent:
 
 
         map1 = image.load()
-        txt_bin_list = self.bin_list_to_4_str_list(self.str_to_bin(text, bits))
+        txt_bin_list = self.bin_list_to_x_str_list(self.str_to_bin(text, bits), 4)
         list_len = len(txt_bin_list)
 
         new_image = Image.new(image.mode, image.size)
@@ -370,9 +369,9 @@ class TextSteganographyLayeredDynamicTransparent:
 
                 if iteration < list_len: # If the current pixel is valid, use the text. If not, use a blank spot
                     txt = txt_bin_list[iteration]
+                    new_map[i, j] = self._merge_rgb(rgb, txt, layer)  # NOQA
                 else:
-                    txt = "0001" # 1 is the alpha channel, so it will not be transparent
-                new_map[i, j] = self._merge_rgb(rgb, txt, layer) # NOQA
+                    new_map[i, j] = rgb # NOQA
 
         bin_list_left = txt_bin_list[image.size[0]*image.size[1]:]
         layers = layer+1
@@ -406,29 +405,31 @@ if __name__ == '__main__':
     filename1 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP1.png"
     filename2 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\Text_Steganography_Output_yes.png"
     filename3 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\bee_movie_script12.txt"
+    filename4 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\out.png"
 
     # text = bee_movie_script*5
     # print(len(text))
     #
     # text = "Hello World!"
 
-    text = bee_movie_script*12
+    text = bee_movie_script
+    # text = "Hello World"
     print(len(text))
 
-    with open(filename3, 'w') as f:
-        f.write(text)
-
-    # start = time()
-    # output, bits, layers = TextSteganographyLayeredDynamicTransparent().encode(Image.open(filename1), text, bits=8)
-    # end = time()
-    # print(f"Encoding took {end-start} seconds.")
-    # output.save(filename2)
+    # with open(filename3, 'w') as f:
+    #     f.write(text)
 
     start = time()
-    output, bits = TextSteganographyLayeredDynamicTransparent().decode(Image.open(filename2))
+    output, bits, layers = TextSteganographyLayeredDynamicTransparent().encode(Image.open(filename1), text)
+    output.save(filename2)
     end = time()
-    print(output)
-    print(f"Decoding took {end-start} seconds.")
+    print(f'Encoding took {end-start} seconds.')
+
+    # start = time()
+    # output, bits = TextSteganographyLayeredDynamicTransparent().decode(Image.open(filename2))
+    # end = time()
+    # print(output)
+    # print(f"Decoding took {end-start} seconds.")
 
     if output == text:
         print("Success!")
