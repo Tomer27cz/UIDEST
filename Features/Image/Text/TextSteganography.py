@@ -206,8 +206,7 @@ class TextSteganographyLayeredDynamic:
             char = ord(x)
             if char > 2 ** bits - 1: raise ValueError(f"Character {x} cannot be encoded with {bits} bits.")
             binary_list.append(format(char, 'b').zfill(bits))
-        for x in range(16):
-            binary_list.append(('0' * (bits - 2) + '11') * 16)  # Add 16 "end of text" bytes to the end of the string
+        binary_list.extend([('0' * (bits - 2) + '11')] * 16)  # Add 16 "end of text" bytes to the end of the string
         return binary_list
 
     def div(self, n, x):
@@ -307,8 +306,7 @@ class TextSteganographyLayeredDynamicTransparent:
             char = ord(x)
             if char > 2 ** bits - 1: raise ValueError(f"Character {x} cannot be encoded with {bits} bits.")
             binary_list.append(format(char, 'b').zfill(bits))
-        for x in range(16):
-            binary_list.append(('0' * (bits - 2) + '11') * 16)  # Add 16 "end of text" bytes to the end of the string
+        binary_list.extend([('0' * (bits - 2) + '11')] * 16)  # Add 16 "end of text" bytes to the end of the string
         return binary_list
 
     def div(self, n, x):

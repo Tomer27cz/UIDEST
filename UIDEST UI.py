@@ -11,7 +11,7 @@ from time import time
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
 from Features.Image.Text.TextSteganography import TextSteganographyLayeredDynamic, TextSteganography, TextSteganographyLayered, TextSteganographyLayeredDynamicTransparent
-from Features.Image.Text.TextToImage import TextToImage
+from Features.Image.Text.TextToImage import TextToImageDynamic
 from Features.tkinter.ToolTip import CreateToolTip
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
@@ -59,6 +59,14 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_encoding_type_var = tkinter.StringVar(value="ASCII")
         self.stt_text_output_checkbox_var = tkinter.IntVar(value=0)
         self.stt_text_input_checkbox_var = tkinter.IntVar(value=0)
+        #-----------------------------------------------
+        self.tti_text_input_checkbox_var = tkinter.IntVar(value=0)
+        self.tti_text_output_checkbox_var = tkinter.IntVar(value=0)
+        self.tti_output_type_var = tkinter.StringVar(value="PNG")
+        self.tti_action_type_var = tkinter.StringVar(value="Encode")
+        self.tti_type_var = tkinter.StringVar(value="Dynamic")
+        self.tti_color_var = tkinter.StringVar(value="RGB")
+
 
         # create sidebar
 
@@ -81,12 +89,6 @@ class App(customtkinter.CTk, tkinter.Tk):
                                                                        values=["System", "Light", "Dark"],
                                                                        command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 10))
-        # self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
-        # self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        # self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame,
-        #                                                        values=["80%", "90%", "100%", "110%", "120%"],
-        #                                                        command=self.change_scaling_event)
-        # self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
         # create notebook
 
@@ -356,27 +358,34 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # ------------------------------------Text - IM Generator --------------------------------------------------
 
-
         self.frame3 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
         self.frame3.grid(row=0, column=1, rowspan=4, sticky="snew")
         self.frame3.grid_rowconfigure(5, weight=1)
         self.frame3.grid_columnconfigure(2, weight=1)
 
         # logo
-        self.tti_logo_label = customtkinter.CTkLabel(self.frame3, text="Image - Text Generator", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.tti_logo_label = customtkinter.CTkLabel(self.frame3, text="Text to Image Generator", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.tti_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
 
         # entries
         self.tti_ent1 = customtkinter.CTkEntry(self.frame3, placeholder_text="Input text file path here", width=100)
-        self.tti_ent1.grid(row=1, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.tti_ent1.grid(row=2, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.tti_ent2 = customtkinter.CTkEntry(self.frame3, placeholder_text="Input Image path here", width=100)
+        self.tti_ent2.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.tti_ent3 = customtkinter.CTkEntry(self.frame3, placeholder_text="Output folder path here", width=100)
+        self.tti_ent3.grid(row=4, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.tti_sidebar_button_1 = customtkinter.CTkButton(self.frame3, command=self.tti_open_text, image=self.folder_button_icon, text="Open text file")
         self.tti_sidebar_button_1.grid(row=2, column=0, padx=20, pady=5)
+        self.tti_sidebar_button_2 = customtkinter.CTkButton(self.frame3, command=self.tti_open_image, image=self.folder_button_icon, text="Open image")
+        self.tti_sidebar_button_2.grid(row=3, column=0, padx=20, pady=5)
+        self.tti_sidebar_button_3 = customtkinter.CTkButton(self.frame3, command=self.tti_open_folder, image=self.folder_button_icon, text="Open folder")
+        self.tti_sidebar_button_3.grid(row=4, column=0, padx=20, pady=5)
 
         # text entry
-        self.tti_ent3 = customtkinter.CTkTextbox(self.frame3, width=100)
-        self.tti_ent3.grid(row=4, column=1, padx=20, pady=10, columnspan=3, rowspan=3, sticky="ewsn")
+        self.tti_ent4 = customtkinter.CTkTextbox(self.frame3, width=100)
+        self.tti_ent4.grid(row=5, column=1, padx=20, pady=10, columnspan=3, rowspan=4, sticky="ewsn")
 
         # console
         self.tti_console = customtkinter.CTkTextbox(self.frame3, width=100, height=20)
@@ -385,61 +394,34 @@ class App(customtkinter.CTk, tkinter.Tk):
         # file name entry
         self.tti_output_name_ent = customtkinter.CTkEntry(self.frame3, placeholder_text="Output filename", width=100)
         self.tti_output_name_ent.grid(row=8, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
-        self.tti_text_output_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Output text to file",
-                                                                  variable=self.tti_text_output_checkbox_var,
-                                                                  state="disabled",
-                                                                  command=self.tti_text_output_checkbox_event)
+        self.tti_text_output_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Output text to file", variable=self.tti_text_output_checkbox_var, state="disabled", command=self.tti_text_output_checkbox_event)
         self.tti_text_output_checkbox.grid(row=7, column=0, padx=20, pady=0, columnspan=1, sticky="w")
-        self.tti_text_input_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Input text from file",
-                                                                 variable=self.tti_text_input_checkbox_var,
-                                                                 command=self.tti_text_input_checkbox_event)
+        self.tti_text_input_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Input text from file", variable=self.tti_text_input_checkbox_var, command=self.tti_text_input_checkbox_event)
         self.tti_text_input_checkbox.grid(row=6, column=0, padx=20, pady=5, columnspan=1, sticky="w")
 
         # drop down menus
-        self.tti_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=self.output_type_list_lossless,
-                                                                    variable=self.tti_output_type_var)
+        self.tti_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=self.output_type_list_lossless, variable=self.tti_output_type_var)
         self.tti_output_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
-        self.tti_type_dropdown = customtkinter.CTkOptionMenu(self.frame3,
-                                                             values=["Layered8", "Sequential8", "LayeredDynamic",
-                                                                     "LayeredDynamic\nTransparent"],
-                                                             variable=self.tti_type_var,
-                                                             command=self.tti_type_dropdown_event)
-        self.tti_type_dropdown.grid(row=10, column=0, padx=20, pady=10)
-        self.tti_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["Encode", "Decode"],
-                                                                    variable=self.tti_action_type_var,
-                                                                    command=self.tti_action_type_dropdown_event)
+        self.tti_color_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["RGB", "RGBA", "Mono"], variable=self.tti_color_var)
+        self.tti_color_dropdown.grid(row=10, column=0, padx=20, pady=10, columnspan=1, sticky="w")
+        self.tti_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["Encode", "Decode"],variable=self.tti_action_type_var,command=self.tti_action_type_dropdown_event)
         self.tti_action_type_dropdown.grid(row=11, column=0, padx=20, pady=10)
-        self.tti_encoding_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["ASCII", "UNICODE"],
-                                                                      variable=self.tti_encoding_type_var,
-                                                                      command=self.tti_encoding_type_dropdown_event)
-        self.tti_encoding_type_dropdown.grid(row=4, column=0, padx=20, pady=10)
 
         # info marker
-        self.tti_info_marker_1 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,
-                                                        height=20, bg_color="#1F6AA5")
+        self.tti_info_marker_1 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,height=20, bg_color="#1F6AA5")
         self.tti_info_marker_1.grid(row=9, column=1, padx=0, pady=0, ipadx=2, ipady=5)
-        self.tti_info_marker_2 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,
-                                                        height=20, bg_color="#1F6AA5")
+        self.tti_info_marker_2 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,height=20, bg_color="#1F6AA5")
         self.tti_info_marker_2.grid(row=10, column=1, padx=0, pady=0, ipadx=2, ipady=5)
-        self.tti_info_marker_3 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,
-                                                        height=20, bg_color="#1F6AA5")
+        self.tti_info_marker_3 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,height=20, bg_color="#1F6AA5")
         self.tti_info_marker_3.grid(row=11, column=1, padx=0, pady=0, ipadx=2, ipady=5)
-        CreateToolTip(self.tti_info_marker_1,
-                      "The output type is the file type of the output image.\nOnly Lossless image formats are supported for this program\n(others may not work because of compression of the data)\n\nDefault: 'PNG' - Lossless encoding for better quality when decoding.",
-                      height=90, width=400)
-        CreateToolTip(self.tti_info_marker_2, "This is the folder you want to save the output to")
-        CreateToolTip(self.tti_info_marker_3,
-                      "This is the type of output you want to get\n\nLayered - The program will encode the text into the image\nand save the output image in the output folder\n\nSequential - The program will encode the text into the image\nand save the output image in the output folder\n\nLayeredDynamic - The program will encode the text into the image\nand save the output image in the output folder")
-        CreateToolTip(self.tti_output_name_ent,
-                      "Default: 'output' - The name of the output file\n\nNote: The file extension will be added automatically\nbased on the output type",
-                      height=75, width=300)
-        CreateToolTip(self.tti_text_output_checkbox,
-                      "If checked, the program will output the text to a text file\nin the output folder with the output filename(UTF-8 encoding)\n\nDefault: 'False'",
-                      height=75, width=360)
+        CreateToolTip(self.tti_info_marker_1,"The output type is the file type of the output image.\nOnly Lossless image formats are supported for this program\n(others may not work because of compression of the data)\n\nDefault: 'PNG' - Lossless encoding for better quality when decoding.",height=90, width=400)
+        CreateToolTip(self.tti_info_marker_2, "This determines the color mode of the output image.\n\nDefault: 'RGB' - 3 channels of color\n'RGBA' - 4 channels of color\n'Mono' - 1 channel of color",height=90, width=310)
+        CreateToolTip(self.tti_info_marker_3,"This is the type of output you want to get\n\nLayered - The program will encode the text into the image\nand save the output image in the output folder\n\nSequential - The program will encode the text into the image\nand save the output image in the output folder\n\nLayeredDynamic - The program will encode the text into the image\nand save the output image in the output folder")
+        CreateToolTip(self.tti_output_name_ent,"Default: 'output' - The name of the output file\n\nNote: The file extension will be added automatically\nbased on the output type",height=75, width=300)
+        CreateToolTip(self.tti_text_output_checkbox,"If checked, the program will output the text to a text file\nin the output folder with the output filename(UTF-8 encoding)\n\nDefault: 'False'",height=75, width=360)
 
         # start button
-        self.tti_start_button = customtkinter.CTkButton(self.frame3, command=self.tti_start_button_event,
-                                                        text="Run Text Steganographer")
+        self.tti_start_button = customtkinter.CTkButton(self.frame3, command=self.tti_start_button_event, text="Run Text Steganographer")
         self.tti_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
         #---------------------------------------------------------------------------------------------------------------
@@ -464,9 +446,13 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_console.configure(state="disabled")
         self.stt_type_dropdown.set("LayeredDynamic")
         self.stt_text_input_checkbox_event()
+        # ------------------------------------ Text - IM Generator -----------------------------------------------------
+        self.tti_console.configure(state="disabled")
+        self.tti_text_input_checkbox_event()
+        self.tti_action_type_dropdown_event('Encode')
         #------------------------------------------ Other --------------------------------------------------------------
         self.appearance_mode_optionemenu.set("System")
-        self.my_notebook.select(2)
+        self.my_notebook.select(3)
 
 
     # ------------------------------------ FUNCTIONS -------------------------------------------------------------------
@@ -1038,6 +1024,132 @@ class App(customtkinter.CTk, tkinter.Tk):
                     self.print_to_stt_textbox(text, output_to)
                     self.print_to_stt_console(f"LayeredDynamicTransparent | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
                 except ValueError as e: return self.print_to_stt_console(e, error=True)
+
+    # Text Image Generator ---------------------------------------------------------------------------------------------
+
+    def tti_open_folder(self):
+        self.tti_ent3.delete(0, "end")
+        self.tti_ent3.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
+    def tti_open_image(self):
+        filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
+        self.stt_ent2.delete(0, "end")
+        self.stt_ent2.insert(0, filename)
+    def tti_open_text(self):
+        filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title="Select text file", filetypes=[("text files", ["*.txt"])])
+        self.tti_ent1.delete(0, "end")
+        self.tti_ent1.insert(0, filename)
+
+    def tti_action_type_dropdown_event(self, new_action_type: str):
+        if new_action_type == "Encode":
+            # ent3
+            self.tti_ent3.configure(state="normal", border_width=2)
+            self.tti_sidebar_button_3.configure(state="normal")
+            # ent2
+            self.tti_ent2.configure(state="disabled", border_width=0)
+            self.tti_sidebar_button_2.configure(state="disabled")
+            # output text checkbox
+            self.tti_text_output_checkbox.configure(state="disabled")
+            self.tti_text_output_checkbox.deselect()
+            self.tti_text_output_checkbox_event()
+            # output name ent
+            self.tti_output_name_ent.configure(state="normal", border_width=2)
+            # output text checkbox
+            self.tti_text_input_checkbox.configure(state="normal")
+            self.tti_text_input_checkbox_event()
+
+        if new_action_type == "Decode":
+            # ent3
+            self.tti_ent3.configure(state="disabled", border_width=0)
+            self.tti_sidebar_button_3.configure(state="disabled")
+            # ent2
+            self.tti_ent2.configure(state="normal", border_width=2)
+            self.tti_sidebar_button_2.configure(state="normal")
+            # output type dropdown
+            self.tti_output_type_dropdown.configure(state="disabled")
+            # output text checkbox
+            self.tti_text_output_checkbox.configure(state="normal")
+            self.tti_text_output_checkbox_event()
+            # output name ent
+            self.tti_output_name_ent.configure(state="disabled", border_width=0)
+            # input text checkbox
+            self.tti_text_input_checkbox.configure(state="disabled")
+            self.tti_text_input_checkbox.deselect()
+            self.tti_text_input_checkbox_event()
+    def tti_type_dropdown_event(self, new_type: str):
+        if new_type == "LayeredDynamic\nTransparent":
+            self.tti_output_type_dropdown.set("PNG")
+            self.tti_output_type_dropdown.configure(state="disabled")
+        else:
+            self.tti_output_type_dropdown.configure(state="normal")
+
+    def tti_text_output_checkbox_event(self):
+        if self.tti_text_output_checkbox.get():
+            self.tti_output_name_ent.configure(state="normal", border_width=2)
+            self.tti_output_type_dropdown.set("TXT")
+        else:
+            self.tti_output_name_ent.configure(state="disabled", border_width=0)
+            self.tti_output_type_dropdown.set("PNG")
+    def tti_text_input_checkbox_event(self):
+        if self.tti_text_input_checkbox.get():
+            self.tti_ent1.configure(state="normal", border_width=2)
+            self.tti_sidebar_button_1.configure(state="normal")
+        else:
+            self.tti_ent1.configure(state="disabled", border_width=0)
+            self.tti_sidebar_button_1.configure(state="disabled")
+
+    def tti_start_button_event(self):
+        start_time = time()
+        ent1 = self.tti_ent1.get()
+        ent2 = self.tti_ent2.get()
+        ent3 = self.tti_ent3.get()
+        ent4 = self.tti_ent4.get(index1="0.0", index2="end")
+
+        output_text_to_file = self.tti_text_output_checkbox.get()
+        input_text_from_file = self.tti_text_input_checkbox.get()
+
+        output_name = self.tti_output_name_ent.get()
+        action_type_dropdown = self.tti_action_type_dropdown.get()  # Action Type: Encode, Decode
+        output_type_dropdown = self.tti_output_type_dropdown.get()  # Output Type: PNG, GIF, etc. (Only for encoding - only lossless formats)
+        color = self.tti_color_dropdown.get()  # Color: RGB, etc.
+
+        # Render start button as disabled
+        self.tti_start_button.configure(state="disabled", text="Running...")
+        self.update_idletasks()
+        self.update()
+
+        # folder/file path
+        if action_type_dropdown == "Encode" or output_text_to_file:
+            if not ent2: return self.print_to_stt_console("Output folder not specified", error=True)
+            if ent2[-1] != "/" or ent2[-1] != "\\":
+                if "\\" in ent2:ent2 += "\\"
+                else:ent2 += "/"
+        if not output_name: output_name = "TextSteganographyOutput"
+        path = f"{ent2}{output_name}.{output_type_dropdown.lower()}"
+        if output_text_to_file: output_to = f"{ent2}{output_name}.txt"
+        else: output_to = "TextBox"
+
+        # text
+        if input_text_from_file:
+            try:
+                with open(ent1, "r") as f: ent4 = f.read()
+            except Exception as e: return self.print_to_stt_console(f"Error opening text file: {e}", error=True)
+        
+        # image
+        if not ent3 and action_type_dropdown == "Decode": return self.print_to_stt_console("Please select an image.", error=True)
+        try: image = Image.open(ent3)
+        except Exception as e: return self.print_to_stt_console(f"Error opening image: {e}", error=True)
+
+
+
+        if action_type_dropdown == "Encode":
+            if not ent4: return self.print_to_stt_console("No text to encode", error=True)
+
+
+
+
+
+
+
 
 
 
