@@ -1119,30 +1119,55 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # folder/file path
         if action_type_dropdown == "Encode" or output_text_to_file:
-            if not ent2: return self.print_to_stt_console("Output folder not specified", error=True)
-            if ent2[-1] != "/" or ent2[-1] != "\\":
-                if "\\" in ent2:ent2 += "\\"
-                else:ent2 += "/"
-        if not output_name: output_name = "TextSteganographyOutput"
-        path = f"{ent2}{output_name}.{output_type_dropdown.lower()}"
-        if output_text_to_file: output_to = f"{ent2}{output_name}.txt"
+            if not ent3: return self.print_to_tti_console("Output folder not specified", error=True)
+            if ent3[-1] != "/" or ent3[-1] != "\\":
+                if "\\" in ent3:ent3 += "\\"
+                else:ent3 += "/"
+        if not output_name: output_name = "TextToImageOutput"
+        path = f"{ent3}{output_name}.{output_type_dropdown.lower()}"
+        if output_text_to_file: output_to = f"{ent3}{output_name}.txt"
         else: output_to = "TextBox"
 
         # text
         if input_text_from_file:
             try:
                 with open(ent1, "r") as f: ent4 = f.read()
-            except Exception as e: return self.print_to_stt_console(f"Error opening text file: {e}", error=True)
+            except Exception as e: return self.print_to_tti_console(f"Error opening text file: {e}", error=True)
         
         # image
-        if not ent3 and action_type_dropdown == "Decode": return self.print_to_stt_console("Please select an image.", error=True)
-        try: image = Image.open(ent3)
-        except Exception as e: return self.print_to_stt_console(f"Error opening image: {e}", error=True)
-
-
+        if not ent2 and action_type_dropdown == "Decode": return self.print_to_tti_console("Please select an image.", error=True)
+        if action_type_dropdown == "Decode":
+            try: image = Image.open(ent2)
+            except Exception as e: return self.print_to_tti_console(f"Error opening image: {e}", error=True)
 
         if action_type_dropdown == "Encode":
-            if not ent4: return self.print_to_stt_console("No text to encode", error=True)
+            output_to = path
+            if not ent4: return self.print_to_tti_console("No text to encode", error=True)
+            if color == "RGB":
+                try:
+                    result_image, bits = TextToImageDynamic().encode(ent4, mode="RGB")
+                    result_image.save(path)
+                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
+                except Exception as e: return self.print_to_tti_console(f"Error encoding text: {e}", error=True)
+            if color == "RGBA":
+                try:
+                    result_image, bits = TextToImageDynamic().encode(ent4, mode="RGBA")
+                    result_image.save(path)
+                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+                except Exception as e: return self.print_to_tti_console(f"Error encoding text: {e}", error=True)
+            if color == "Mono":
+                try:
+                    result_image, bits = TextToImageDynamic().encode(ent4, mode="L")
+                    result_image.save(path)
+                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+                except Exception as e: return self.print_to_tti_console(f"Error encoding text: {e}", error=True)
+
+        if action_type_dropdown == "Decode":
+            if color == "RGB":
+                try:
+                    text, bits = TextToImageDynamic().decode(image, mode="RGB")
+                    self.print_to_tti_console(f"TextToImageDynamic | Mode: {color} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}\n\n{text}")
+                except Exception as e: return self.print_to_tti_console(f"Error decoding text: {e}", error=True)
 
 
 
@@ -1183,6 +1208,17 @@ class App(customtkinter.CTk, tkinter.Tk):
         if error: self.stt_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.stt_console.configure(border_width=0)
         self.stt_start_button.configure(state="normal", text="Run Text Steganographer")
+        self.update_idletasks()
+        self.update()
+
+    def print_to_tti_console(self, text, error=False):
+        self.tti_console.configure(state="normal")
+        self.tti_console.delete("1.0", "end")
+        self.tti_console.insert(customtkinter.END, text)
+        self.tti_console.configure(state="disabled")
+        if error: self.tti_console.configure(border_width=2, border_color="#1F6AA5")
+        else: self.tti_console.configure(border_width=0)
+        self.tti_start_button.configure(state="normal", text="Run Generator")
         self.update_idletasks()
         self.update()
 
