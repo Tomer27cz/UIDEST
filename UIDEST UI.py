@@ -34,9 +34,9 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.initial_browser_dir = 'Desktop'
         self.title_open = "Select image file"
-        self.filetypes = (("image files", "*.png *.jpg *.gif *.webp *.ico *.tiff *.bmp *.im *.msp *.pcx *.ppm *.sgi *.xbm "
+        self.filetypes = (("image files", "*.png *.jpg *.jpeg *.gif *.webp *.ico *.tiff *.bmp *.im *.msp *.pcx *.ppm *.sgi *.xbm "
                                      "*.dds *.dib *.eps *.spi"), ("all files", "*.*"))
-        self.output_type_list = ["BMP", "DDS", "DIB", "EPS", "GIF", "ICO", "IM", "JPEG", "PCX", "PNG", "PPM", "SGI",
+        self.output_type_list = ["BMP", "DDS", "DIB", "EPS", "GIF", "ICO", "IM", "JPEG", "JPG", "PCX", "PNG", "PPM", "SGI",
              "SPIDER", "TGA", "TIFF", "WebP"]
         self.output_type_list_lossless = ["BMP", "GIF", "PNG", "TIFF", "WebP", "ICO", "PCX", "SGI", "TGA"]
         self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/folder-open-light.png"), dark_image=Image.open("Assets/folder-open-dark.png"))
@@ -64,8 +64,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_text_output_checkbox_var = tkinter.IntVar(value=0)
         self.tti_output_type_var = tkinter.StringVar(value="PNG")
         self.tti_action_type_var = tkinter.StringVar(value="Encode")
-        self.tti_type_var = tkinter.StringVar(value="Dynamic")
         self.tti_color_var = tkinter.StringVar(value="RGB")
+        #-----------------------------------------------
+        self.iet_output_type_var = tkinter.StringVar(value="PNG")
 
 
         # create sidebar
@@ -83,6 +84,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="Text - Image\nGenerator", command=self.sidebar_button_event_frame_3)
         self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
+        self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Transform Image\nExtension", command=self.sidebar_button_event_frame_4)
+        self.sidebar_button_5.grid(row=5, column=0, padx=20, pady=10)
+
+
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=9, column=0, padx=20, pady=(10, 0))
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame,
@@ -356,7 +361,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
 
-        # ------------------------------------Text - IM Generator --------------------------------------------------
+        # ------------------------------------Text - IM Generator ------------------------------------------------------
 
         self.frame3 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
         self.frame3.grid(row=0, column=1, rowspan=4, sticky="snew")
@@ -415,7 +420,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_info_marker_3 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,height=20, bg_color="#1F6AA5")
         self.tti_info_marker_3.grid(row=11, column=1, padx=0, pady=0, ipadx=2, ipady=5)
         CreateToolTip(self.tti_info_marker_1,"The output type is the file type of the output image.\nOnly Lossless image formats are supported for this program\n(others may not work because of compression of the data)\n\nDefault: 'PNG' - Lossless encoding for better quality when decoding.",height=90, width=400)
-        CreateToolTip(self.tti_info_marker_2, "This determines the color mode of the output image.\n\nDefault: 'RGB' - 3 channels of color\n'RGBA' - 4 channels of color\n'Mono' - 1 channel of color",height=90, width=310)
+        CreateToolTip(self.tti_info_marker_2,"This determines the color mode of the output image.\n\nDefault: 'RGB' - 3 channels of color\n'RGBA' - 4 channels of color\n'Mono' - 1 channel of color",height=90, width=310)
         CreateToolTip(self.tti_info_marker_3,"This is the type of output you want to get\n\nLayered - The program will encode the text into the image\nand save the output image in the output folder\n\nSequential - The program will encode the text into the image\nand save the output image in the output folder\n\nLayeredDynamic - The program will encode the text into the image\nand save the output image in the output folder")
         CreateToolTip(self.tti_output_name_ent,"Default: 'output' - The name of the output file\n\nNote: The file extension will be added automatically\nbased on the output type",height=75, width=300)
         CreateToolTip(self.tti_text_output_checkbox,"If checked, the program will output the text to a text file\nin the output folder with the output filename(UTF-8 encoding)\n\nDefault: 'False'",height=75, width=360)
@@ -423,6 +428,34 @@ class App(customtkinter.CTk, tkinter.Tk):
         # start button
         self.tti_start_button = customtkinter.CTkButton(self.frame3, command=self.tti_start_button_event, text="Run Text Steganographer")
         self.tti_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
+
+        # ------------------------------------ IM Extension Transform --------------------------------------------------
+
+        self.frame4 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
+        # self.frame4.grid(row=0, column=1, rowspan=4, sticky="snew")
+        self.frame4.grid_rowconfigure(4, weight=1)
+        self.frame4.grid_columnconfigure(0, weight=1)
+
+        # logo
+        self.iet_logo_label = customtkinter.CTkLabel(self.frame4, text="Image Extension Transform", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.iet_logo_label.grid(row=1, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+
+        # entries
+        self.iet_ent1 = customtkinter.CTkEntry(self.frame4, placeholder_text="Input Image file path here", width=100)
+        self.iet_ent1.grid(row=2, column=0, padx=20, pady=self.spacing, ipady=10  ,columnspan=3, sticky="ew")
+
+        # buttons
+        self.iet_sidebar_button_1 = customtkinter.CTkButton(self.frame4, command=self.tti_open_image, image=self.folder_button_icon, text="Open image", font=customtkinter.CTkFont(size=20))
+        self.iet_sidebar_button_1.grid(row=3, column=0, padx=20, pady=30, ipady=15 ,columnspan=3, sticky="ew")
+
+        # drop down menus
+        self.iet_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame4, values=self.output_type_list, variable=self.iet_output_type_var, height=50, width=400, font=customtkinter.CTkFont(size=17))
+        self.iet_output_type_dropdown.grid(row=4, column=0, padx=20, pady=10)
+
+        # start button
+        self.iet_start_button = customtkinter.CTkButton(self.frame4, command=self.iet_start_button_event, text="Transform", font=customtkinter.CTkFont(size=20))
+        self.iet_start_button.grid(row=5, column=0, padx=20, pady=50, ipady=10, columnspan=3, rowspan=2, sticky="we")
+
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -432,6 +465,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.my_notebook.add(self.frame1, text="Tab 2")
         self.my_notebook.add(self.frame2, text="Tab 3")
         self.my_notebook.add(self.frame3, text="Tab 4")
+        self.my_notebook.add(self.frame4, text="Tab 5")
 
         # set default values
         #------------------------------------ Image Scrambler ----------------------------------------------------------
@@ -452,7 +486,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_action_type_dropdown_event('Encode')
         #------------------------------------------ Other --------------------------------------------------------------
         self.appearance_mode_optionemenu.set("System")
-        self.my_notebook.select(3)
+        self.my_notebook.select(4)
 
 
     # ------------------------------------ FUNCTIONS -------------------------------------------------------------------
@@ -467,6 +501,7 @@ class App(customtkinter.CTk, tkinter.Tk):
     def sidebar_button_event_frame_1(self): self.my_notebook.select(1)
     def sidebar_button_event_frame_2(self): self.my_notebook.select(2)
     def sidebar_button_event_frame_3(self): self.my_notebook.select(3)
+    def sidebar_button_event_frame_4(self): self.my_notebook.select(4)
 
     # Image Scrambler functions ----------------------------------------------------------------------------------------
 
@@ -1025,15 +1060,15 @@ class App(customtkinter.CTk, tkinter.Tk):
                     self.print_to_stt_console(f"LayeredDynamicTransparent | Bits: {bits} | Characters: {len(text)} | Type: {'ASCII' if text.isascii() else 'UNICODE'} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
                 except ValueError as e: return self.print_to_stt_console(e, error=True)
 
-    # Text Image Generator ---------------------------------------------------------------------------------------------
+    # Text To Image Generator ------------------------------------------------------------------------------------------
 
     def tti_open_folder(self):
         self.tti_ent3.delete(0, "end")
         self.tti_ent3.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
     def tti_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
-        self.stt_ent2.delete(0, "end")
-        self.stt_ent2.insert(0, filename)
+        self.tti_ent2.delete(0, "end")
+        self.tti_ent2.insert(0, filename)
     def tti_open_text(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title="Select text file", filetypes=[("text files", ["*.txt"])])
         self.tti_ent1.delete(0, "end")
@@ -1047,6 +1082,8 @@ class App(customtkinter.CTk, tkinter.Tk):
             # ent2
             self.tti_ent2.configure(state="disabled", border_width=0)
             self.tti_sidebar_button_2.configure(state="disabled")
+            # output type dropdown
+            self.tti_output_type_dropdown.configure(state="normal")
             # output text checkbox
             self.tti_text_output_checkbox.configure(state="disabled")
             self.tti_text_output_checkbox.deselect()
@@ -1075,18 +1112,17 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.tti_text_input_checkbox.configure(state="disabled")
             self.tti_text_input_checkbox.deselect()
             self.tti_text_input_checkbox_event()
-    def tti_type_dropdown_event(self, new_type: str):
-        if new_type == "LayeredDynamic\nTransparent":
-            self.tti_output_type_dropdown.set("PNG")
-            self.tti_output_type_dropdown.configure(state="disabled")
-        else:
-            self.tti_output_type_dropdown.configure(state="normal")
 
     def tti_text_output_checkbox_event(self):
         if self.tti_text_output_checkbox.get():
+            self.tti_ent3.configure(state="normal", border_width=2)
+            self.tti_sidebar_button_3.configure(state="normal")
             self.tti_output_name_ent.configure(state="normal", border_width=2)
             self.tti_output_type_dropdown.set("TXT")
         else:
+            if self.tti_action_type_dropdown.get() != "Encode":
+                self.tti_ent3.configure(state="disabled", border_width=0)
+                self.tti_sidebar_button_3.configure(state="disabled")
             self.tti_output_name_ent.configure(state="disabled", border_width=0)
             self.tti_output_type_dropdown.set("PNG")
     def tti_text_input_checkbox_event(self):
@@ -1133,43 +1169,59 @@ class App(customtkinter.CTk, tkinter.Tk):
             try:
                 with open(ent1, "r") as f: ent4 = f.read()
             except Exception as e: return self.print_to_tti_console(f"Error opening text file: {e}", error=True)
-        
-        # image
-        if not ent2 and action_type_dropdown == "Decode": return self.print_to_tti_console("Please select an image.", error=True)
-        if action_type_dropdown == "Decode":
-            try: image = Image.open(ent2)
-            except Exception as e: return self.print_to_tti_console(f"Error opening image: {e}", error=True)
 
         if action_type_dropdown == "Encode":
             output_to = path
             if not ent4: return self.print_to_tti_console("No text to encode", error=True)
             if color == "RGB":
-                try:
-                    result_image, bits = TextToImageDynamic().encode(ent4, mode="RGB")
-                    result_image.save(path)
-                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}")
+                try: result_image, bits = TextToImageDynamic().encode(ent4, mode="RGB")
                 except Exception as e: return self.print_to_tti_console(f"Error encoding text: {e}", error=True)
+                try: result_image.save(path)
+                except Exception as e: return self.print_to_tti_console(f"Error saving image: {e}", error=True)
+                self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+
             if color == "RGBA":
-                try:
-                    result_image, bits = TextToImageDynamic().encode(ent4, mode="RGBA")
-                    result_image.save(path)
-                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+                try: result_image, bits = TextToImageDynamic().encode(ent4, mode="RGBA")
                 except Exception as e: return self.print_to_tti_console(f"Error encoding text: {e}", error=True)
+                try: result_image.save(path)
+                except Exception as e: return self.print_to_tti_console(f"Error saving image: {e}", error=True)
+                self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+
             if color == "Mono":
-                try:
-                    result_image, bits = TextToImageDynamic().encode(ent4, mode="L")
-                    result_image.save(path)
-                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+                try: result_image, bits = TextToImageDynamic().encode(ent4, mode="L")
                 except Exception as e: return self.print_to_tti_console(f"Error encoding text: {e}", error=True)
+                try: result_image.save(path)
+                except Exception as e: return self.print_to_tti_console(f"Error saving image: {e}", error=True)
+                self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(ent4)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+
 
         if action_type_dropdown == "Decode":
+            if not ent2: return self.print_to_tti_console("Please select an image.", error=True)
+            try:image = Image.open(ent2)
+            except Exception as e: return self.print_to_tti_console(f"Error opening image: {e}", error=True)
             if color == "RGB":
                 try:
                     text, bits = TextToImageDynamic().decode(image, mode="RGB")
-                    self.print_to_tti_console(f"TextToImageDynamic | Mode: {color} | Action: {action_type_dropdown} | Time: {round(time()-start_time, 2)} sec\n\nOutput in: {output_to}\n\n{text}")
+                    self.print_to_tti_textbox(text, output_to)
+                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(text)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+                except Exception as e: return self.print_to_tti_console(f"Error decoding text: {e}", error=True)
+            if color == "RGBA":
+                try:
+                    text, bits = TextToImageDynamic().decode(image, mode="RGBA")
+                    self.print_to_tti_textbox(text, output_to)
+                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(text)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
+                except Exception as e: return self.print_to_tti_console(f"Error decoding text: {e}", error=True)
+            if color == "Mono":
+                try:
+                    text, bits = TextToImageDynamic().decode(image, mode="L")
+                    self.print_to_tti_textbox(text, output_to)
+                    self.print_to_tti_console(f"TextToImageDynamic | Bits: {bits} | Mode: {color} | Characters: {len(text)} | Action: {action_type_dropdown} | Time: {round(time() - start_time, 2)} sec\n\nOutput in: {output_to}")
                 except Exception as e: return self.print_to_tti_console(f"Error decoding text: {e}", error=True)
 
+    # Image Extension Transform ----------------------------------------------------------------------------------------
 
+    def iet_start_button_event(self):
+        print("Image Extension Transform | Start Button Event")
 
 
 
@@ -1189,7 +1241,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: self.sc_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
-
     def print_to_st_console(self, text, error=False):
         self.st_console.configure(state="normal")
         self.st_console.delete("1.0", "end")
@@ -1199,7 +1250,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: self.st_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
-
     def print_to_stt_console(self, text, error=False):
         self.stt_console.configure(state="normal")
         self.stt_console.delete("1.0", "end")
@@ -1210,7 +1260,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_start_button.configure(state="normal", text="Run Text Steganographer")
         self.update_idletasks()
         self.update()
-
     def print_to_tti_console(self, text, error=False):
         self.tti_console.configure(state="normal")
         self.tti_console.delete("1.0", "end")
@@ -1229,8 +1278,19 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.update_idletasks()
             self.update()
         else:
-            with open(output_to, "w", encoding="utf-8") as f:
-                f.write(text)
+            try:
+                with open(output_to, "w", encoding="utf-8") as f: f.write(text)
+            except Exception as e: return self.print_to_stt_console(f"Error writing to file: {e}", error=True)
+    def print_to_tti_textbox(self, text, output_to):
+        if output_to == "TextBox":
+            self.tti_ent4.delete("0.0", "end")
+            self.tti_ent4.insert(customtkinter.END, text)
+            self.update_idletasks()
+            self.update()
+        else:
+            try:
+                with open(output_to, "w", encoding="utf-8") as f: f.write(text)
+            except Exception as e: return self.print_to_tti_console(f"Error writing to file: {e}", error=True)
 
 
 
