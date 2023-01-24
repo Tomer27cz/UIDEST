@@ -22,7 +22,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         super().__init__()
 
         # configure window
-        self.title("Universal Image Decode and Encode Steganography Tool")
+        self.title("Universal Image Decode Encode and Steganography Tool")
         self.geometry(f"{1100}x{580}")
 
         # configure grid layout (4x4)
@@ -445,16 +445,20 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.iet_ent1.grid(row=2, column=0, padx=20, pady=self.spacing, ipady=10  ,columnspan=3, sticky="ew")
 
         # buttons
-        self.iet_sidebar_button_1 = customtkinter.CTkButton(self.frame4, command=self.tti_open_image, image=self.folder_button_icon, text="Open image", font=customtkinter.CTkFont(size=20))
+        self.iet_sidebar_button_1 = customtkinter.CTkButton(self.frame4, command=self.iet_open_image, image=self.folder_button_icon, text="Open image", font=customtkinter.CTkFont(size=20))
         self.iet_sidebar_button_1.grid(row=3, column=0, padx=20, pady=30, ipady=15 ,columnspan=3, sticky="ew")
 
         # drop down menus
         self.iet_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame4, values=self.output_type_list, variable=self.iet_output_type_var, height=50, width=400, font=customtkinter.CTkFont(size=17))
         self.iet_output_type_dropdown.grid(row=4, column=0, padx=20, pady=10)
 
+        # console
+        self.iet_console = customtkinter.CTkTextbox(self.frame4, width=100, height=10, state="disabled")
+        self.iet_console.grid(row=5, column=0, padx=20, pady=10, ipady=10, columnspan=3, sticky="ew")
+
         # start button
         self.iet_start_button = customtkinter.CTkButton(self.frame4, command=self.iet_start_button_event, text="Transform", font=customtkinter.CTkFont(size=20))
-        self.iet_start_button.grid(row=5, column=0, padx=20, pady=50, ipady=10, columnspan=3, rowspan=2, sticky="we")
+        self.iet_start_button.grid(row=6, column=0, padx=20, pady=50, ipady=10, columnspan=3, rowspan=2, sticky="we")
 
 
         #---------------------------------------------------------------------------------------------------------------
@@ -1220,14 +1224,22 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     # Image Extension Transform ----------------------------------------------------------------------------------------
 
+    def iet_open_image(self):
+        filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
+        self.iet_ent1.delete(0, "end")
+        self.iet_ent1.insert(0, filename)
+
     def iet_start_button_event(self):
-        print("Image Extension Transform | Start Button Event")
-
-
-
-
-
-
+        ent1 = self.iet_ent1.get()
+        if not ent1: return self.print_to_iet_console("Please select an image.", error=True)
+        ext = self.iet_output_type_var.get()
+        try: image = Image.open(ent1)
+        except Exception as e: return self.print_to_iet_console(f"Error opening image: {e}", error=True)
+        title = image.filename.split("/")[-1].split(".")[0]
+        filename = filedialog.asksaveasfilename(initialdir=self.initial_browser_dir, defaultextension=ext.lower(), filetypes=self.filetypes, initialfile=title)
+        try: image.save(filename)
+        except Exception as e: return self.print_to_iet_console(f"Error saving image: {e}", error=True)
+        self.print_to_iet_console(f"Output in: {filename}")
 
 
     # Console Functions ------------------------------------------------------------------------------------------------
@@ -1270,6 +1282,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_start_button.configure(state="normal", text="Run Generator")
         self.update_idletasks()
         self.update()
+    def print_to_iet_console(self, text, error=False):
+        self.iet_console.configure(state="normal")
+        self.iet_console.delete("1.0", "end")
+        self.iet_console.insert(customtkinter.END, text)
+        self.iet_console.configure(state="disabled")
+        if error: self.iet_console.configure(border_width=2, border_color="#1F6AA5")
+        else: self.iet_console.configure(border_width=0)
+        self.update_idletasks()
+        self.update()
 
     def print_to_stt_textbox(self, text, output_to):
         if output_to == "TextBox":
@@ -1291,8 +1312,6 @@ class App(customtkinter.CTk, tkinter.Tk):
             try:
                 with open(output_to, "w", encoding="utf-8") as f: f.write(text)
             except Exception as e: return self.print_to_tti_console(f"Error writing to file: {e}", error=True)
-
-
 
 
 # Static Functions -----------------------------------------------------------------------------------------------------
