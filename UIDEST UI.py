@@ -5,8 +5,9 @@ from tkinter import filedialog
 
 from tkhtmlview import HTMLScrolledText
 import customtkinter
-import os
+from os import mkdir
 from time import time
+from subprocess import Popen, PIPE, STDOUT
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
@@ -33,6 +34,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         # configure misc
 
         self.initial_browser_dir = 'Desktop'
+        self.exif_tool_path = 'Features/Metadata/exiftool.exe'
         self.title_open = "Select image file"
         self.filetypes = (("image files", "*.png *.jpg *.jpeg *.gif *.webp *.ico *.tiff *.bmp *.im *.msp *.pcx *.ppm *.sgi *.xbm "
                                      "*.dds *.dib *.eps *.spi"), ("all files", "*.*"))
@@ -44,6 +46,8 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # create variables
 
+        self.button_spacing = 5
+        #-----------------------------------------------
         self.sc_seed_loop_var = tkinter.IntVar(value=0)
         self.sc_size_loop_var = tkinter.IntVar(value=0)
         self.sc_action_type_var = tkinter.StringVar(value="Encode")
@@ -74,26 +78,28 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(8, weight=1)
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="UIDEST 1.0\nALPHA", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="UIDEST 2.1", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Image Scrambler", command=self.sidebar_button_event_frame_0)
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
+        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=self.button_spacing)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Image - Image\nSteganography", command=self.sidebar_button_event_frame_1)
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
+        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=self.button_spacing)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Image - Text\nSteganography", command=self.sidebar_button_event_frame_2)
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
+        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=self.button_spacing)
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="Text - Image\nGenerator", command=self.sidebar_button_event_frame_3)
-        self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
+        self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=self.button_spacing)
         self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Transform Image\nExtension", command=self.sidebar_button_event_frame_4)
-        self.sidebar_button_5.grid(row=5, column=0, padx=20, pady=10)
+        self.sidebar_button_5.grid(row=5, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Get Metadata", command=self.sidebar_button_event_frame_5)
+        self.sidebar_button_6.grid(row=6, column=0, padx=20, pady=self.button_spacing)
 
 
-        self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=9, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame,
-                                                                       values=["System", "Light", "Dark"],
-                                                                       command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 10))
+        self.sidebar_button_about = customtkinter.CTkButton(self.sidebar_frame, text="About", command=self.sidebar_button_event_frame_about)
+        self.sidebar_button_about.grid(row=13, column=0, padx=20, pady=0)
+        # self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
+        # self.appearance_mode_label.grid(row=14, column=0, padx=20, pady=(10, 0))
+        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["System", "Light", "Dark"], command=self.change_appearance_mode_event)
+        self.appearance_mode_optionemenu.grid(row=15, column=0, padx=20, pady=(10, 10))
 
         # create notebook
 
@@ -107,8 +113,21 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # create frames
 
+        # ----------------------------------------------- About --------------------------------------------------------
 
-        #--------------------------------------Image Scrambler----------------------------------------------------------
+        self.frame69 = customtkinter.CTkFrame(self.my_notebook, width=140, corner_radius=0)
+        self.frame69.grid(row=0, column=0, rowspan=4, sticky="nsew")
+
+        # label
+        self.about_logo_label = customtkinter.CTkLabel(self.frame69, text="About", font=customtkinter.CTkFont(size=30, weight="bold"))
+        self.about_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+
+        # text
+        self.about_text = customtkinter.CTkLabel(self.frame69, width=100, height=100, font=customtkinter.CTkFont(size=12))
+        self.about_text.grid(row=1, column=0, padx=20, pady=20)
+
+
+        #-------------------------------------------- Image Scrambler --------------------------------------------------
 
 
         self.frame0 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
@@ -188,7 +207,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sc_start_button.grid(row=13, column=2, padx=20, pady=(10, 20), columnspan=3, sticky="we")
 
 
-        #---------------------------------------- IM - IM Steganography-------------------------------------------------
+        #---------------------------------------- IM - IM Steganography ------------------------------------------------
 
 
         self.frame1 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
@@ -290,7 +309,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.st_start_button.grid(row=12, column=2, padx=20, pady=10, ipady=5, columnspan=5, rowspan=2, sticky="we")
 
 
-        # ------------------------------------Text - IM Steganography --------------------------------------------------
+        # ------------------------------------ Text - IM Steganography -------------------------------------------------
 
         self.frame2 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
         self.frame2.grid(row=0, column=1, rowspan=4, sticky="snew")
@@ -361,7 +380,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
 
-        # ------------------------------------Text - IM Generator ------------------------------------------------------
+        # ------------------------------------ Text - IM Generator -----------------------------------------------------
 
         self.frame3 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
         self.frame3.grid(row=0, column=1, rowspan=4, sticky="snew")
@@ -460,6 +479,28 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.iet_start_button = customtkinter.CTkButton(self.frame4, command=self.iet_start_button_event, text="Transform", font=customtkinter.CTkFont(size=20))
         self.iet_start_button.grid(row=6, column=0, padx=20, pady=50, ipady=10, columnspan=3, rowspan=2, sticky="we")
 
+        # --------------------------------------- Metadata Info --------------------------------------------------------
+
+        self.frame5 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
+        self.frame5.grid(row=0, column=1, rowspan=4, sticky="snew")
+        self.frame5.grid_rowconfigure(4, weight=1)
+        self.frame5.grid_columnconfigure(1, weight=1)
+
+        # logo
+        self.mi_logo_label = customtkinter.CTkLabel(self.frame5, text="Get Metadata", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.mi_logo_label.grid(row=1, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+
+        # entries
+        self.mi_ent1 = customtkinter.CTkEntry(self.frame5, placeholder_text="File path", width=100)
+        self.mi_ent1.grid(row=2, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+
+        # buttons
+        self.mi_sidebar_button_1 = customtkinter.CTkButton(self.frame5, command=self.mi_open_image, image=self.folder_button_icon, text="Open file")
+        self.mi_sidebar_button_1.grid(row=2, column=0, padx=20, pady=5)
+
+        # console
+        self.mi_console = customtkinter.CTkTextbox(self.frame5, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=15))
+        self.mi_console.grid(row=4, column=0, padx=20, pady=10, ipady=10, columnspan=3, sticky="ewns")
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -470,6 +511,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.my_notebook.add(self.frame2, text="Tab 3")
         self.my_notebook.add(self.frame3, text="Tab 4")
         self.my_notebook.add(self.frame4, text="Tab 5")
+        self.my_notebook.add(self.frame5, text="Tab 6")
+
+        self.my_notebook.add(self.frame69, text="Tab 69", )
 
         # set default values
         #------------------------------------ Image Scrambler ----------------------------------------------------------
@@ -490,7 +534,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_action_type_dropdown_event('Encode')
         #------------------------------------------ Other --------------------------------------------------------------
         self.appearance_mode_optionemenu.set("System")
-        self.my_notebook.select(4)
+        self.my_notebook.select(5)
 
 
     # ------------------------------------ FUNCTIONS -------------------------------------------------------------------
@@ -501,11 +545,15 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     # Sidebar functions ------------------------------------------------------------------------------------------------
 
-    def sidebar_button_event_frame_0(self): self.my_notebook.select(0)
-    def sidebar_button_event_frame_1(self): self.my_notebook.select(1)
-    def sidebar_button_event_frame_2(self): self.my_notebook.select(2)
-    def sidebar_button_event_frame_3(self): self.my_notebook.select(3)
-    def sidebar_button_event_frame_4(self): self.my_notebook.select(4)
+    def sidebar_button_event_frame_0(self): self.my_notebook.select(self.frame0)
+    def sidebar_button_event_frame_1(self): self.my_notebook.select(self.frame1)
+    def sidebar_button_event_frame_2(self): self.my_notebook.select(self.frame2)
+    def sidebar_button_event_frame_3(self): self.my_notebook.select(self.frame3)
+    def sidebar_button_event_frame_4(self): self.my_notebook.select(self.frame4)
+    def sidebar_button_event_frame_5(self): self.my_notebook.select(self.frame5)
+
+
+    def sidebar_button_event_frame_about(self): self.my_notebook.select(self.frame69)
 
     # Image Scrambler functions ----------------------------------------------------------------------------------------
 
@@ -1261,6 +1309,36 @@ class App(customtkinter.CTk, tkinter.Tk):
         except Exception as e: return self.print_to_iet_console(f"Error saving image: {e}", error=True)
         self.print_to_iet_console(f"Output in: {filename}")
 
+    # Metadata Info ----------------------------------------------------------------------------------------------
+
+    def mi_open_image(self):
+        filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open)
+        self.mi_ent1.delete(0, "end")
+        self.mi_ent1.insert(0, filename)
+        self.print_to_mi_console("Getting metadata info...")
+        self.update_idletasks()
+        self.update()
+        self.mi_get_metadata_event()
+
+    def mi_get_metadata_event(self):
+        img_path = self.mi_ent1.get()
+        if not img_path: return self.print_to_mi_console("Please select a file.", error=True)
+
+        info_dict = {}
+        text = ''
+
+        try:
+            process = Popen([self.exif_tool_path, img_path], stdout=PIPE, stderr=STDOUT, universal_newlines=True)
+            for tag in process.stdout:
+                line = tag.strip().split(':')
+                info_dict[line[0].strip()] = line[-1].strip()
+
+            for k, v in info_dict.items():
+                text += f"{k} : {v}\n"
+
+            self.print_to_mi_console(text)
+            process.stdout.close()
+        except Exception as e: return self.print_to_mi_console(f"Error getting metadata: {e}", error=True)
 
     # Console Functions ------------------------------------------------------------------------------------------------
 
@@ -1311,6 +1389,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: self.iet_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
+    def print_to_mi_console(self, text, error=False):
+        self.mi_console.configure(state="normal")
+        self.mi_console.delete("1.0", "end")
+        self.mi_console.insert(customtkinter.END, text)
+        self.mi_console.configure(state="disabled")
+        if error: self.mi_console.configure(border_width=2, border_color="#1F6AA5")
+        else: self.mi_console.configure(border_width=0)
+        self.update_idletasks()
+        self.update()
 
     def print_to_stt_textbox(self, text, output_to):
         if output_to == "TextBox":
@@ -1340,7 +1427,7 @@ def make_folder(folder_path):
     # Example folder path: "C:/Users/Tomer27cz/Desktop/Files/CODING/Python Projects/AICode/Output"
     try:
         print("Making folder: " + folder_path)
-        os.mkdir(folder_path)
+        mkdir(folder_path)
         return folder_path, f"Making folder: {folder_path}"
     except FileExistsError:
         print("Folder already exists: " + folder_path)
