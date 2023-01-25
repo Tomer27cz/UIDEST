@@ -556,7 +556,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         folder_name = self.sc_output_folder_name_ent.get()
 
         if not image_path or not folder_path:
-            self.print_to_sc_console("Please select an image and a folder.")
+            self.print_to_sc_console("Please select an image and a folder.", error=True)
             return
 
         if file_name == "":
@@ -572,7 +572,8 @@ class App(customtkinter.CTk, tkinter.Tk):
                 folder_path += "/"
 
         if seed_loop or size_loop:
-            folder_path = make_folder(folder_path + folder_name)
+            folder_path, message = make_folder(folder_path + folder_name)
+            self.print_to_sc_console(message)
             if "\\" in folder_path:
                 folder_path += "\\"
             else:
@@ -586,7 +587,7 @@ class App(customtkinter.CTk, tkinter.Tk):
             try:
                 size = int(size)
             except ValueError:
-                self.print_to_sc_console("Please enter a valid size. (Integer)")
+                self.print_to_sc_console("Please enter a valid size. (Integer)", error=True)
                 return
 
             # configure start button
@@ -610,15 +611,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         else:
             if seed_loop:
                 if seed == "" or seed_to == "":
-                    return self.print_to_sc_console("Please enter a valid seed range.")
+                    return self.print_to_sc_console("Please enter a valid seed range.", error=True)
                 try:
                     seed = int(seed)
                     seed_to = int(seed_to)
                 except ValueError:
-                    self.print_to_sc_console("Please enter a valid seed range. (Integer)")
+                    self.print_to_sc_console("Please enter a valid seed range. (Integer)", error=True)
                     return
 
-                if seed > seed_to: return self.print_to_sc_console("Please enter a valid seed range. (From < To)")
+                if seed > seed_to: return self.print_to_sc_console("Please enter a valid seed range. (From < To)", error=True)
 
                 seed_range = list(range(seed, seed_to+1))
             else:
@@ -627,15 +628,15 @@ class App(customtkinter.CTk, tkinter.Tk):
 
             if size_loop:
                 if size == "" or size_to == "":
-                    return self.print_to_sc_console("Please enter a valid size range.")
+                    return self.print_to_sc_console("Please enter a valid size range.", error=True)
                 try:
                     size = int(size)
                     size_to = int(size_to)
                 except ValueError:
-                    self.print_to_sc_console("Please enter a valid size range. (Integer)")
+                    self.print_to_sc_console("Please enter a valid size range. (Integer)", error=True)
                     return
 
-                if size > size_to: return self.print_to_sc_console("Please enter a valid size range. (From < To)")
+                if size > size_to: return self.print_to_sc_console("Please enter a valid size range. (From < To)", error=True)
 
                 size_range = list(range(size, size_to+1))
             else:
@@ -775,40 +776,43 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         if folder_checkbox == 1 and output_folder_ent == "": output_folder_ent = "SteganographyOutput"
 
+        if not ent_folder: return self.print_to_st_console("Please select an output folder", error=True)
+
         if ent_folder[-1] != "/" or ent_folder[-1] != "\\":
             if "\\" in ent_folder: ent_folder += "\\"
             else: ent_folder += "/"
 
         # Get path
 
-        path = f"{ent_folder}/{output_name_ent}"
+        path = f"{ent_folder}{output_name_ent}.{output_type_dropdown.lower()}"
 
         if folder_checkbox == 1:
-            output_folder_path = make_folder(ent_folder + output_folder_ent)
-            path = f"{output_folder_path}/{output_name_ent}"
+            output_folder_path, message = make_folder(ent_folder + output_folder_ent)
+            self.print_to_st_console(message)
+            path = f"{output_folder_path}/{output_name_ent}.{output_type_dropdown.lower()}"
 
 
         # Warning message
 
         if action_type_dropdown == "Unmerge":
             if not ent1:
-                return self.print_to_st_console("Image 1 must be filled in")
+                return self.print_to_st_console("Image 1 must be filled in", error=True)
 
         if action_type_dropdown == "Merge":
             if type_dropdown == "Steganography x2" and (not ent1 or not ent2):
-                return self.print_to_st_console("Image 1 and 2 must be filled in")
+                return self.print_to_st_console("Image 1 and 2 must be filled in", error=True)
             elif type_dropdown == "Steganography x3" and (not ent1 or not ent2 or not ent3):
-                return self.print_to_st_console("Image 1, 2 and 3 must be filled in")
+                return self.print_to_st_console("Image 1, 2 and 3 must be filled in", error=True)
             elif type_dropdown == "Steganography x4" and (not ent1 or not ent2 or not ent3 or not ent4):
-                return self.print_to_st_console("Image 1, 2, 3 and 4 must be filled in")
+                return self.print_to_st_console("Image 1, 2, 3 and 4 must be filled in", error=True)
             elif type_dropdown == "Steganography x5" and (not ent1 or not ent2 or not ent3 or not ent4 or not ent5):
-                return self.print_to_st_console("Image 1, 2, 3, 4 and 5 must be filled in")
+                return self.print_to_st_console("Image 1, 2, 3, 4 and 5 must be filled in", error=True)
             elif type_dropdown == "Steganography x6" and (not ent1 or not ent2 or not ent3 or not ent4 or not ent5 or not ent6):
-                return self.print_to_st_console("Image 1, 2, 3, 4, 5 and 6 must be filled in")
+                return self.print_to_st_console("Image 1, 2, 3, 4, 5 and 6 must be filled in", error=True)
             elif type_dropdown == "Steganography x7" and (not ent1 or not ent2 or not ent3 or not ent4 or not ent5 or not ent6 or not ent7):
-                return self.print_to_st_console("Image 1, 2, 3, 4, 5, 6 and 7 must be filled in")
+                return self.print_to_st_console("Image 1, 2, 3, 4, 5, 6 and 7 must be filled in", error=True)
             elif type_dropdown == "Steganography x8" and (not ent1 or not ent2 or not ent3 or not ent4 or not ent5 or not ent6 or not ent7 or not ent8):
-                return self.print_to_st_console("Image 1, 2, 3, 4, 5, 6, 7 and 8 must be filled in")
+                return self.print_to_st_console("Image 1, 2, 3, 4, 5, 6, 7 and 8 must be filled in", error=True)
 
         # Merge / Unmerge
 
@@ -816,31 +820,38 @@ class App(customtkinter.CTk, tkinter.Tk):
             im_list = []
             if type_dropdown == "Steganography x2":
                 for i in range(2): im_list.append(Image.open(ent1 if i == 0 else ent2))
-                image = Steganography().merge(im_list)
+                try: image = Steganography().merge(im_list)
+                except Exception as e: return self.print_to_st_console(f"Error: {e}", error=True)
                 for im in im_list: im.close()
             elif type_dropdown == "Steganography x3":
                 for i in range(3): im_list.append(Image.open(ent1 if i == 0 else ent2 if i == 1 else ent3))
-                image = Steganography3().merge(im_list)
+                try: image = Steganography3().merge(im_list)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
                 for im in im_list: im.close()
             elif type_dropdown == "Steganography x4":
                 for i in range(4): im_list.append(Image.open(ent1 if i == 0 else ent2 if i == 1 else ent3 if i == 2 else ent4))
-                image = Steganography4().merge(im_list)
+                try: image = Steganography4().merge(im_list)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
                 for im in im_list: im.close()
             elif type_dropdown == "Steganography x5":
                 for i in range(5): im_list.append(Image.open(ent1 if i == 0 else ent2 if i == 1 else ent3 if i == 2 else ent4 if i == 3 else ent5))
-                image = Steganography5().merge(im_list)
+                try: image = Steganography5().merge(im_list)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
                 for im in im_list: im.close()
             elif type_dropdown == "Steganography x6":
                 for i in range(6): im_list.append(Image.open(ent1 if i == 0 else ent2 if i == 1 else ent3 if i == 2 else ent4 if i == 3 else ent5 if i == 4 else ent6))
-                image = Steganography6().merge(im_list)
+                try: image = Steganography6().merge(im_list)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
                 for im in im_list: im.close()
             elif type_dropdown == "Steganography x7":
                 for i in range(7): im_list.append(Image.open(ent1 if i == 0 else ent2 if i == 1 else ent3 if i == 2 else ent4 if i == 3 else ent5 if i == 4 else ent6 if i == 5 else ent7))
-                image = Steganography7().merge(im_list)
+                try: image = Steganography7().merge(im_list)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
                 for im in im_list: im.close()
             elif type_dropdown == "Steganography x8":
                 for i in range(8): im_list.append(Image.open(ent1 if i == 0 else ent2 if i == 1 else ent3 if i == 2 else ent4 if i == 3 else ent5 if i == 4 else ent6 if i == 5 else ent7 if i == 6 else ent8))
-                image = Steganography8().merge(im_list)
+                try: image = Steganography8().merge(im_list)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
                 for im in im_list: im.close()
 
             for im in im_list:
@@ -849,28 +860,37 @@ class App(customtkinter.CTk, tkinter.Tk):
         if action_type_dropdown == "Unmerge":
             im = Image.open(ent1)
             if type_dropdown == "Steganography x2":
-                images = Steganography().unmerge(im)
+                try: images = Steganography().unmerge(im)
+                except Exception as e: return self.print_to_st_console(f"Error: {e}", error=True)
             elif type_dropdown == "Steganography x3":
-                images = Steganography3().unmerge(im)
+                try: images = Steganography3().unmerge(im)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
             elif type_dropdown == "Steganography x4":
-                images = Steganography4().unmerge(im)
+                try: images = Steganography4().unmerge(im)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
             elif type_dropdown == "Steganography x5":
-                images = Steganography5().unmerge(im)
+                try: images = Steganography5().unmerge(im)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
             elif type_dropdown == "Steganography x6":
-                images = Steganography6().unmerge(im)
+                try: images = Steganography6().unmerge(im)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
             elif type_dropdown == "Steganography x7":
-                images = Steganography7().unmerge(im)
+                try: images = Steganography7().unmerge(im)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
             elif type_dropdown == "Steganography x8":
-                images = Steganography8().unmerge(im)
+                try: images = Steganography8().unmerge(im)
+                except Exception as e:return self.print_to_st_console(f"Error: {e}", error=True)
             im.close()
 
         # Save image
 
         if action_type_dropdown == "Merge":
-            image.save(f"{path}.{output_type_dropdown.lower()}")
+            try: image.save(f"{path}.{output_type_dropdown.lower()}")
+            except Exception as e: return self.print_to_st_console(f"Error saving image: {e}", error=True)
         else:
             for i, im in enumerate(images):
-                im.save(f"{path}_{i + 1}.{output_type_dropdown.lower()}")
+                try: im.save(f"{path}_{i + 1}.{output_type_dropdown.lower()}")
+                except Exception as e: return self.print_to_st_console(f"Error saving image: {e}", error=True)
 
         self.print_to_st_console(f"Saved to: '{path}'")
 
@@ -1235,7 +1255,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         ext = self.iet_output_type_var.get()
         try: image = Image.open(ent1)
         except Exception as e: return self.print_to_iet_console(f"Error opening image: {e}", error=True)
-        title = image.filename.split("/")[-1].split(".")[0]
+        title = image.filename.split("/")[-1].split(".")[0] # NOQA
         filename = filedialog.asksaveasfilename(initialdir=self.initial_browser_dir, defaultextension=ext.lower(), filetypes=self.filetypes, initialfile=title)
         try: image.save(filename)
         except Exception as e: return self.print_to_iet_console(f"Error saving image: {e}", error=True)
@@ -1321,7 +1341,7 @@ def make_folder(folder_path):
     try:
         print("Making folder: " + folder_path)
         os.mkdir(folder_path)
-        return folder_path
+        return folder_path, f"Making folder: {folder_path}"
     except FileExistsError:
         print("Folder already exists: " + folder_path)
         if folder_path[-1] == ")":
