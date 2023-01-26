@@ -8,6 +8,7 @@ import customtkinter
 from os import mkdir
 from time import time
 from subprocess import Popen, PIPE, STDOUT
+import youtube_dl
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
@@ -92,6 +93,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_button_5.grid(row=5, column=0, padx=20, pady=self.button_spacing)
         self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Get Metadata", command=self.sidebar_button_event_frame_5)
         self.sidebar_button_6.grid(row=6, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_7 = customtkinter.CTkButton(self.sidebar_frame, text="YT Downloader", command=self.sidebar_button_event_frame_6)
+        self.sidebar_button_7.grid(row=7, column=0, padx=20, pady=self.button_spacing)
 
 
         self.sidebar_button_about = customtkinter.CTkButton(self.sidebar_frame, text="About", command=self.sidebar_button_event_frame_about)
@@ -502,6 +505,31 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.mi_console = customtkinter.CTkTextbox(self.frame5, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=15))
         self.mi_console.grid(row=4, column=0, padx=20, pady=10, ipady=10, columnspan=3, sticky="ewns")
 
+        # --------------------------------------- Youtube Downloader ---------------------------------------------------
+
+        self.frame6 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
+        self.frame6.grid(row=0, column=1, rowspan=4, sticky="snew")
+        self.frame6.grid_rowconfigure(4, weight=1)
+        self.frame6.grid_columnconfigure(1, weight=1)
+
+        # logo
+        self.yt_logo_label = customtkinter.CTkLabel(self.frame6, text="Get Metadata",font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.yt_logo_label.grid(row=1, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+
+        # entries
+        self.yt_ent1 = customtkinter.CTkEntry(self.frame6, placeholder_text="Youtube link", width=100, font=customtkinter.CTkFont(size=15))
+        self.yt_ent1.grid(row=2, column=0, padx=20, pady=self.spacing, ipady=5 ,columnspan=3 ,sticky="ew")
+        self.yt_ent2 = customtkinter.CTkEntry(self.frame6, placeholder_text="Folder path", width=100)
+        self.yt_ent2.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+
+        # buttons
+        self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
+        self.yt_sidebar_button_2.grid(row=3, column=0, padx=20, pady=5)
+
+        # console
+        self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, state="disabled",font=customtkinter.CTkFont(size=15))
+        self.yt_console.grid(row=4, column=0, padx=20, pady=10, ipady=10, columnspan=3, sticky="ew")
+
         #---------------------------------------------------------------------------------------------------------------
 
         # add frames to notebook
@@ -512,6 +540,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.my_notebook.add(self.frame3, text="Tab 4")
         self.my_notebook.add(self.frame4, text="Tab 5")
         self.my_notebook.add(self.frame5, text="Tab 6")
+        self.my_notebook.add(self.frame6, text="Tab 7")
 
         self.my_notebook.add(self.frame69, text="Tab 69", )
 
@@ -534,7 +563,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_action_type_dropdown_event('Encode')
         #------------------------------------------ Other --------------------------------------------------------------
         self.appearance_mode_optionemenu.set("System")
-        self.my_notebook.select(5)
+        self.my_notebook.select(6)
 
 
     # ------------------------------------ FUNCTIONS -------------------------------------------------------------------
@@ -551,7 +580,7 @@ class App(customtkinter.CTk, tkinter.Tk):
     def sidebar_button_event_frame_3(self): self.my_notebook.select(self.frame3)
     def sidebar_button_event_frame_4(self): self.my_notebook.select(self.frame4)
     def sidebar_button_event_frame_5(self): self.my_notebook.select(self.frame5)
-
+    def sidebar_button_event_frame_6(self): self.my_notebook.select(self.frame6)
 
     def sidebar_button_event_frame_about(self): self.my_notebook.select(self.frame69)
 
@@ -1309,7 +1338,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         except Exception as e: return self.print_to_iet_console(f"Error saving image: {e}", error=True)
         self.print_to_iet_console(f"Output in: {filename}")
 
-    # Metadata Info ----------------------------------------------------------------------------------------------
+    # Metadata Info ----------------------------------------------------------------------------------------------------
 
     def mi_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open)
@@ -1339,6 +1368,13 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.print_to_mi_console(text)
             process.stdout.close()
         except Exception as e: return self.print_to_mi_console(f"Error getting metadata: {e}", error=True)
+
+    # Youtube downloader -----------------------------------------------------------------------------------------------
+
+    def yt_open_folder(self):
+        folder = filedialog.askdirectory(initialdir=self.initial_browser_dir, title=self.title_open)
+        self.yt_ent2.delete(0, "end")
+        self.yt_ent2.insert(0, folder)
 
     # Console Functions ------------------------------------------------------------------------------------------------
 
@@ -1396,6 +1432,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.mi_console.configure(state="disabled")
         if error: self.mi_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.mi_console.configure(border_width=0)
+        self.update_idletasks()
+        self.update()
+    def print_to_yt_console(self, text, error=False):
+        self.yt_console.configure(state="normal")
+        self.yt_console.delete("1.0", "end")
+        self.yt_console.insert(customtkinter.END, text)
+        self.yt_console.configure(state="disabled")
+        if error: self.yt_console.configure(border_width=2, border_color="#1F6AA5")
+        else: self.yt_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
 
