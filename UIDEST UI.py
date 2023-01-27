@@ -7,8 +7,7 @@ from tkhtmlview import HTMLScrolledText
 import customtkinter
 from os import mkdir
 from time import time
-from subprocess import Popen, PIPE, STDOUT
-import youtube_dl
+from subprocess import Popen, PIPE, STDOUT, run, CalledProcessError
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
@@ -42,6 +41,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.output_type_list = ["BMP", "DDS", "DIB", "EPS", "GIF", "ICO", "IM", "JPEG", "JPG", "PCX", "PNG", "PPM", "SGI",
              "SPIDER", "TGA", "TIFF", "WebP"]
         self.output_type_list_lossless = ["BMP", "GIF", "PNG", "TIFF", "WebP", "ICO", "PCX", "SGI", "TGA"]
+        self.resolutions_list = ["144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p", "4320p"]
         self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/folder-open-light.png"), dark_image=Image.open("Assets/folder-open-dark.png"))
         self.info_marker_icon = customtkinter.CTkImage(light_image=Image.open("Assets/info-mark-light.png"), dark_image=Image.open("Assets/info-mark-dark.png"))
 
@@ -72,6 +72,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_color_var = tkinter.StringVar(value="RGB")
         #-----------------------------------------------
         self.iet_output_type_var = tkinter.StringVar(value="PNG")
+        #-----------------------------------------------
+        self.yt_resolution_var = tkinter.StringVar(value="1080p")
+        self.yt_av_type_var = tkinter.StringVar(value="Video and Audio")
+        self.yt_playlist_var = tkinter.IntVar(value=0)
 
 
         # create sidebar
@@ -509,26 +513,46 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.frame6 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
         self.frame6.grid(row=0, column=1, rowspan=4, sticky="snew")
-        self.frame6.grid_rowconfigure(4, weight=1)
+        self.frame6.grid_rowconfigure(9, weight=1)
         self.frame6.grid_columnconfigure(1, weight=1)
 
         # logo
-        self.yt_logo_label = customtkinter.CTkLabel(self.frame6, text="Get Metadata",font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.yt_logo_label = customtkinter.CTkLabel(self.frame6, text="Youtube Downloader",font=customtkinter.CTkFont(size=20, weight="bold"))
         self.yt_logo_label.grid(row=1, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
 
         # entries
         self.yt_ent1 = customtkinter.CTkEntry(self.frame6, placeholder_text="Youtube link", width=100, font=customtkinter.CTkFont(size=15))
-        self.yt_ent1.grid(row=2, column=0, padx=20, pady=self.spacing, ipady=5 ,columnspan=3 ,sticky="ew")
+        self.yt_ent1.grid(row=2, column=0, padx=20, pady=self.spacing, ipady=5, columnspan=3 ,sticky="ew")
         self.yt_ent2 = customtkinter.CTkEntry(self.frame6, placeholder_text="Folder path", width=100)
         self.yt_ent2.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
         self.yt_sidebar_button_2.grid(row=3, column=0, padx=20, pady=5)
+        self.yt_sidebar_button_3 = customtkinter.CTkButton(self.frame6, command=self.yt_get_res_event, text="Get Resolutions")
+        self.yt_sidebar_button_3.grid(row=4, column=0, padx=20, pady=5)
 
         # console
-        self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, state="disabled",font=customtkinter.CTkFont(size=15))
-        self.yt_console.grid(row=4, column=0, padx=20, pady=10, ipady=10, columnspan=3, sticky="ew")
+        self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=11))
+        self.yt_console.grid(row=4, column=1, columnspan=3, rowspan=8, sticky="ewsn", padx=20)
+
+        # dropdowns
+        self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.frame6, values=self.resolutions_list, variable=self.yt_resolution_var)
+        self.yt_dropdown1.grid(row=5, column=0, padx=20, pady=5)
+        self.yt_dropdown2 = customtkinter.CTkOptionMenu(self.frame6, values=["Video and Audio", "Audio", "Video"], variable=self.yt_av_type_var)
+        self.yt_dropdown2.grid(row=6, column=0, padx=20, pady=5)
+
+        # options entries
+        self.yt_ent3 = customtkinter.CTkEntry(self.frame6, placeholder_text="format code", width=10)
+        self.yt_ent3.grid(row=7, column=0, padx=20, pady=self.spacing, sticky="ew")
+
+        # options checkbox
+        self.yt_checkbox1 = customtkinter.CTkCheckBox(self.frame6, text="Download playlist", variable=self.yt_playlist_var)
+        self.yt_checkbox1.grid(row=8, column=0, padx=20, pady=self.spacing, sticky="w")
+
+        # start button
+        self.yt_start_button = customtkinter.CTkButton(self.frame6, command=self.yt_start_button_event, text="Download", font=customtkinter.CTkFont(size=20))
+        self.yt_start_button.grid(row=15, column=1, padx=20, pady=10, ipady=10, columnspan=3, sticky="we")
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -1376,6 +1400,50 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_ent2.delete(0, "end")
         self.yt_ent2.insert(0, folder)
 
+    def yt_get_res_event(self):
+        ent1 = self.yt_ent1.get()
+        if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
+        self.print_to_yt_console("Getting video info...")
+        self.update_idletasks()
+        self.update()
+        # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
+        output = run(f"youtube-dl -F {ent1}", capture_output=True).stdout.decode(encoding="utf-8")
+        self.print_to_yt_console(output)
+
+    def yt_start_button_event(self):
+        ent1 = self.yt_ent1.get()
+        ent2 = self.yt_ent2.get()
+        ent3 = self.yt_ent3.get()
+        resolution = self.yt_resolution_var.get()
+        av_type = self.yt_av_type_var.get()
+        playlist = self.yt_playlist_var.get()
+        name = "video" if av_type == "Video" or av_type == "Video and Audio" else "audio"
+
+        # command: f"youtube-dl {f'-f {code}' if ent3 else ''} {'--yes-playlist' if playlist else ''} -o {folder} {url}"
+        # url: https://www.youtube.com/watch?v=rcVb6l4TpHw
+
+        if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
+        if not ent2: return self.print_to_yt_console("Please select a folder.", error=True)
+        try:
+            if ent3: ent3 = str(int(ent3))
+        except Exception as e: return self.print_to_yt_console(f"Please enter a valid format code: {e}", error=True)
+
+        if ent2[-1] != "/" or ent2[-1] != "\\":
+            if "\\" in ent2:
+                ent2 += "\\"
+            else:
+                ent2 += "/"
+
+        self.yt_start_button.configure(state="disabled", text="Downloading...")
+        self.update_idletasks()
+        self.update()
+
+        command = f"youtube-dl {f'-f {ent3}' if ent3 else ''} {'--yes-playlist' if playlist else ''} -o {ent2+name} {ent1}"
+
+        for path in execute(command):
+            print(path, end="")
+            self.print_to_yt_console(path, error=False, clear=False)
+
     # Console Functions ------------------------------------------------------------------------------------------------
 
     def print_to_sc_console(self, text, error=False):
@@ -1392,6 +1460,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.st_console.delete("1.0", "end")
         self.st_console.insert(customtkinter.END, text)
         self.st_console.configure(state="disabled")
+        self.st_console.see("end")
         if error: self.st_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.st_console.configure(border_width=0)
         self.update_idletasks()
@@ -1401,6 +1470,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_console.delete("1.0", "end")
         self.stt_console.insert(customtkinter.END, text)
         self.stt_console.configure(state="disabled")
+        self.stt_console.see("end")
         if error: self.stt_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.stt_console.configure(border_width=0)
         self.stt_start_button.configure(state="normal", text="Run Text Steganographer")
@@ -1411,6 +1481,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_console.delete("1.0", "end")
         self.tti_console.insert(customtkinter.END, text)
         self.tti_console.configure(state="disabled")
+        self.tti_console.see("end")
         if error: self.tti_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.tti_console.configure(border_width=0)
         self.tti_start_button.configure(state="normal", text="Run Generator")
@@ -1421,6 +1492,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.iet_console.delete("1.0", "end")
         self.iet_console.insert(customtkinter.END, text)
         self.iet_console.configure(state="disabled")
+        self.iet_console.see("end")
         if error: self.iet_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.iet_console.configure(border_width=0)
         self.update_idletasks()
@@ -1430,15 +1502,17 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.mi_console.delete("1.0", "end")
         self.mi_console.insert(customtkinter.END, text)
         self.mi_console.configure(state="disabled")
+        self.mi_console.see("end")
         if error: self.mi_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.mi_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
-    def print_to_yt_console(self, text, error=False):
+    def print_to_yt_console(self, text, error=False, clear=True):
         self.yt_console.configure(state="normal")
-        self.yt_console.delete("1.0", "end")
+        if clear: self.yt_console.delete("1.0", "end")
         self.yt_console.insert(customtkinter.END, text)
         self.yt_console.configure(state="disabled")
+        self.yt_console.see("end")
         if error: self.yt_console.configure(border_width=2, border_color="#1F6AA5")
         else: self.yt_console.configure(border_width=0)
         self.update_idletasks()
@@ -1494,6 +1568,15 @@ def _calc_size(width, height):
             possible_sizes.append(n)
     return possible_sizes
 
+
+def execute(cmd):
+    popen = Popen(cmd, stdout=PIPE, universal_newlines=True)
+    for stdout_line in iter(popen.stdout.readline, ""):
+        yield stdout_line
+    popen.stdout.close()
+    return_code = popen.wait()
+    if return_code:
+        raise CalledProcessError(return_code, cmd)
 
 
 # Main -----------------------------------------------------------------------------------------------------------------
