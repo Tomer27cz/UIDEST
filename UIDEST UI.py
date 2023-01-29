@@ -41,22 +41,40 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.output_type_list = ["BMP", "DDS", "DIB", "EPS", "GIF", "ICO", "IM", "JPEG", "JPG", "PCX", "PNG", "PPM", "SGI",
              "SPIDER", "TGA", "TIFF", "WebP"]
         self.output_type_list_lossless = ["BMP", "GIF", "PNG", "TIFF", "WebP", "ICO", "PCX", "SGI", "TGA"]
-        self.resolutions_list = ["144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p", "4320p"]
+        self.resolutions_list = ["144p", "240p (SD)", "360p (SD)", "480p (SD/DVD)", "720p (HD)", "1080p (Full HD)", "1440p (QHD/2k)", "2160p (UHD/4k)", "4320p (8k)", "Best"]
+        self.resolutions_list_values = [(256, 144), (426, 240), (640, 360), (854, 480), (1280, 720), (1920, 1080), (2560, 1440), (3840, 2160), (7680, 4320)]
         self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/folder-open-light.png"), dark_image=Image.open("Assets/folder-open-dark.png"))
         self.info_marker_icon = customtkinter.CTkImage(light_image=Image.open("Assets/info-mark-light.png"), dark_image=Image.open("Assets/info-mark-dark.png"))
 
         # create variables
 
         self.button_spacing = 5
+        self.spacing = 5
+        self.st_spacing = 3
         #-----------------------------------------------
         self.sc_seed_loop_var = tkinter.IntVar(value=0)
         self.sc_size_loop_var = tkinter.IntVar(value=0)
         self.sc_action_type_var = tkinter.StringVar(value="Encode")
         self.sc_output_type_var = tkinter.StringVar(value="PNG")
+        self.sc_ent1_var = tkinter.StringVar(value="")
+        self.sc_ent2_var = tkinter.StringVar(value="")
+        self.sc_output_name_var = tkinter.StringVar(value="")
+        self.sc_output_folder_var = tkinter.StringVar(value="")
         #-----------------------------------------------
         self.st_type_var = tkinter.StringVar(value="Steganography x2")
         self.st_output_type_var = tkinter.StringVar(value="PNG")
         self.st_action_type_var = tkinter.StringVar(value="Merge")
+        self.st_ent1_var = tkinter.StringVar(value="")
+        self.st_ent2_var = tkinter.StringVar(value="")
+        self.st_ent3_var = tkinter.StringVar(value="")
+        self.st_ent4_var = tkinter.StringVar(value="")
+        self.st_ent5_var = tkinter.StringVar(value="")
+        self.st_ent6_var = tkinter.StringVar(value="")
+        self.st_ent7_var = tkinter.StringVar(value="")
+        self.st_ent8_var = tkinter.StringVar(value="")
+        self.st_ent_folder_var = tkinter.StringVar(value="")
+        self.st_output_name_var = tkinter.StringVar(value="")
+        self.st_output_folder_var = tkinter.StringVar(value="")
         #-----------------------------------------------
         self.stt_type_var = tkinter.StringVar(value="Layered8")
         self.stt_output_type_var = tkinter.StringVar(value="PNG")
@@ -64,18 +82,31 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_encoding_type_var = tkinter.StringVar(value="ASCII")
         self.stt_text_output_checkbox_var = tkinter.IntVar(value=0)
         self.stt_text_input_checkbox_var = tkinter.IntVar(value=0)
+        self.stt_ent1_var = tkinter.StringVar(value="")
+        self.stt_ent2_var = tkinter.StringVar(value="")
+        self.stt_ent4_var = tkinter.StringVar(value="")
+        self.stt_output_name_var = tkinter.StringVar(value="")
         #-----------------------------------------------
         self.tti_text_input_checkbox_var = tkinter.IntVar(value=0)
         self.tti_text_output_checkbox_var = tkinter.IntVar(value=0)
         self.tti_output_type_var = tkinter.StringVar(value="PNG")
         self.tti_action_type_var = tkinter.StringVar(value="Encode")
         self.tti_color_var = tkinter.StringVar(value="RGB")
+        self.tti_ent1_var = tkinter.StringVar(value="")
+        self.tti_ent2_var = tkinter.StringVar(value="")
+        self.tti_ent3_var = tkinter.StringVar(value="")
+        self.tti_output_name_var = tkinter.StringVar(value="")
         #-----------------------------------------------
         self.iet_output_type_var = tkinter.StringVar(value="PNG")
+        self.iet_ent1_var = tkinter.StringVar(value="")
         #-----------------------------------------------
-        self.yt_resolution_var = tkinter.StringVar(value="1080p")
+        self.mi_ent1_var = tkinter.StringVar(value="")
+        #-----------------------------------------------
+        self.yt_resolution_var = tkinter.StringVar(value="Best")
         self.yt_av_type_var = tkinter.StringVar(value="Video and Audio")
         self.yt_playlist_var = tkinter.IntVar(value=0)
+        self.yt_ent1_var = tkinter.StringVar(value="")
+        self.yt_ent2_var = tkinter.StringVar(value="")
 
 
         # create sidebar
@@ -84,29 +115,29 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(8, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="UIDEST 2.1", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        self.logo_label.grid(row=0, column=0, padx=10, pady=(20, 10))
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Image Scrambler", command=self.sidebar_button_event_frame_0)
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_1.grid(row=1, column=0, padx=10, pady=self.button_spacing)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Image - Image\nSteganography", command=self.sidebar_button_event_frame_1)
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_2.grid(row=2, column=0, padx=10, pady=self.button_spacing)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Image - Text\nSteganography", command=self.sidebar_button_event_frame_2)
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_3.grid(row=3, column=0, padx=10, pady=self.button_spacing)
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="Text - Image\nGenerator", command=self.sidebar_button_event_frame_3)
-        self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_4.grid(row=4, column=0, padx=10, pady=self.button_spacing)
         self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Transform Image\nExtension", command=self.sidebar_button_event_frame_4)
-        self.sidebar_button_5.grid(row=5, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_5.grid(row=5, column=0, padx=10, pady=self.button_spacing)
         self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Get Metadata", command=self.sidebar_button_event_frame_5)
-        self.sidebar_button_6.grid(row=6, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_6.grid(row=6, column=0, padx=10, pady=self.button_spacing)
         self.sidebar_button_7 = customtkinter.CTkButton(self.sidebar_frame, text="YT Downloader", command=self.sidebar_button_event_frame_6)
-        self.sidebar_button_7.grid(row=7, column=0, padx=20, pady=self.button_spacing)
+        self.sidebar_button_7.grid(row=7, column=0, padx=10, pady=self.button_spacing)
 
 
         self.sidebar_button_about = customtkinter.CTkButton(self.sidebar_frame, text="About", command=self.sidebar_button_event_frame_about)
-        self.sidebar_button_about.grid(row=13, column=0, padx=20, pady=0)
+        self.sidebar_button_about.grid(row=13, column=0, padx=10, pady=0)
         # self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        # self.appearance_mode_label.grid(row=14, column=0, padx=20, pady=(10, 0))
+        # self.appearance_mode_label.grid(row=14, column=0, padx=10, pady=(10, 0))
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["System", "Light", "Dark"], command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(row=15, column=0, padx=20, pady=(10, 10))
+        self.appearance_mode_optionemenu.grid(row=15, column=0, padx=10, pady=(10, 10))
 
         # create notebook
 
@@ -127,11 +158,11 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # label
         self.about_logo_label = customtkinter.CTkLabel(self.frame69, text="About", font=customtkinter.CTkFont(size=30, weight="bold"))
-        self.about_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        self.about_logo_label.grid(row=0, column=0, padx=10, pady=(20, 10))
 
         # text
         self.about_text = customtkinter.CTkLabel(self.frame69, width=100, height=100, font=customtkinter.CTkFont(size=12))
-        self.about_text.grid(row=1, column=0, padx=20, pady=20)
+        self.about_text.grid(row=1, column=0, padx=10, pady=20)
 
 
         #-------------------------------------------- Image Scrambler --------------------------------------------------
@@ -144,53 +175,51 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # label
         self.sc_logo_label = customtkinter.CTkLabel(self.frame0, text="Image Scrambler", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.sc_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        self.sc_logo_label.grid(row=0, column=0, padx=10, pady=(20, 10), columnspan=3, sticky="w")
 
         # input/output entry
-        self.sc_ent1 = customtkinter.CTkEntry(self.frame0, placeholder_text="Input image path here", width=100)
-        self.sc_ent1.grid(row=1, column=2, padx=20, pady=10, columnspan=3, sticky="ew")
-        self.sc_ent2 = customtkinter.CTkEntry(self.frame0, placeholder_text="Output folder path here", width=100)
-        self.sc_ent2.grid(row=2, column=2, padx=20, pady=10, columnspan=3, sticky="ew")
+        self.sc_ent1 = customtkinter.CTkEntry(self.frame0, placeholder_text="Input image path here", width=100, textvariable=self.sc_ent1_var)
+        self.sc_ent1.grid(row=1, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
+        self.sc_ent2 = customtkinter.CTkEntry(self.frame0, placeholder_text="Output folder path here", width=100, textvariable=self.sc_ent2_var)
+        self.sc_ent2.grid(row=2, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
 
         # input/output button
         self.sc_sidebar_button_1 = customtkinter.CTkButton(self.frame0, command=self.sc_open_image, image=self.folder_button_icon, text="Open Image")
-        self.sc_sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
+        self.sc_sidebar_button_1.grid(row=1, column=0, padx=10, pady=self.spacing)
         self.sc_sidebar_button_2 = customtkinter.CTkButton(self.frame0, command=self.sc_open_folder, image=self.folder_button_icon, text="Open folder")
-        self.sc_sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
+        self.sc_sidebar_button_2.grid(row=2, column=0, padx=10, pady=self.spacing)
 
         # loop checkboxes
-        self.sc_loop_label = customtkinter.CTkLabel(self.frame0, text="Loop mode:", anchor="w")
-        self.sc_loop_label.grid(row=3, column=0, padx=20, pady=(10, 0))
         self.sc_loop_checkbox1 = customtkinter.CTkCheckBox(self.frame0, text="Seed", command=self.sc_seed_loop_checkbox_event, variable=self.sc_seed_loop_var, onvalue=1, offvalue=0)
-        self.sc_loop_checkbox1.grid(row=4, column=0, padx=35, pady=10, sticky="wn")
+        self.sc_loop_checkbox1.grid(row=4, column=0, padx=15, pady=10, sticky="wn")
         self.sc_loop_checkbox2 = customtkinter.CTkCheckBox(self.frame0, text="Size", command=self.sc_size_loop_checkbox_event, variable=self.sc_size_loop_var, onvalue=1, offvalue=0)
-        self.sc_loop_checkbox2.grid(row=4, column=0, padx=0, pady=10, sticky="en")
+        self.sc_loop_checkbox2.grid(row=4, column=0, padx=(90, 0), pady=10, sticky="w", columnspan=2)
 
         # seed and size entry fields
-        self.sc_from_seed_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="Seed", width=75)
-        self.sc_from_seed_ent.grid(row=5, column=0, padx=20, pady=10, sticky="w")
-        self.sc_from_size_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="Size", width=75)
-        self.sc_from_size_ent.grid(row=5, column=0, padx=20, pady=10, sticky="e")
-        self.sc_to_seed_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="", width=75, state="disabled", border_width=0)
-        self.sc_to_seed_ent.grid(row=6, column=0, padx=20, pady=5, sticky="w")
-        self.sc_to_size_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="", width=75, state="disabled", border_width=0)
-        self.sc_to_size_ent.grid(row=6, column=0, padx=20, pady=5, sticky="e")
+        self.sc_from_seed_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="Seed", width=60)
+        self.sc_from_seed_ent.grid(row=5, column=0, padx=10, pady=10, sticky="w")
+        self.sc_from_size_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="Size", width=60)
+        self.sc_from_size_ent.grid(row=5, column=0, padx=10, pady=10, sticky="e")
+        self.sc_to_seed_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="", width=60, state="disabled", border_width=0)
+        self.sc_to_seed_ent.grid(row=6, column=0, padx=10, pady=5, sticky="w")
+        self.sc_to_size_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="", width=60, state="disabled", border_width=0)
+        self.sc_to_size_ent.grid(row=6, column=0, padx=10, pady=5, sticky="e")
 
         # filename and folder name entry fields
-        self.sc_output_name_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="Output filename", width=100)
-        self.sc_output_name_ent.grid(row=7, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
-        self.sc_output_folder_name_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="", width=100, border_width=0, state="disabled")
-        self.sc_output_folder_name_ent.grid(row=8, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.sc_output_name_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="Output filename", width=100, textvariable=self.sc_output_name_var)
+        self.sc_output_name_ent.grid(row=7, column=0, padx=10, pady=10, columnspan=1, sticky="ew")
+        self.sc_output_folder_ent = customtkinter.CTkEntry(self.frame0, placeholder_text="", width=100, border_width=0, state="disabled", textvariable=self.sc_output_folder_var)
+        self.sc_output_folder_ent.grid(row=8, column=0, padx=10, pady=10, columnspan=1, sticky="ew")
 
         # drop down menus
         self.sc_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame0, values=self.output_type_list, variable=self.sc_output_type_var)
-        self.sc_output_type_dropdown.grid(row=12, column=0, padx=20, pady=(10, 10))
+        self.sc_output_type_dropdown.grid(row=12, column=0, padx=10, pady=(10, 10))
         self.sc_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame0, values=["Encode", "Decode"], variable=self.sc_action_type_var)
-        self.sc_action_type_dropdown.grid(row=13, column=0, padx=20, pady=(10, 20))
+        self.sc_action_type_dropdown.grid(row=13, column=0, padx=10, pady=(10, 20))
 
         # console
-        self.sc_console = customtkinter.CTkTextbox(self.frame0, width=100, height=300)
-        self.sc_console.grid(row=4, column=2, columnspan=3, rowspan=8, sticky="ewsn", padx=20)
+        self.sc_console = customtkinter.CTkTextbox(self.frame0, width=100, height=300, font=customtkinter.CTkFont(size=15, family="Consolas"))
+        self.sc_console.grid(row=4, column=2, columnspan=3, rowspan=8, sticky="ewsn", padx=10, pady=10)
 
         # info markers
         self.sc_info_marker_1 = customtkinter.CTkLabel(self.frame0, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
@@ -209,9 +238,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         CreateToolTip(self.sc_info_marker_4, "The output folder will be created in output folder path,\nif the loop mode is enabled.\nDefault: 'Image Scrambler Output'", height=65, width=330)
         CreateToolTip(self.sc_info_marker_5, "The output type is the file type of the output image.\n\nDefault: 'PNG' - Lossless encoding for better quality when decoding.", height=65, width=400)
 
-        # start button
+        #start button
         self.sc_start_button = customtkinter.CTkButton(self.frame0, command=self.sc_start_button_event, text="Run Image Scrambler")
-        self.sc_start_button.grid(row=13, column=2, padx=20, pady=(10, 20), columnspan=3, sticky="we")
+        self.sc_start_button.grid(row=12, column=2, padx=10, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
 
         #---------------------------------------- IM - IM Steganography ------------------------------------------------
@@ -222,34 +251,31 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.frame1.grid_rowconfigure(10, weight=1)
         self.frame1.grid_columnconfigure(3, weight=1)
 
-        # variables
-        self.spacing = 3
-
         # logo
         self.st_logo_label = customtkinter.CTkLabel(self.frame1, text="Image - Image Steganography", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.st_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+        self.st_logo_label.grid(row=0, column=0, padx=10, pady=(20, 10), columnspan=3, sticky="w")
 
         # image entries
-        self.st_ent1 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent2 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent3 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent4 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent5 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent6 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent7 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent8 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100)
-        self.st_ent1.grid(row=1, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
-        self.st_ent2.grid(row=2, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
-        self.st_ent3.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
-        self.st_ent4.grid(row=4, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
-        self.st_ent5.grid(row=5, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
-        self.st_ent6.grid(row=6, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
-        self.st_ent7.grid(row=7, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
-        self.st_ent8.grid(row=8, column=1, padx=20, pady=self.spacing, columnspan=7, sticky="ew")
+        self.st_ent1 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent1_var)
+        self.st_ent2 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent2_var)
+        self.st_ent3 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent3_var)
+        self.st_ent4 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent4_var)
+        self.st_ent5 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent5_var)
+        self.st_ent6 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent6_var)
+        self.st_ent7 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent7_var)
+        self.st_ent8 = customtkinter.CTkEntry(self.frame1, placeholder_text="Input image path here", width=100, textvariable=self.st_ent8_var)
+        self.st_ent1.grid(row=1, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
+        self.st_ent2.grid(row=2, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
+        self.st_ent3.grid(row=3, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
+        self.st_ent4.grid(row=4, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
+        self.st_ent5.grid(row=5, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
+        self.st_ent6.grid(row=6, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
+        self.st_ent7.grid(row=7, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
+        self.st_ent8.grid(row=8, column=1, padx=10, pady=self.st_spacing, columnspan=7, sticky="ew")
 
         # folder entry
-        self.st_ent_folder = customtkinter.CTkEntry(self.frame1, placeholder_text="Output folder path here", width=100)
-        self.st_ent_folder.grid(row=9, column=1, padx=20, pady=23, columnspan=7, sticky="ew")
+        self.st_ent_folder = customtkinter.CTkEntry(self.frame1, placeholder_text="Output folder path here", width=100, textvariable=self.st_ent_folder_var)
+        self.st_ent_folder.grid(row=9, column=1, padx=10, pady=23, columnspan=7, sticky="ew")
 
         # image buttons
         self.st_sidebar_button_1 = customtkinter.CTkButton(self.frame1, command=self.st_open_image1, image=self.folder_button_icon, text="Open Image")
@@ -260,42 +286,42 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.st_sidebar_button_6 = customtkinter.CTkButton(self.frame1, command=self.st_open_image6, image=self.folder_button_icon, text="Open Image")
         self.st_sidebar_button_7 = customtkinter.CTkButton(self.frame1, command=self.st_open_image7, image=self.folder_button_icon, text="Open Image")
         self.st_sidebar_button_8 = customtkinter.CTkButton(self.frame1, command=self.st_open_image8, image=self.folder_button_icon, text="Open Image")
-        self.st_sidebar_button_1.grid(row=1, column=0, padx=20, pady=self.spacing)
-        self.st_sidebar_button_2.grid(row=2, column=0, padx=20, pady=self.spacing)
-        self.st_sidebar_button_3.grid(row=3, column=0, padx=20, pady=self.spacing)
-        self.st_sidebar_button_4.grid(row=4, column=0, padx=20, pady=self.spacing)
-        self.st_sidebar_button_5.grid(row=5, column=0, padx=20, pady=self.spacing)
-        self.st_sidebar_button_6.grid(row=6, column=0, padx=20, pady=self.spacing)
-        self.st_sidebar_button_7.grid(row=7, column=0, padx=20, pady=self.spacing)
-        self.st_sidebar_button_8.grid(row=8, column=0, padx=20, pady=self.spacing)
+        self.st_sidebar_button_1.grid(row=1, column=0, padx=10, pady=self.st_spacing)
+        self.st_sidebar_button_2.grid(row=2, column=0, padx=10, pady=self.st_spacing)
+        self.st_sidebar_button_3.grid(row=3, column=0, padx=10, pady=self.st_spacing)
+        self.st_sidebar_button_4.grid(row=4, column=0, padx=10, pady=self.st_spacing)
+        self.st_sidebar_button_5.grid(row=5, column=0, padx=10, pady=self.st_spacing)
+        self.st_sidebar_button_6.grid(row=6, column=0, padx=10, pady=self.st_spacing)
+        self.st_sidebar_button_7.grid(row=7, column=0, padx=10, pady=self.st_spacing)
+        self.st_sidebar_button_8.grid(row=8, column=0, padx=10, pady=self.st_spacing)
 
         # folder button
         self.st_sidebar_button_folder = customtkinter.CTkButton(self.frame1, command=self.st_open_folder, image=self.folder_button_icon, text="Open folder")
-        self.st_sidebar_button_folder.grid(row=9, column=0, padx=20, pady=23)
+        self.st_sidebar_button_folder.grid(row=9, column=0, padx=10, pady=23)
 
         # console
-        self.st_console = customtkinter.CTkTextbox(self.frame1, width=100, height=20)
-        self.st_console.grid(row=10, column=0, columnspan=9, rowspan=1, sticky="ewsn", padx=20)
+        self.st_console = customtkinter.CTkTextbox(self.frame1, width=100, height=20, font=customtkinter.CTkFont(size=15, family="Consolas"))
+        self.st_console.grid(row=10, column=0, columnspan=9, rowspan=1, sticky="ewsn", padx=10)
 
         # drop down menus
         self.st_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame1, values=self.output_type_list, variable=self.st_output_type_var)
-        self.st_output_type_dropdown.grid(row=11, column=0, padx=20, pady=(10, 10))
+        self.st_output_type_dropdown.grid(row=11, column=0, padx=10, pady=(10, 10))
         self.st_type_dropdown = customtkinter.CTkOptionMenu(self.frame1, values=["Steganography x2", "Steganography x3", "Steganography x4", "Steganography x5", "Steganography x6", "Steganography x7", "Steganography x8"], variable=self.st_type_var, command=self.st_type_dropdown_event)
-        self.st_type_dropdown.grid(row=12, column=0, padx=20, pady=10)
+        self.st_type_dropdown.grid(row=12, column=0, padx=10, pady=10)
         self.st_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame1, values=["Merge", "Unmerge"], variable=self.st_action_type_var, command=self.st_type_dropdown_event)
-        self.st_action_type_dropdown.grid(row=13, column=0, padx=20, pady=10)
+        self.st_action_type_dropdown.grid(row=13, column=0, padx=10, pady=10)
 
         # file name and folder entries
-        self.st_output_name_ent = customtkinter.CTkEntry(self.frame1, placeholder_text="Output filename")
-        self.st_output_name_ent.grid(row=11, column=2, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.st_output_name_ent = customtkinter.CTkEntry(self.frame1, placeholder_text="Output filename", textvariable=self.st_output_name_var)
+        self.st_output_name_ent.grid(row=11, column=2, padx=10, pady=10, columnspan=1, sticky="ew")
         self.st_folder_checkbox = customtkinter.CTkCheckBox(self.frame1, text="", command=self.st_folder_checkbox_event, onvalue=True, offvalue=False)
         self.st_folder_checkbox.grid(row=11, column=4, padx=(0, 100), pady=0, sticky="w", columnspan=2)
-        self.st_output_folder_ent = customtkinter.CTkEntry(self.frame1, placeholder_text="Output folder name")
-        self.st_output_folder_ent.grid(row=11, column=5, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.st_output_folder_ent = customtkinter.CTkEntry(self.frame1, placeholder_text="Output folder name", textvariable=self.st_output_folder_var)
+        self.st_output_folder_ent.grid(row=11, column=5, padx=10, pady=10, columnspan=1, sticky="ew")
 
         # info markers
         self.stt_explanation = customtkinter.CTkButton(self.frame1, text="Show Explanation", command=self.st_explanation_event)
-        self.stt_explanation.grid(row=0, column=3, padx=20, pady=10, sticky="w")
+        self.stt_explanation.grid(row=0, column=3, padx=10, pady=10, sticky="w")
 
         self.stt_info_marker_1 = customtkinter.CTkLabel(self.frame1, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
         self.stt_info_marker_1.grid(row=11, column=1, padx=0, pady=0, ipadx=2, ipady=5)
@@ -313,7 +339,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # start button
         self.st_start_button = customtkinter.CTkButton(self.frame1, command=self.st_start_button_event, text="Run Steganographer")
-        self.st_start_button.grid(row=12, column=2, padx=20, pady=10, ipady=5, columnspan=5, rowspan=2, sticky="we")
+        self.st_start_button.grid(row=12, column=2, padx=10, pady=10, ipady=5, columnspan=5, rowspan=2, sticky="we")
 
 
         # ------------------------------------ Text - IM Steganography -------------------------------------------------
@@ -325,49 +351,49 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # logo
         self.stt_logo_label = customtkinter.CTkLabel(self.frame2, text="Image - Text Steganography", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.stt_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+        self.stt_logo_label.grid(row=0, column=0, padx=10, pady=(20, 10), columnspan=3, sticky="w")
 
         # entries
-        self.stt_ent1 = customtkinter.CTkEntry(self.frame2, placeholder_text="Input image path here", width=100)
-        self.stt_ent1.grid(row=1, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
-        self.stt_ent2 = customtkinter.CTkEntry(self.frame2, placeholder_text="Output folder path here", width=100)
-        self.stt_ent2.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
-        self.stt_ent4 = customtkinter.CTkEntry(self.frame2, placeholder_text="Input text file path here", width=100)
-        self.stt_ent4.grid(row=2, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.stt_ent1 = customtkinter.CTkEntry(self.frame2, placeholder_text="Input image path here", width=100, textvariable=self.stt_ent1_var)
+        self.stt_ent1.grid(row=1, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
+        self.stt_ent2 = customtkinter.CTkEntry(self.frame2, placeholder_text="Output folder path here", width=100, textvariable=self.stt_ent2_var)
+        self.stt_ent2.grid(row=3, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
+        self.stt_ent4 = customtkinter.CTkEntry(self.frame2, placeholder_text="Input text file path here", width=100, textvariable=self.stt_ent4_var)
+        self.stt_ent4.grid(row=2, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.stt_sidebar_button_1 = customtkinter.CTkButton(self.frame2, command=self.stt_open_image, image=self.folder_button_icon, text="Open Image")
-        self.stt_sidebar_button_1.grid(row=1, column=0, padx=20, pady=5)
+        self.stt_sidebar_button_1.grid(row=1, column=0, padx=10, pady=self.spacing)
         self.stt_sidebar_button_2 = customtkinter.CTkButton(self.frame2, command=self.stt_open_folder, image=self.folder_button_icon, text="Open folder")
-        self.stt_sidebar_button_2.grid(row=3, column=0, padx=20, pady=5)
+        self.stt_sidebar_button_2.grid(row=3, column=0, padx=10, pady=self.spacing)
         self.stt_sidebar_button_4 = customtkinter.CTkButton(self.frame2, command=self.stt_open_text, image=self.folder_button_icon, text="Open text file")
-        self.stt_sidebar_button_4.grid(row=2, column=0, padx=20, pady=5)
+        self.stt_sidebar_button_4.grid(row=2, column=0, padx=10, pady=self.spacing)
 
         # text entry
         self.stt_ent3 = customtkinter.CTkTextbox(self.frame2, width=100)
-        self.stt_ent3.grid(row=4, column=1, padx=20, pady=10, columnspan=3, rowspan=3, sticky="ewsn")
+        self.stt_ent3.grid(row=4, column=1, padx=10, pady=10, columnspan=3, rowspan=3, sticky="ewsn")
 
         # console
-        self.stt_console = customtkinter.CTkTextbox(self.frame2, width=100, height=20)
-        self.stt_console.grid(row=9, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
+        self.stt_console = customtkinter.CTkTextbox(self.frame2, width=100, height=20, font=customtkinter.CTkFont(size=15, family="Consolas"))
+        self.stt_console.grid(row=9, column=2, columnspan=3, rowspan=2, sticky="wens", padx=10, pady=10)
 
         # file name entry
-        self.stt_output_name_ent = customtkinter.CTkEntry(self.frame2, placeholder_text="Output filename", width=100)
-        self.stt_output_name_ent.grid(row=8, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.stt_output_name_ent = customtkinter.CTkEntry(self.frame2, placeholder_text="Output filename", width=100, textvariable=self.stt_output_name_var)
+        self.stt_output_name_ent.grid(row=8, column=0, padx=10, pady=10, columnspan=1, sticky="ew")
         self.stt_text_output_checkbox = customtkinter.CTkCheckBox(self.frame2, text="Output text to file", variable=self.stt_text_output_checkbox_var, state="disabled", command=self.stt_text_output_checkbox_event)
-        self.stt_text_output_checkbox.grid(row=7, column=0, padx=20, pady=0, columnspan=1, sticky="w")
+        self.stt_text_output_checkbox.grid(row=7, column=0, padx=10, pady=0, columnspan=1, sticky="w")
         self.stt_text_input_checkbox = customtkinter.CTkCheckBox(self.frame2, text="Input text from file", variable=self.stt_text_input_checkbox_var, command=self.stt_text_input_checkbox_event)
-        self.stt_text_input_checkbox.grid(row=6, column=0, padx=20, pady=5, columnspan=1, sticky="w")
+        self.stt_text_input_checkbox.grid(row=6, column=0, padx=10, pady=5, columnspan=1, sticky="w")
 
         # drop down menus
         self.stt_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=self.output_type_list_lossless, variable=self.stt_output_type_var)
-        self.stt_output_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
+        self.stt_output_type_dropdown.grid(row=9, column=0, padx=10, pady=10)
         self.stt_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Layered8", "Sequential8", "LayeredDynamic", "LayeredDynamic\nTransparent"], variable=self.stt_type_var, command=self.stt_type_dropdown_event)
-        self.stt_type_dropdown.grid(row=10, column=0, padx=20, pady=10)
+        self.stt_type_dropdown.grid(row=10, column=0, padx=10, pady=10)
         self.stt_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["Encode", "Decode"], variable=self.stt_action_type_var, command=self.stt_action_type_dropdown_event)
-        self.stt_action_type_dropdown.grid(row=11, column=0, padx=20, pady=10)
+        self.stt_action_type_dropdown.grid(row=11, column=0, padx=10, pady=10)
         self.stt_encoding_type_dropdown = customtkinter.CTkOptionMenu(self.frame2, values=["ASCII", "UNICODE"], variable=self.stt_encoding_type_var, command=self.stt_encoding_type_dropdown_event)
-        self.stt_encoding_type_dropdown.grid(row=4, column=0, padx=20, pady=10)
+        self.stt_encoding_type_dropdown.grid(row=4, column=0, padx=10, pady=10)
 
         # info marker
         self.stt_info_marker_1 = customtkinter.CTkLabel(self.frame2, text="", image=self.info_marker_icon, width=30, height=20, bg_color="#1F6AA5")
@@ -384,7 +410,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # start button
         self.stt_start_button = customtkinter.CTkButton(self.frame2, command=self.stt_start_button_event, text="Run Text Steganographer")
-        self.stt_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
+        self.stt_start_button.grid(row=11, column=2, padx=10, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
 
         # ------------------------------------ Text - IM Generator -----------------------------------------------------
@@ -396,47 +422,47 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # logo
         self.tti_logo_label = customtkinter.CTkLabel(self.frame3, text="Text to Image Generator", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.tti_logo_label.grid(row=0, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+        self.tti_logo_label.grid(row=0, column=0, padx=10, pady=(20, 10), columnspan=3, sticky="w")
 
         # entries
-        self.tti_ent1 = customtkinter.CTkEntry(self.frame3, placeholder_text="Input text file path here", width=100)
-        self.tti_ent1.grid(row=2, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
-        self.tti_ent2 = customtkinter.CTkEntry(self.frame3, placeholder_text="Input Image path here", width=100)
-        self.tti_ent2.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
-        self.tti_ent3 = customtkinter.CTkEntry(self.frame3, placeholder_text="Output folder path here", width=100)
-        self.tti_ent3.grid(row=4, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.tti_ent1 = customtkinter.CTkEntry(self.frame3, placeholder_text="Input text file path here", width=100, textvariable=self.tti_ent1_var)
+        self.tti_ent1.grid(row=2, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
+        self.tti_ent2 = customtkinter.CTkEntry(self.frame3, placeholder_text="Input Image path here", width=100, textvariable=self.tti_ent2_var)
+        self.tti_ent2.grid(row=3, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
+        self.tti_ent3 = customtkinter.CTkEntry(self.frame3, placeholder_text="Output folder path here", width=100, textvariable=self.tti_ent3_var)
+        self.tti_ent3.grid(row=4, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.tti_sidebar_button_1 = customtkinter.CTkButton(self.frame3, command=self.tti_open_text, image=self.folder_button_icon, text="Open text file")
-        self.tti_sidebar_button_1.grid(row=2, column=0, padx=20, pady=5)
+        self.tti_sidebar_button_1.grid(row=2, column=0, padx=10, pady=self.spacing)
         self.tti_sidebar_button_2 = customtkinter.CTkButton(self.frame3, command=self.tti_open_image, image=self.folder_button_icon, text="Open image")
-        self.tti_sidebar_button_2.grid(row=3, column=0, padx=20, pady=5)
+        self.tti_sidebar_button_2.grid(row=3, column=0, padx=10, pady=self.spacing)
         self.tti_sidebar_button_3 = customtkinter.CTkButton(self.frame3, command=self.tti_open_folder, image=self.folder_button_icon, text="Open folder")
-        self.tti_sidebar_button_3.grid(row=4, column=0, padx=20, pady=5)
+        self.tti_sidebar_button_3.grid(row=4, column=0, padx=10, pady=self.spacing)
 
         # text entry
         self.tti_ent4 = customtkinter.CTkTextbox(self.frame3, width=100)
-        self.tti_ent4.grid(row=5, column=1, padx=20, pady=10, columnspan=3, rowspan=4, sticky="ewsn")
+        self.tti_ent4.grid(row=5, column=1, padx=10, pady=10, columnspan=3, rowspan=4, sticky="ewsn")
 
         # console
-        self.tti_console = customtkinter.CTkTextbox(self.frame3, width=100, height=20)
-        self.tti_console.grid(row=9, column=2, columnspan=3, rowspan=2, sticky="wens", padx=20, pady=10)
+        self.tti_console = customtkinter.CTkTextbox(self.frame3, width=100, height=20, font=customtkinter.CTkFont(size=15, family="Consolas"))
+        self.tti_console.grid(row=9, column=2, columnspan=3, rowspan=2, sticky="wens", padx=10, pady=10)
 
         # file name entry
-        self.tti_output_name_ent = customtkinter.CTkEntry(self.frame3, placeholder_text="Output filename", width=100)
-        self.tti_output_name_ent.grid(row=8, column=0, padx=20, pady=10, columnspan=1, sticky="ew")
+        self.tti_output_name_ent = customtkinter.CTkEntry(self.frame3, placeholder_text="Output filename", width=100, textvariable=self.tti_output_name_var)
+        self.tti_output_name_ent.grid(row=8, column=0, padx=10, pady=10, columnspan=1, sticky="ew")
         self.tti_text_output_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Output text to file", variable=self.tti_text_output_checkbox_var, state="disabled", command=self.tti_text_output_checkbox_event)
-        self.tti_text_output_checkbox.grid(row=7, column=0, padx=20, pady=0, columnspan=1, sticky="w")
+        self.tti_text_output_checkbox.grid(row=7, column=0, padx=10, pady=0, columnspan=1, sticky="w")
         self.tti_text_input_checkbox = customtkinter.CTkCheckBox(self.frame3, text="Input text from file", variable=self.tti_text_input_checkbox_var, command=self.tti_text_input_checkbox_event)
-        self.tti_text_input_checkbox.grid(row=6, column=0, padx=20, pady=5, columnspan=1, sticky="w")
+        self.tti_text_input_checkbox.grid(row=6, column=0, padx=10, pady=5, columnspan=1, sticky="w")
 
         # drop down menus
         self.tti_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=self.output_type_list_lossless, variable=self.tti_output_type_var)
-        self.tti_output_type_dropdown.grid(row=9, column=0, padx=20, pady=10)
+        self.tti_output_type_dropdown.grid(row=9, column=0, padx=10, pady=10)
         self.tti_color_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["RGB", "RGBA", "Mono"], variable=self.tti_color_var)
-        self.tti_color_dropdown.grid(row=10, column=0, padx=20, pady=10, columnspan=1, sticky="w")
+        self.tti_color_dropdown.grid(row=10, column=0, padx=10, pady=10, columnspan=1, sticky="w")
         self.tti_action_type_dropdown = customtkinter.CTkOptionMenu(self.frame3, values=["Encode", "Decode"],variable=self.tti_action_type_var,command=self.tti_action_type_dropdown_event)
-        self.tti_action_type_dropdown.grid(row=11, column=0, padx=20, pady=10)
+        self.tti_action_type_dropdown.grid(row=11, column=0, padx=10, pady=10)
 
         # info marker
         self.tti_info_marker_1 = customtkinter.CTkLabel(self.frame3, text="", image=self.info_marker_icon, width=30,height=20, bg_color="#1F6AA5")
@@ -453,7 +479,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # start button
         self.tti_start_button = customtkinter.CTkButton(self.frame3, command=self.tti_start_button_event, text="Run Text Steganographer")
-        self.tti_start_button.grid(row=11, column=2, padx=20, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
+        self.tti_start_button.grid(row=11, column=2, padx=10, pady=10, ipady=5, columnspan=3, rowspan=2, sticky="we")
 
         # ------------------------------------ IM Extension Transform --------------------------------------------------
 
@@ -464,27 +490,27 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # logo
         self.iet_logo_label = customtkinter.CTkLabel(self.frame4, text="Image Extension Transform", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.iet_logo_label.grid(row=1, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+        self.iet_logo_label.grid(row=1, column=0, padx=10, pady=(20, 10), columnspan=3, sticky="w")
 
         # entries
-        self.iet_ent1 = customtkinter.CTkEntry(self.frame4, placeholder_text="Input Image file path here", width=100)
-        self.iet_ent1.grid(row=2, column=0, padx=20, pady=self.spacing, ipady=10  ,columnspan=3, sticky="ew")
+        self.iet_ent1 = customtkinter.CTkEntry(self.frame4, placeholder_text="Input Image file path here", width=100, textvariable=self.iet_ent1_var)
+        self.iet_ent1.grid(row=2, column=0, padx=10, pady=self.spacing, ipady=10  ,columnspan=3, sticky="ew")
 
         # buttons
         self.iet_sidebar_button_1 = customtkinter.CTkButton(self.frame4, command=self.iet_open_image, image=self.folder_button_icon, text="Open image", font=customtkinter.CTkFont(size=20))
-        self.iet_sidebar_button_1.grid(row=3, column=0, padx=20, pady=30, ipady=15 ,columnspan=3, sticky="ew")
+        self.iet_sidebar_button_1.grid(row=3, column=0, padx=10, pady=30, ipady=15 ,columnspan=3, sticky="ew")
 
         # drop down menus
         self.iet_output_type_dropdown = customtkinter.CTkOptionMenu(self.frame4, values=self.output_type_list, variable=self.iet_output_type_var, height=50, width=400, font=customtkinter.CTkFont(size=17))
-        self.iet_output_type_dropdown.grid(row=4, column=0, padx=20, pady=10)
+        self.iet_output_type_dropdown.grid(row=4, column=0, padx=10, pady=10)
 
         # console
-        self.iet_console = customtkinter.CTkTextbox(self.frame4, width=100, height=10, state="disabled")
-        self.iet_console.grid(row=5, column=0, padx=20, pady=10, ipady=10, columnspan=3, sticky="ew")
+        self.iet_console = customtkinter.CTkTextbox(self.frame4, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=15, family="Consolas"))
+        self.iet_console.grid(row=5, column=0, padx=10, pady=10, ipady=10, columnspan=3, sticky="ew")
 
         # start button
         self.iet_start_button = customtkinter.CTkButton(self.frame4, command=self.iet_start_button_event, text="Transform", font=customtkinter.CTkFont(size=20))
-        self.iet_start_button.grid(row=6, column=0, padx=20, pady=50, ipady=10, columnspan=3, rowspan=2, sticky="we")
+        self.iet_start_button.grid(row=6, column=0, padx=10, pady=50, ipady=10, columnspan=3, rowspan=2, sticky="we")
 
         # --------------------------------------- Metadata Info --------------------------------------------------------
 
@@ -495,19 +521,19 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # logo
         self.mi_logo_label = customtkinter.CTkLabel(self.frame5, text="Get Metadata", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.mi_logo_label.grid(row=1, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+        self.mi_logo_label.grid(row=1, column=0, padx=10, pady=(20, 10), columnspan=3, sticky="w")
 
         # entries
-        self.mi_ent1 = customtkinter.CTkEntry(self.frame5, placeholder_text="File path", width=100)
-        self.mi_ent1.grid(row=2, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.mi_ent1 = customtkinter.CTkEntry(self.frame5, placeholder_text="File path", width=100, textvariable=self.mi_ent1_var)
+        self.mi_ent1.grid(row=2, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.mi_sidebar_button_1 = customtkinter.CTkButton(self.frame5, command=self.mi_open_image, image=self.folder_button_icon, text="Open file")
-        self.mi_sidebar_button_1.grid(row=2, column=0, padx=20, pady=5)
+        self.mi_sidebar_button_1.grid(row=2, column=0, padx=10, pady=5)
 
         # console
-        self.mi_console = customtkinter.CTkTextbox(self.frame5, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=15))
-        self.mi_console.grid(row=4, column=0, padx=20, pady=10, ipady=10, columnspan=3, sticky="ewns")
+        self.mi_console = customtkinter.CTkTextbox(self.frame5, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=15, family="Consolas"))
+        self.mi_console.grid(row=4, column=0, padx=10, pady=10, ipady=10, columnspan=3, sticky="ewns")
 
         # --------------------------------------- Youtube Downloader ---------------------------------------------------
 
@@ -518,41 +544,42 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # logo
         self.yt_logo_label = customtkinter.CTkLabel(self.frame6, text="Youtube Downloader",font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.yt_logo_label.grid(row=1, column=0, padx=20, pady=(20, 10), columnspan=3, sticky="w")
+        self.yt_logo_label.grid(row=1, column=0, padx=10, pady=(20, 10), columnspan=3, sticky="w")
 
         # entries
-        self.yt_ent1 = customtkinter.CTkEntry(self.frame6, placeholder_text="Youtube link", width=100, font=customtkinter.CTkFont(size=15))
-        self.yt_ent1.grid(row=2, column=0, padx=20, pady=self.spacing, ipady=5, columnspan=3 ,sticky="ew")
-        self.yt_ent2 = customtkinter.CTkEntry(self.frame6, placeholder_text="Folder path", width=100)
-        self.yt_ent2.grid(row=3, column=1, padx=20, pady=self.spacing, columnspan=3, sticky="ew")
+        self.yt_ent1 = customtkinter.CTkEntry(self.frame6, placeholder_text="Youtube link", width=100, font=customtkinter.CTkFont(size=15), textvariable=self.yt_ent1_var)
+        self.yt_ent1.grid(row=2, column=0, padx=10, pady=self.spacing, ipady=5, columnspan=3 ,sticky="ew")
+        self.yt_ent2 = customtkinter.CTkEntry(self.frame6, placeholder_text="Folder path", width=100, textvariable=self.yt_ent2_var)
+        self.yt_ent2.grid(row=3, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
-        self.yt_sidebar_button_2.grid(row=3, column=0, padx=20, pady=5)
+        self.yt_sidebar_button_2.grid(row=3, column=0, padx=10, pady=5)
         self.yt_sidebar_button_3 = customtkinter.CTkButton(self.frame6, command=self.yt_get_res_event, text="Get Resolutions")
-        self.yt_sidebar_button_3.grid(row=4, column=0, padx=20, pady=5)
+        self.yt_sidebar_button_3.grid(row=4, column=0, padx=10, pady=5)
 
         # console
-        self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=11))
-        self.yt_console.grid(row=4, column=1, columnspan=3, rowspan=8, sticky="ewsn", padx=20)
+        self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10, family="Consolas"))
+        #self.yt_console = customtkinter.CTkLabel(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10), anchor="nw", justify="left", text="")
+        self.yt_console.grid(row=4, column=1, columnspan=3, rowspan=8, sticky="ewsn", padx=10)
 
         # dropdowns
         self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.frame6, values=self.resolutions_list, variable=self.yt_resolution_var)
-        self.yt_dropdown1.grid(row=5, column=0, padx=20, pady=5)
+        self.yt_dropdown1.grid(row=5, column=0, padx=10, pady=5)
         self.yt_dropdown2 = customtkinter.CTkOptionMenu(self.frame6, values=["Video and Audio", "Audio", "Video"], variable=self.yt_av_type_var)
-        self.yt_dropdown2.grid(row=6, column=0, padx=20, pady=5)
+        self.yt_dropdown2.grid(row=6, column=0, padx=10, pady=5)
 
         # options entries
         self.yt_ent3 = customtkinter.CTkEntry(self.frame6, placeholder_text="format code", width=10)
-        self.yt_ent3.grid(row=7, column=0, padx=20, pady=self.spacing, sticky="ew")
+        self.yt_ent3.grid(row=7, column=0, padx=10, pady=self.spacing, sticky="ew")
 
         # options checkbox
         self.yt_checkbox1 = customtkinter.CTkCheckBox(self.frame6, text="Download playlist", variable=self.yt_playlist_var)
-        self.yt_checkbox1.grid(row=8, column=0, padx=20, pady=self.spacing, sticky="w")
+        self.yt_checkbox1.grid(row=8, column=0, padx=10, pady=self.spacing, sticky="w")
 
         # start button
-        self.yt_start_button = customtkinter.CTkButton(self.frame6, command=self.yt_start_button_event, text="Download", font=customtkinter.CTkFont(size=20))
-        self.yt_start_button.grid(row=15, column=1, padx=20, pady=10, ipady=10, columnspan=3, sticky="we")
+        self.yt_start_button = customtkinter.CTkButton(self.frame6, command=self.yt_start_button_event, text="Download", font=customtkinter.CTkFont(size=15))
+        self.yt_start_button.grid(row=15, column=1, padx=10, pady=10, ipady=10, columnspan=3, sticky="we")
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -612,14 +639,14 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     def sc_open_folder(self):
         self.sc_ent2.delete(0, "end")
-        self.sc_ent2.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
+        self.sc_ent2_var.set(filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
     def sc_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         with Image.open(filename) as image:
             text = f"Image size: {image.size}\nImage mode: {image.mode}\nImage format: {image.format}\nPossible sizes: {_calc_size(image.size[0], image.size[1])}"
         CreateToolTip(self.sc_ent1, text, height=100, width=200)
         self.sc_ent1.delete(0, "end")
-        self.sc_ent1.insert(0, filename)
+        self.sc_ent1_var.set(filename)
 
         CreateToolTip(self.sc_ent1, )
 
@@ -628,7 +655,7 @@ class App(customtkinter.CTk, tkinter.Tk):
                                    placeholder_text="To" if self.sc_loop_checkbox1.get() else "",
                                    border_width=2 if self.sc_loop_checkbox1.get() else 0)
         self.sc_from_seed_ent.configure(placeholder_text="From" if self.sc_loop_checkbox1.get() else "Seed")
-        self.sc_output_folder_name_ent.configure(
+        self.sc_output_folder_ent.configure(
             state="normal" if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else "disabled",
             border_width=2 if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else 0,
             placeholder_text="Output Folder Name" if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else "")
@@ -637,7 +664,7 @@ class App(customtkinter.CTk, tkinter.Tk):
                                    placeholder_text="To" if self.sc_loop_checkbox2.get() else "",
                                    border_width=2 if self.sc_loop_checkbox1.get() else 0)
         self.sc_from_size_ent.configure(placeholder_text="From" if self.sc_loop_checkbox1.get() else "Size")
-        self.sc_output_folder_name_ent.configure(
+        self.sc_output_folder_ent.configure(
             state="normal" if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else "disabled",
             border_width=2 if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else 0,
             placeholder_text="Output Folder Name" if self.sc_loop_checkbox2.get() or self.sc_loop_checkbox1.get() else "")
@@ -645,16 +672,16 @@ class App(customtkinter.CTk, tkinter.Tk):
     def sc_start_button_event(self):
         seed = self.sc_from_seed_ent.get()
         size = self.sc_from_size_ent.get()
-        image_path = self.sc_ent1.get()
-        folder_path = self.sc_ent2.get()
+        image_path = self.sc_ent1_var.get()
+        folder_path = self.sc_ent2_var.get()
         action_type = self.sc_action_type_var.get()
         output_type = self.sc_output_type_var.get()
         seed_loop = self.sc_loop_checkbox1.get()
         size_loop = self.sc_loop_checkbox2.get()
         seed_to = self.sc_to_seed_ent.get()
         size_to = self.sc_to_size_ent.get()
-        file_name = self.sc_output_name_ent.get()
-        folder_name = self.sc_output_folder_name_ent.get()
+        file_name = self.sc_output_name_var.get()
+        folder_name = self.sc_output_folder_var.get()
 
         if not image_path or not folder_path:
             self.print_to_sc_console("Please select an image and a folder.", error=True)
@@ -775,47 +802,47 @@ class App(customtkinter.CTk, tkinter.Tk):
     def st_open_image1(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent1.delete(0, "end")
-        self.st_ent1.insert(0, filename)
+        self.st_ent1_var.set(filename)
         CreateToolTip(self.st_ent1, filename=filename)
     def st_open_image2(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent2.delete(0, "end")
-        self.st_ent2.insert(0, filename)
+        self.st_ent2_var.set(filename)
         CreateToolTip(self.st_ent2, filename=filename)
     def st_open_image3(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent3.delete(0, "end")
-        self.st_ent3.insert(0, filename)
+        self.st_ent3_var.set(filename)
         CreateToolTip(self.st_ent3, filename=filename)
     def st_open_image4(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent4.delete(0, "end")
-        self.st_ent4.insert(0, filename)
+        self.st_ent4_var.set(filename)
         CreateToolTip(self.st_ent4, filename=filename)
     def st_open_image5(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent5.delete(0, "end")
-        self.st_ent5.insert(0, filename)
+        self.st_ent5_var.set(filename)
         CreateToolTip(self.st_ent5, filename=filename)
     def st_open_image6(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent6.delete(0, "end")
-        self.st_ent6.insert(0, filename)
+        self.st_ent6_var.set(filename)
         CreateToolTip(self.st_ent6, filename=filename)
     def st_open_image7(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent7.delete(0, "end")
-        self.st_ent7.insert(0, filename)
+        self.st_ent7_var.set(filename)
         CreateToolTip(self.st_ent7, filename=filename)
     def st_open_image8(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.st_ent8.delete(0, "end")
-        self.st_ent8.insert(0, filename)
+        self.st_ent8_var.set(filename)
         CreateToolTip(self.st_ent8, filename=filename)
 
     def st_open_folder(self):
         self.st_ent_folder.delete(0, "end")
-        self.st_ent_folder.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
+        self.st_ent_folder_var.set(filedialog.askdirectory(initialdir=self.initial_browser_dir, title=self.title_open))
 
     def st_type_dropdown_event(self, new_action_type: str):
         num = 1
@@ -853,22 +880,22 @@ class App(customtkinter.CTk, tkinter.Tk):
         html_label.fit_height()
 
     def st_start_button_event(self):
-        ent1 = self.st_ent1.get()
-        ent2 = self.st_ent2.get()
-        ent3 = self.st_ent3.get()
-        ent4 = self.st_ent4.get()
-        ent5 = self.st_ent5.get()
-        ent6 = self.st_ent6.get()
-        ent7 = self.st_ent7.get()
-        ent8 = self.st_ent8.get()
-        ent_folder = self.st_ent_folder.get()
+        ent1 = self.st_ent1_var.get()
+        ent2 = self.st_ent2_var.get()
+        ent3 = self.st_ent3_var.get()
+        ent4 = self.st_ent4_var.get()
+        ent5 = self.st_ent5_var.get()
+        ent6 = self.st_ent6_var.get()
+        ent7 = self.st_ent7_var.get()
+        ent8 = self.st_ent8_var.get()
+        ent_folder = self.st_ent_folder_var.get()
 
         output_type_dropdown = self.st_output_type_dropdown.get() # "PNG" or "JPG"
         type_dropdown = self.st_type_dropdown.get() # steganography type
         action_type_dropdown = self.st_action_type_dropdown.get() # "Merge" or "Unmerge"
         folder_checkbox = self.st_folder_checkbox.get() # 0 or 1
-        output_folder_ent = self.st_output_folder_ent.get() # output folder
-        output_name_ent = self.st_output_name_ent.get() # output name
+        output_folder_ent = self.st_output_folder_var.get() # output folder
+        output_name_ent = self.st_output_name_var.get() # output name
 
         image = ""
         images = []
@@ -1000,16 +1027,16 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     def stt_open_folder(self):
         self.stt_ent2.delete(0, "end")
-        self.stt_ent2.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
+        self.stt_ent2_var.set(filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
     def stt_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.stt_ent1.delete(0, "end")
-        self.stt_ent1.insert(0, filename)
+        self.stt_ent1_var.set(filename)
         CreateToolTip(self.stt_ent1, filename=filename)
     def stt_open_text(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title="Select text file", filetypes=[("text files", ["*.txt"])])
         self.stt_ent4.delete(0, "end")
-        self.stt_ent4.insert(0, filename)
+        self.stt_ent4_var.set(filename)
 
     def stt_action_type_dropdown_event(self, new_action_type: str):
         if new_action_type == "Encode":
@@ -1076,13 +1103,13 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     def stt_start_button_event(self):
         start_time = time()
-        ent1 = self.stt_ent1.get()
-        ent2 = self.stt_ent2.get()
+        ent1 = self.stt_ent1_var.get()
+        ent2 = self.stt_ent2_var.get()
         ent3 = self.stt_ent3.get(index1="0.0", index2="end")
-        ent4 = self.stt_ent4.get()
+        ent4 = self.stt_ent4_var.get()
         output_text_to_file = self.stt_text_output_checkbox.get()
         input_text_from_file = self.stt_text_input_checkbox.get()
-        output_name = self.stt_output_name_ent.get()
+        output_name = self.stt_output_name_var.get()
         st_type = self.stt_type_dropdown.get() # Steganography Type: Layered, Sequential, etc.
         encoding_type = self.stt_encoding_type_dropdown.get() # Encoding Type: UNICODE, ASCII
         action_type_dropdown = self.stt_action_type_dropdown.get() # Action Type: Encode, Decode
@@ -1189,15 +1216,15 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     def tti_open_folder(self):
         self.tti_ent3.delete(0, "end")
-        self.tti_ent3.insert(0, filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
+        self.tti_ent3_var.set(filedialog.askdirectory(initialdir=self.initial_browser_dir, title="Select output folder"))
     def tti_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.tti_ent2.delete(0, "end")
-        self.tti_ent2.insert(0, filename)
+        self.tti_ent2_var.set(filename)
     def tti_open_text(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title="Select text file", filetypes=[("text files", ["*.txt"])])
         self.tti_ent1.delete(0, "end")
-        self.tti_ent1.insert(0, filename)
+        self.tti_ent1_var.set(filename)
 
     def tti_action_type_dropdown_event(self, new_action_type: str):
         if new_action_type == "Encode":
@@ -1260,15 +1287,15 @@ class App(customtkinter.CTk, tkinter.Tk):
 
     def tti_start_button_event(self):
         start_time = time()
-        ent1 = self.tti_ent1.get()
-        ent2 = self.tti_ent2.get()
-        ent3 = self.tti_ent3.get()
+        ent1 = self.tti_ent1_var.get()
+        ent2 = self.tti_ent2_var.get()
+        ent3 = self.tti_ent3_var.get()
         ent4 = self.tti_ent4.get(index1="0.0", index2="end")
 
         output_text_to_file = self.tti_text_output_checkbox.get()
         input_text_from_file = self.tti_text_input_checkbox.get()
 
-        output_name = self.tti_output_name_ent.get()
+        output_name = self.tti_output_name_var.get()
         action_type_dropdown = self.tti_action_type_dropdown.get()  # Action Type: Encode, Decode
         output_type_dropdown = self.tti_output_type_dropdown.get()  # Output Type: PNG, GIF, etc. (Only for encoding - only lossless formats)
         color = self.tti_color_dropdown.get()  # Color: RGB, etc.
@@ -1348,10 +1375,10 @@ class App(customtkinter.CTk, tkinter.Tk):
     def iet_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open, filetypes=self.filetypes)
         self.iet_ent1.delete(0, "end")
-        self.iet_ent1.insert(0, filename)
+        self.iet_ent1_var.set(filename)
 
     def iet_start_button_event(self):
-        ent1 = self.iet_ent1.get()
+        ent1 = self.iet_ent1_var.get()
         if not ent1: return self.print_to_iet_console("Please select an image.", error=True)
         ext = self.iet_output_type_var.get()
         try: image = Image.open(ent1)
@@ -1367,21 +1394,25 @@ class App(customtkinter.CTk, tkinter.Tk):
     def mi_open_image(self):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open)
         self.mi_ent1.delete(0, "end")
-        self.mi_ent1.insert(0, filename)
+        self.mi_ent1_var.set(filename)
         self.print_to_mi_console("Getting metadata info...")
         self.update_idletasks()
         self.update()
         self.mi_get_metadata_event()
 
     def mi_get_metadata_event(self):
-        img_path = self.mi_ent1.get()
-        if not img_path: return self.print_to_mi_console("Please select a file.", error=True)
+        path = self.mi_ent1_var.get()
+        if not path: return self.print_to_mi_console("Please select a file.", error=True)
+
+        for ch in path:
+            print(f"{ch} - {ord(ch)}")
 
         info_dict = {}
         text = ''
+        command = f'{self.exif_tool_path} "{path}"'
 
         try:
-            process = Popen([self.exif_tool_path, img_path], stdout=PIPE, stderr=STDOUT, universal_newlines=True)
+            process = Popen(command, stdout=PIPE, stderr=STDOUT, universal_newlines=True)
             for tag in process.stdout:
                 line = tag.strip().split(':')
                 info_dict[line[0].strip()] = line[-1].strip()
@@ -1398,26 +1429,34 @@ class App(customtkinter.CTk, tkinter.Tk):
     def yt_open_folder(self):
         folder = filedialog.askdirectory(initialdir=self.initial_browser_dir, title=self.title_open)
         self.yt_ent2.delete(0, "end")
-        self.yt_ent2.insert(0, folder)
+        self.yt_ent2_var.set(folder)
 
     def yt_get_res_event(self):
-        ent1 = self.yt_ent1.get()
+        ent1 = self.yt_ent1_var.get()
+        playlist = self.yt_playlist_var.get()
         if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
         self.print_to_yt_console("Getting video info...")
         self.update_idletasks()
         self.update()
         # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
-        output = run(f"youtube-dl -F {ent1}", capture_output=True).stdout.decode(encoding="utf-8")
+        output = run(f"yt-dlp -F {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}", capture_output=True).stdout.decode(encoding="utf-8")
+        print(output)
+        output1 = output.replace(" ", "_")
+        print(output1)
+        with open("yt-dlp.txt", "w") as f: f.write(output)
         self.print_to_yt_console(output)
 
     def yt_start_button_event(self):
-        ent1 = self.yt_ent1.get()
-        ent2 = self.yt_ent2.get()
-        ent3 = self.yt_ent3.get()
+        ent1 = self.yt_ent1_var.get()
+        ent2 = self.yt_ent2_var.get()
+        ent3 = self.tti_ent3_var.get()
         resolution = self.yt_resolution_var.get()
         av_type = self.yt_av_type_var.get()
         playlist = self.yt_playlist_var.get()
-        name = "video" if av_type == "Video" or av_type == "Video and Audio" else "audio"
+        if av_type == "Audio": av = 'audio'
+        elif av_type == "Video": av = 'video_only'
+        else: av = 'video'
+        res = self.resolutions_list_values[self.resolutions_list.index(resolution)][1] if resolution != "Best" else ''
 
         # command: f"youtube-dl {f'-f {code}' if ent3 else ''} {'--yes-playlist' if playlist else ''} -o {folder} {url}"
         # url: https://www.youtube.com/watch?v=rcVb6l4TpHw
@@ -1429,20 +1468,41 @@ class App(customtkinter.CTk, tkinter.Tk):
         except Exception as e: return self.print_to_yt_console(f"Please enter a valid format code: {e}", error=True)
 
         if ent2[-1] != "/" or ent2[-1] != "\\":
-            if "\\" in ent2:
-                ent2 += "\\"
-            else:
-                ent2 += "/"
+            if "\\" in ent2: ent2 += "\\"
+            else: ent2 += "/"
 
         self.yt_start_button.configure(state="disabled", text="Downloading...")
+        self.print_to_yt_console('', clear=True)
         self.update_idletasks()
         self.update()
 
-        command = f"youtube-dl {f'-f {ent3}' if ent3 else ''} {'--yes-playlist' if playlist else ''} -o {ent2+name} {ent1}"
+        # command = f"youtube-dl {f'-f {ent3}' if ent3 else ''} {'--yes-playlist' if playlist else '--no-playlist '} -o {ent2+name} {ent1}"
+        # command = f"youtube-dl --ignore-config -f bestvideo+bestaudio {'--yes-playlist ' if playlist else '--no-playlist '}-o {quote}{ent2+name}{quote} {ent1}"
 
-        for path in execute(command):
-            print(path, end="")
-            self.print_to_yt_console(path, error=False, clear=False)
+        if playlist:
+            name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
+        else:
+            name = f"{av}-%(id)s (%(height)sp).%(ext)s"
+
+        if av_type == "Audio":
+            command = f"yt-dlp -f ba -x --audio-format mp3 {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+        elif av_type == "Video":
+            command = f"yt-dlp -f bv[ext=mp4]/bv {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+        else:
+            command = f"yt-dlp -f bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+
+        # url: https://www.youtube.com/watch?v=rcVb6l4TpHw
+        # --ignore-config -f 'bestvideo[height<=480]+bestaudio/best[height<=480]' -o "C:\Users\user\Downloads\video%(title)s.%(ext)s" https://www.youtube.com/watch?v=rcVb6l4TpHw
+
+        try:
+            for path in execute(command):
+                print(path, end="")
+                self.print_to_yt_console(path, error=False, clear=False)
+        except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True)
+
+        self.yt_start_button.configure(state="normal", text="Download")
+        self.update_idletasks()
+        self.update()
 
     # Console Functions ------------------------------------------------------------------------------------------------
 
@@ -1508,15 +1568,25 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_idletasks()
         self.update()
     def print_to_yt_console(self, text, error=False, clear=True):
-        self.yt_console.configure(state="normal")
+        #self.yt_console.configure(state="normal")
         if clear: self.yt_console.delete("1.0", "end")
         self.yt_console.insert(customtkinter.END, text)
-        self.yt_console.configure(state="disabled")
+        #self.yt_console.configure(state="disabled")
         self.yt_console.see("end")
-        if error: self.yt_console.configure(border_width=2, border_color="#1F6AA5")
+        if error:
+            self.yt_console.configure(border_width=2, border_color="#1F6AA5")
+            self.yt_start_button.configure(state="normal", text="Download")
+            self.update_idletasks()
+            self.update()
         else: self.yt_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
+    # def print_to_yt_console(self, text, error=False, clear=True):
+    #     self.yt_console.configure(state="normal")
+    #     if clear: self.yt_console.configure(text=text)
+    #     else: self.yt_console.configure(text=self.yt_console.cget("text") + text)
+    #     self.update_idletasks()
+    #     self.update()
 
     def print_to_stt_textbox(self, text, output_to):
         if output_to == "TextBox":
