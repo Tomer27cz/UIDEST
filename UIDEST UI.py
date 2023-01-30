@@ -15,6 +15,8 @@ from Features.Image.Text.TextSteganography import TextSteganographyLayeredDynami
 from Features.Image.Text.TextToImage import TextToImageDynamic
 from Features.tkinter.ToolTip import CreateToolTip
 
+from Assets.lang_list import lang_dict, lang_dict_inv
+
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
@@ -36,13 +38,17 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.initial_browser_dir = 'Desktop'
         self.exif_tool_path = 'Features/Metadata/exiftool.exe'
         self.title_open = "Select image file"
-        self.filetypes = (("image files", "*.png *.jpg *.jpeg *.gif *.webp *.ico *.tiff *.bmp *.im *.msp *.pcx *.ppm *.sgi *.xbm "
-                                     "*.dds *.dib *.eps *.spi"), ("all files", "*.*"))
-        self.output_type_list = ["BMP", "DDS", "DIB", "EPS", "GIF", "ICO", "IM", "JPEG", "JPG", "PCX", "PNG", "PPM", "SGI",
-             "SPIDER", "TGA", "TIFF", "WebP"]
+
+        # lists
+        self.filetypes = (("image files", "*.png *.jpg *.jpeg *.gif *.webp *.ico *.tiff *.bmp *.im *.msp *.pcx *.ppm *.sgi *.xbm *.dds *.dib *.eps *.spi"), ("all files", "*.*"))
+        self.output_type_list = ["BMP", "DDS", "DIB", "EPS", "GIF", "ICO", "IM", "JPEG", "JPG", "PCX", "PNG", "PPM", "SGI", "SPIDER", "TGA", "TIFF", "WebP"]
         self.output_type_list_lossless = ["BMP", "GIF", "PNG", "TIFF", "WebP", "ICO", "PCX", "SGI", "TGA"]
         self.resolutions_list = ["144p", "240p (SD)", "360p (SD)", "480p (SD/DVD)", "720p (HD)", "1080p (Full HD)", "1440p (QHD/2k)", "2160p (UHD/4k)", "4320p (8k)", "Best"]
         self.resolutions_list_values = [(256, 144), (426, 240), (640, 360), (854, 480), (1280, 720), (1920, 1080), (2560, 1440), (3840, 2160), (7680, 4320)]
+        self.sub_ext_list = ['vtt', 'ttml', 'srv3', 'srv2', 'srv1', 'json3']
+        self.sub_lang_list = list(lang_dict.values())
+
+        # icons
         self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/folder-open-light.png"), dark_image=Image.open("Assets/folder-open-dark.png"))
         self.info_marker_icon = customtkinter.CTkImage(light_image=Image.open("Assets/info-mark-light.png"), dark_image=Image.open("Assets/info-mark-dark.png"))
 
@@ -107,6 +113,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_playlist_var = tkinter.IntVar(value=0)
         self.yt_ent1_var = tkinter.StringVar(value="")
         self.yt_ent2_var = tkinter.StringVar(value="")
+        self.yt_ent3_var = tkinter.StringVar(value="")
+        self.yt_ent4_var = tkinter.StringVar(value="")
+        self.yt_sub_lang_var = tkinter.StringVar(value="English")
+        self.yt_sub_ext_var = tkinter.StringVar(value="vtt")
+        self.yt_sub_auto_var = tkinter.IntVar(value=1)
 
 
         # create sidebar
@@ -555,31 +566,55 @@ class App(customtkinter.CTk, tkinter.Tk):
         # buttons
         self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
         self.yt_sidebar_button_2.grid(row=3, column=0, padx=10, pady=5)
-        self.yt_sidebar_button_3 = customtkinter.CTkButton(self.frame6, command=self.yt_get_res_event, text="Get Resolutions")
-        self.yt_sidebar_button_3.grid(row=4, column=0, padx=10, pady=5)
 
         # console
         self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10, family="Consolas"))
         #self.yt_console = customtkinter.CTkLabel(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10), anchor="nw", justify="left", text="")
-        self.yt_console.grid(row=4, column=1, columnspan=3, rowspan=8, sticky="ewsn", padx=10)
+        self.yt_console.grid(row=4, column=1, columnspan=3, rowspan=6, sticky="ewsn", padx=10)
 
-        # dropdowns
-        self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.frame6, values=self.resolutions_list, variable=self.yt_resolution_var)
-        self.yt_dropdown1.grid(row=5, column=0, padx=10, pady=5)
-        self.yt_dropdown2 = customtkinter.CTkOptionMenu(self.frame6, values=["Video and Audio", "Audio", "Video"], variable=self.yt_av_type_var)
-        self.yt_dropdown2.grid(row=6, column=0, padx=10, pady=5)
+        # tab view
+        self.yt_tab_view = customtkinter.CTkTabview(self.frame6, width=100, height=10)
+        self.yt_tab_view.grid(row=4, column=0, padx=10, pady=10, ipady=10, columnspan=1, rowspan=15 , sticky="ewns")
+        self.yt_av = self.yt_tab_view.add("AudioVideo")
+        self.yt_sub = self.yt_tab_view.add("Subtitles")
 
-        # options entries
-        self.yt_ent3 = customtkinter.CTkEntry(self.frame6, placeholder_text="format code", width=10)
-        self.yt_ent3.grid(row=7, column=0, padx=10, pady=self.spacing, sticky="ew")
 
-        # options checkbox
-        self.yt_checkbox1 = customtkinter.CTkCheckBox(self.frame6, text="Download playlist", variable=self.yt_playlist_var)
-        self.yt_checkbox1.grid(row=8, column=0, padx=10, pady=self.spacing, sticky="w")
+        # audio video tab
+        self.yt_sidebar_button_3 = customtkinter.CTkButton(self.yt_av, command=self.yt_get_res_event, text="Get Resolutions")
+        self.yt_sidebar_button_3.grid(row=0, column=0, padx=10, pady=5)
+
+        self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.yt_av, values=self.resolutions_list, variable=self.yt_resolution_var)
+        self.yt_dropdown1.grid(row=1, column=0, padx=10, pady=5)
+        self.yt_dropdown2 = customtkinter.CTkOptionMenu(self.yt_av, values=["Audio and Video", "Audio", "Video"], variable=self.yt_av_type_var)
+        self.yt_dropdown2.grid(row=2, column=0, padx=10, pady=5)
+
+        self.yt_ent3 = customtkinter.CTkEntry(self.yt_av, placeholder_text="Format code", width=10, textvariable=self.yt_ent3_var)
+        self.yt_ent3.grid(row=3, column=0, padx=10, pady=self.spacing, sticky="ew")
+
+        self.yt_checkbox1 = customtkinter.CTkCheckBox(self.yt_av, text="Download playlist", variable=self.yt_playlist_var)
+        self.yt_checkbox1.grid(row=4, column=0, padx=10, pady=self.spacing, sticky="w")
+
+
+        # subtitles tab
+        self.yt_sidebar_button_4 = customtkinter.CTkButton(self.yt_sub, command=self.yt_get_sub_event, text="Get Subtitles")
+        self.yt_sidebar_button_4.grid(row=0, column=0, padx=10, pady=5)
+
+        self.yt_dropdown3 = customtkinter.CTkOptionMenu(self.yt_sub, values=self.sub_lang_list, variable=self.yt_sub_lang_var)
+        self.yt_dropdown3.grid(row=1, column=0, padx=10, pady=5)
+        self.yt_dropdown4 = customtkinter.CTkOptionMenu(self.yt_sub, values=self.sub_ext_list, variable=self.yt_sub_ext_var)
+        self.yt_dropdown4.grid(row=2, column=0, padx=10, pady=5)
+
+        self.yt_ent4 = customtkinter.CTkEntry(self.yt_sub, placeholder_text="Language code", width=10, textvariable=self.yt_ent4_var)
+        self.yt_ent4.grid(row=3, column=0, padx=10, pady=self.spacing, sticky="ew")
+
+        self.yt_checkbox2 = customtkinter.CTkCheckBox(self.yt_sub, text="Automatic subtitles", variable=self.yt_sub_auto_var)
+        self.yt_checkbox2.grid(row=4, column=0, padx=10, pady=self.spacing, sticky="w")
 
         # start button
         self.yt_start_button = customtkinter.CTkButton(self.frame6, command=self.yt_start_button_event, text="Download", font=customtkinter.CTkFont(size=15))
-        self.yt_start_button.grid(row=15, column=1, padx=10, pady=10, ipady=10, columnspan=3, sticky="we")
+        self.yt_start_button.grid(row=10, column=1, padx=10, pady=10, ipady=10, columnspan=3, sticky="we")
+        # self.yt_sub_start_button = customtkinter.CTkButton(self.frame6, command=self.yt_sub_start_button_event, text="Download Subtitles", font=customtkinter.CTkFont(size=15))
+        # self.yt_sub_start_button.grid(row=16, column=0, padx=10, pady=10, ipady=10, sticky="we")
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -1440,16 +1475,29 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update()
         # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
         output = run(f"yt-dlp -F {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}", capture_output=True).stdout.decode(encoding="utf-8")
-        print(output)
-        output1 = output.replace(" ", "_")
-        print(output1)
-        with open("yt-dlp.txt", "w") as f: f.write(output)
+        self.print_to_yt_console(output)
+
+    def yt_get_sub_event(self):
+        ent1 = self.yt_ent1_var.get()
+        playlist = self.yt_playlist_var.get()
+        if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
+        self.print_to_yt_console("Getting video info...")
+        self.update_idletasks()
+        self.update()
+        output = run(f"yt-dlp --list-subs {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}", capture_output=True).stdout.decode(encoding="utf-8")
         self.print_to_yt_console(output)
 
     def yt_start_button_event(self):
+        tab = self.yt_tab_view.get()
+        if tab == "AudioVideo":
+            self.yt_av_event()
+        elif tab == "Subtitles":
+            self.yt_sub_event()
+
+    def yt_av_event(self):
         ent1 = self.yt_ent1_var.get()
         ent2 = self.yt_ent2_var.get()
-        ent3 = self.tti_ent3_var.get()
+        ent3 = self.yt_ent3_var.get()
         resolution = self.yt_resolution_var.get()
         av_type = self.yt_av_type_var.get()
         playlist = self.yt_playlist_var.get()
@@ -1458,14 +1506,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: av = 'video'
         res = self.resolutions_list_values[self.resolutions_list.index(resolution)][1] if resolution != "Best" else ''
 
-        # command: f"youtube-dl {f'-f {code}' if ent3 else ''} {'--yes-playlist' if playlist else ''} -o {folder} {url}"
-        # url: https://www.youtube.com/watch?v=rcVb6l4TpHw
-
         if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
         if not ent2: return self.print_to_yt_console("Please select a folder.", error=True)
-        try:
-            if ent3: ent3 = str(int(ent3))
-        except Exception as e: return self.print_to_yt_console(f"Please enter a valid format code: {e}", error=True)
 
         if ent2[-1] != "/" or ent2[-1] != "\\":
             if "\\" in ent2: ent2 += "\\"
@@ -1476,33 +1518,53 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_idletasks()
         self.update()
 
-        # command = f"youtube-dl {f'-f {ent3}' if ent3 else ''} {'--yes-playlist' if playlist else '--no-playlist '} -o {ent2+name} {ent1}"
-        # command = f"youtube-dl --ignore-config -f bestvideo+bestaudio {'--yes-playlist ' if playlist else '--no-playlist '}-o {quote}{ent2+name}{quote} {ent1}"
+        if playlist: name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
+        else: name = f"{av}-%(id)s (%(height)sp).%(ext)s"
 
-        if playlist:
-            name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
+        if ent3: command = f"yt-dlp -f \"{ent3}\" {'--yes-playlist ' if playlist else '--no-playlist '}--ignore-config -o \"{ent2+name}\" {ent1}"
         else:
-            name = f"{av}-%(id)s (%(height)sp).%(ext)s"
-
-        if av_type == "Audio":
-            command = f"yt-dlp -f ba -x --audio-format mp3 {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
-        elif av_type == "Video":
-            command = f"yt-dlp -f bv[ext=mp4]/bv {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
-        else:
-            command = f"yt-dlp -f bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
-
-        # url: https://www.youtube.com/watch?v=rcVb6l4TpHw
-        # --ignore-config -f 'bestvideo[height<=480]+bestaudio/best[height<=480]' -o "C:\Users\user\Downloads\video%(title)s.%(ext)s" https://www.youtube.com/watch?v=rcVb6l4TpHw
+            if av_type == "Audio": command = f"yt-dlp -f ba -x --audio-format mp3 {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            elif av_type == "Video": command = f"yt-dlp -f bv[ext=mp4]/bv {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            else: command = f"yt-dlp -f bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
 
         try:
             for path in execute(command):
-                print(path, end="")
                 self.print_to_yt_console(path, error=False, clear=False)
         except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True)
 
         self.yt_start_button.configure(state="normal", text="Download")
         self.update_idletasks()
         self.update()
+
+    def yt_sub_event(self):
+        ent1 = self.yt_ent1_var.get()
+        ent2 = self.yt_ent2_var.get()
+        ext = self.yt_sub_ext_var.get()
+        lang = self.yt_sub_lang_var.get()
+        playlist = self.yt_playlist_var.get()
+        auto = self.yt_sub_auto_var.get()
+        if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
+        if not ent2: return self.print_to_yt_console("Please select a folder.", error=True)
+
+        if ent2[-1] != "/" or ent2[-1] != "\\":
+            if "\\" in ent2: ent2 += "\\"
+            else: ent2 += "/"
+
+        self.yt_start_button.configure(state="disabled", text="Downloading...")
+        self.print_to_yt_console('', clear=True)
+        self.update_idletasks()
+        self.update()
+
+        if playlist: name = f"%(playlist)s/sub-%(id)s-%(playlist_index)s.%(ext)s"
+        else: name = f"sub-%(id)s.%(ext)s"
+        command = f"yt-dlp --skip-download {'--write-auto-subs ' if auto else ''}--write-sub --sub-lang \"{lang_dict_inv[lang]}\" {'--yes-playlist ' if playlist else '--no-playlist '}--sub-format \"{ext}\" -o \"{ent2+name}\" {ent1}"
+
+        try:
+            for path in execute(command):
+                self.print_to_yt_console(path, error=False, clear=False)
+        except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True)
+
+        self.yt_start_button.configure(state="normal", text="Download")
 
     # Console Functions ------------------------------------------------------------------------------------------------
 
@@ -1568,10 +1630,20 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_idletasks()
         self.update()
     def print_to_yt_console(self, text, error=False, clear=True):
-        #self.yt_console.configure(state="normal")
         if clear: self.yt_console.delete("1.0", "end")
+        # if text.startswith("[download]"):
+        #     print("starts with [download]")
+        #     con_list = self.yt_console.get("1.0", "end").split('\n')
+        #     con_list_len = len(con_list)
+        #     print(con_list)
+        #     if con_list_len >= 3 and con_list[-3].startswith("[download]"):
+        #         print(f"con list -3: {con_list[-3]}")
+        #         print(f'con list len: {con_list_len}')
+        #         print(f"con list len -2: {con_list_len - 2}")
+        #         self.yt_console.delete(f"{con_list_len - 2}.0", "end")
+        #     self.yt_console.insert(customtkinter.END, "\n"+text)
+        # else:
         self.yt_console.insert(customtkinter.END, text)
-        #self.yt_console.configure(state="disabled")
         self.yt_console.see("end")
         if error:
             self.yt_console.configure(border_width=2, border_color="#1F6AA5")
