@@ -7,7 +7,7 @@ from tkhtmlview import HTMLScrolledText
 import customtkinter
 from os import mkdir
 from time import time
-from subprocess import Popen, PIPE, STDOUT, run, CalledProcessError
+import subprocess
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
@@ -36,7 +36,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         # configure misc
 
         self.initial_browser_dir = 'Desktop'
-        self.exif_tool_path = 'Features/Metadata/exiftool.exe'
+        self.exif_tool_path = 'Features/Executable/exiftool.exe'
+        self.yt_dlp_path = 'Features/Executable/yt-dlp.exe'
         self.title_open = "Select image file"
 
         # lists
@@ -45,6 +46,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.output_type_list_lossless = ["BMP", "GIF", "PNG", "TIFF", "WebP", "ICO", "PCX", "SGI", "TGA"]
         self.resolutions_list = ["144p", "240p (SD)", "360p (SD)", "480p (SD/DVD)", "720p (HD)", "1080p (Full HD)", "1440p (QHD/2k)", "2160p (UHD/4k)", "4320p (8k)", "Best"]
         self.resolutions_list_values = [(256, 144), (426, 240), (640, 360), (854, 480), (1280, 720), (1920, 1080), (2560, 1440), (3840, 2160), (7680, 4320)]
+        self.yt_ext = ['mp4', 'webm', 'mkv', 'mov', 'flv']
+        self.yt_ext_audio = ['mp3', 'ogg', 'opus', 'webm', 'm4a', 'aac', 'flac', 'wav']
+        self.yt_codec = ['h264', 'h265', 'vp9', 'vp9.2', 'av01', 'vp8', 'h263', 'theora']
+        self.yt_codec_audio = ['opus', 'flac', 'alac', 'wav', 'aiff', 'vorbis', 'aac', 'mp4a', 'mp3', 'eac3', 'ac3', 'dts']
         self.sub_ext_list = ['vtt', 'ttml', 'srv3', 'srv2', 'srv1', 'json3']
         self.sub_lang_list = list(lang_dict.values())
 
@@ -109,7 +114,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.mi_ent1_var = tkinter.StringVar(value="")
         #-----------------------------------------------
         self.yt_resolution_var = tkinter.StringVar(value="Best")
-        self.yt_av_type_var = tkinter.StringVar(value="Video and Audio")
         self.yt_playlist_var = tkinter.IntVar(value=0)
         self.yt_ent1_var = tkinter.StringVar(value="")
         self.yt_ent2_var = tkinter.StringVar(value="")
@@ -118,6 +122,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_sub_lang_var = tkinter.StringVar(value="English")
         self.yt_sub_ext_var = tkinter.StringVar(value="vtt")
         self.yt_sub_auto_var = tkinter.IntVar(value=1)
+        self.yt_video_ext_var = tkinter.StringVar(value="mp4")
+        self.yt_audio_ext_var = tkinter.StringVar(value="mp3")
+        self.yt_video_codec_var = tkinter.StringVar(value="h264")
+        self.yt_audio_codec_var = tkinter.StringVar(value="opus")
+        self.yt_checkbox_video_var = tkinter.IntVar(value=1)
+        self.yt_checkbox_audio_var = tkinter.IntVar(value=1)
 
 
         # create sidebar
@@ -583,16 +593,29 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_sidebar_button_3 = customtkinter.CTkButton(self.yt_av, command=self.yt_get_res_event, text="Get Resolutions")
         self.yt_sidebar_button_3.grid(row=0, column=0, padx=10, pady=5)
 
+        self.yt_checkbox_video = customtkinter.CTkCheckBox(self.yt_av, text="Video", variable=self.yt_checkbox_video_var, command=self.yt_toggle_video)
+        self.yt_checkbox_video.grid(row=1, column=0, padx=10, pady=5)
+        self.yt_checkbox_audio = customtkinter.CTkCheckBox(self.yt_av, text="Audio", variable=self.yt_checkbox_audio_var, command=self.yt_toggle_audio)
+        self.yt_checkbox_audio.grid(row=5, column=0, padx=10, pady=5)
+
         self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.yt_av, values=self.resolutions_list, variable=self.yt_resolution_var)
-        self.yt_dropdown1.grid(row=1, column=0, padx=10, pady=5)
-        self.yt_dropdown2 = customtkinter.CTkOptionMenu(self.yt_av, values=["Audio and Video", "Audio", "Video"], variable=self.yt_av_type_var)
-        self.yt_dropdown2.grid(row=2, column=0, padx=10, pady=5)
+        self.yt_dropdown1.grid(row=2, column=0, padx=10, pady=5)
+        # self.yt_dropdown2 = customtkinter.CTkOptionMenu(self.yt_av, values=["Audio and Video", "Audio", "Video"], variable=self.yt_av_type_var)
+        # self.yt_dropdown2.grid(row=2, column=0, padx=10, pady=5)
+        self.yt_dropdown5 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext, variable=self.yt_video_ext_var)
+        self.yt_dropdown5.grid(row=3, column=0, padx=10, pady=5)
+        self.yt_dropdown6 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec, variable=self.yt_video_codec_var)
+        self.yt_dropdown6.grid(row=4, column=0, padx=10, pady=5)
+        self.yt_dropdown7 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext_audio, variable=self.yt_audio_ext_var)
+        self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=5)
+        self.yt_dropdown8 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec_audio, variable=self.yt_audio_codec_var)
+        self.yt_dropdown8.grid(row=7, column=0, padx=10, pady=5)
 
         self.yt_ent3 = customtkinter.CTkEntry(self.yt_av, placeholder_text="Format code", width=10, textvariable=self.yt_ent3_var)
-        self.yt_ent3.grid(row=3, column=0, padx=10, pady=self.spacing, sticky="ew")
+        self.yt_ent3.grid(row=8, column=0, padx=10, pady=self.spacing, sticky="ew")
 
         self.yt_checkbox1 = customtkinter.CTkCheckBox(self.yt_av, text="Download playlist", variable=self.yt_playlist_var)
-        self.yt_checkbox1.grid(row=4, column=0, padx=10, pady=self.spacing, sticky="w")
+        self.yt_checkbox1.grid(row=9, column=0, padx=10, pady=self.spacing, sticky="w")
 
 
         # subtitles tab
@@ -615,6 +638,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_start_button.grid(row=10, column=1, padx=10, pady=10, ipady=10, columnspan=3, sticky="we")
         # self.yt_sub_start_button = customtkinter.CTkButton(self.frame6, command=self.yt_sub_start_button_event, text="Download Subtitles", font=customtkinter.CTkFont(size=15))
         # self.yt_sub_start_button.grid(row=16, column=0, padx=10, pady=10, ipady=10, sticky="we")
+
+
+        # just for testing --- delte after
+        self.yt_ent1_var.set("https://www.youtube.com/watch?v=QH2-TGUlwu4")
+        self.yt_ent2_var.set("C:/Users/Admin/Desktop")
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -1447,7 +1475,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         command = f'{self.exif_tool_path} "{path}"'
 
         try:
-            process = Popen(command, stdout=PIPE, stderr=STDOUT, universal_newlines=True)
+            process = subprocess.Popen(command, stdout=PIPE, stderr=STDOUT, universal_newlines=True)
             for tag in process.stdout:
                 line = tag.strip().split(':')
                 info_dict[line[0].strip()] = line[-1].strip()
@@ -1474,9 +1502,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update_idletasks()
         self.update()
         # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
-        output = run(f"yt-dlp -F {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}", capture_output=True).stdout.decode(encoding="utf-8")
-        self.print_to_yt_console(output)
-
+        command = f"{self.yt_dlp_path} -F {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}"
+        try:
+            for path in execute(command):
+                self.print_to_yt_console(path, error=False, clear=False)
+        except Exception as e: return self.print_to_yt_console(f"Error getting video info: {e}", error=True, clear=False)
     def yt_get_sub_event(self):
         ent1 = self.yt_ent1_var.get()
         playlist = self.yt_playlist_var.get()
@@ -1484,8 +1514,20 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.print_to_yt_console("Getting video info...")
         self.update_idletasks()
         self.update()
-        output = run(f"yt-dlp --list-subs {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}", capture_output=True).stdout.decode(encoding="utf-8")
-        self.print_to_yt_console(output)
+        command = f"{self.yt_dlp_path} --list-subs {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}"
+        try:
+            for path in execute(command):
+                self.print_to_yt_console(path, error=False, clear=False)
+        except Exception as e:return self.print_to_yt_console(f"Error getting video info: {e}", error=True, clear=False)
+
+    def yt_toggle_video(self):
+        self.yt_dropdown1.configure(state="normal" if self.yt_checkbox_video.get() else "disabled")
+        self.yt_dropdown5.configure(state="normal" if self.yt_checkbox_video.get() else "disabled")
+        self.yt_dropdown6.configure(state="normal" if self.yt_checkbox_video.get() else "disabled")
+
+    def yt_toggle_audio(self):
+        self.yt_dropdown7.configure(state="normal" if self.yt_checkbox_audio.get() else "disabled")
+        self.yt_dropdown8.configure(state="normal" if self.yt_checkbox_audio.get() else "disabled")
 
     def yt_start_button_event(self):
         tab = self.yt_tab_view.get()
@@ -1499,11 +1541,18 @@ class App(customtkinter.CTk, tkinter.Tk):
         ent2 = self.yt_ent2_var.get()
         ent3 = self.yt_ent3_var.get()
         resolution = self.yt_resolution_var.get()
-        av_type = self.yt_av_type_var.get()
         playlist = self.yt_playlist_var.get()
-        if av_type == "Audio": av = 'audio'
-        elif av_type == "Video": av = 'video_only'
-        else: av = 'video'
+        ch_video = self.yt_checkbox_video.get()
+        ch_audio = self.yt_checkbox_audio.get()
+        v_ext = self.yt_video_ext_var.get()
+        a_ext = self.yt_audio_ext_var.get()
+        v_codec = self.yt_video_codec_var.get()
+        a_codec = self.yt_audio_codec_var.get()
+
+        if ch_video and ch_audio: av = 'video'
+        elif ch_video and not ch_audio: av = 'video_only'
+        elif not ch_video and ch_audio: av = 'audio'
+        else: return self.print_to_yt_console("Please select at least one option.", error=True)
         res = self.resolutions_list_values[self.resolutions_list.index(resolution)][1] if resolution != "Best" else ''
 
         if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
@@ -1521,16 +1570,24 @@ class App(customtkinter.CTk, tkinter.Tk):
         if playlist: name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
         else: name = f"{av}-%(id)s (%(height)sp).%(ext)s"
 
-        if ent3: command = f"yt-dlp -f \"{ent3}\" {'--yes-playlist ' if playlist else '--no-playlist '}--ignore-config -o \"{ent2+name}\" {ent1}"
+        bv = f"ext={v_ext}" + f'][vcodec={v_codec}'
+        ba = f"ext={a_ext}" + f'][acodec={a_codec}'
+        b = f"ext={v_ext}" + f'][vcodec={v_codec}' + f'][acodec={a_codec}'
+
+        if ent3: command = f"{self.yt_dlp_path} -f \"{ent3}\" {'--yes-playlist ' if playlist else '--no-playlist '}--ignore-config -o \"{ent2+name}\" {ent1}"
         else:
-            if av_type == "Audio": command = f"yt-dlp -f ba -x --audio-format mp3 {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
-            elif av_type == "Video": command = f"yt-dlp -f bv[ext=mp4]/bv {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
-            else: command = f"yt-dlp -f bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            if av == "audio": command = f"{self.yt_dlp_path} -f ba[{ba}] -x --audio-format mp3 {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            elif av == "video_only": command = f"{self.yt_dlp_path} -f bv[{bv}]/bv {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            elif av == 'video': command = f"{self.yt_dlp_path} -f bv*[{bv}]+ba[{ba}]/b{b}]/bv*+ba/b {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            else: return self.print_to_yt_console("Error: Invalid AV option.", error=True)
+
+        # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
 
         try:
             for path in execute(command):
                 self.print_to_yt_console(path, error=False, clear=False)
-        except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True)
+        except subprocess.CalledProcessError as e: return self.print_to_yt_console(f"Error downloading process: {e}", error=True, clear=False)
+        except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True, clear=False)
 
         self.yt_start_button.configure(state="normal", text="Download")
         self.update_idletasks()
@@ -1557,12 +1614,12 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         if playlist: name = f"%(playlist)s/sub-%(id)s-%(playlist_index)s.%(ext)s"
         else: name = f"sub-%(id)s.%(ext)s"
-        command = f"yt-dlp --skip-download {'--write-auto-subs ' if auto else ''}--write-sub --sub-lang \"{lang_dict_inv[lang]}\" {'--yes-playlist ' if playlist else '--no-playlist '}--sub-format \"{ext}\" -o \"{ent2+name}\" {ent1}"
+        command = f"{self.yt_dlp_path} --skip-download {'--write-auto-subs ' if auto else ''}--write-sub --sub-lang \"{lang_dict_inv[lang]}\" {'--yes-playlist ' if playlist else '--no-playlist '}--sub-format \"{ext}\" -o \"{ent2+name}\" {ent1}"
 
         try:
             for path in execute(command):
                 self.print_to_yt_console(path, error=False, clear=False)
-        except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True)
+        except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True, clear=False)
 
         self.yt_start_button.configure(state="normal", text="Download")
 
@@ -1712,13 +1769,23 @@ def _calc_size(width, height):
 
 
 def execute(cmd):
-    popen = Popen(cmd, stdout=PIPE, universal_newlines=True)
-    for stdout_line in iter(popen.stdout.readline, ""):
-        yield stdout_line
-    popen.stdout.close()
-    return_code = popen.wait()
+    try:
+        popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+        for stdout_line in iter(popen.stdout.readline, ""):
+            yield stdout_line
+            print(stdout_line, end="")
+        popen.stdout.close()
+        return_code = popen.wait()
+    except subprocess.CalledProcessError as e:
+        print("called process error")
+        print(e.output)
+    print('zes', popen.wait())
     if return_code:
-        raise CalledProcessError(return_code, cmd)
+        print('----------------------------')
+        print('cmd: ', cmd)
+        print('return_code: ', return_code)
+        print('stdout: ', popen.stdout.readline())
+        raise subprocess.CalledProcessError(return_code, cmd)
 
 
 # Main -----------------------------------------------------------------------------------------------------------------
