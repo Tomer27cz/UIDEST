@@ -44,12 +44,18 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.filetypes = (("image files", "*.png *.jpg *.jpeg *.gif *.webp *.ico *.tiff *.bmp *.im *.msp *.pcx *.ppm *.sgi *.xbm *.dds *.dib *.eps *.spi"), ("all files", "*.*"))
         self.output_type_list = ["BMP", "DDS", "DIB", "EPS", "GIF", "ICO", "IM", "JPEG", "JPG", "PCX", "PNG", "PPM", "SGI", "SPIDER", "TGA", "TIFF", "WebP"]
         self.output_type_list_lossless = ["BMP", "GIF", "PNG", "TIFF", "WebP", "ICO", "PCX", "SGI", "TGA"]
-        self.resolutions_list = ["144p", "240p (SD)", "360p (SD)", "480p (SD/DVD)", "720p (HD)", "1080p (Full HD)", "1440p (QHD/2k)", "2160p (UHD/4k)", "4320p (8k)", "Best"]
+        self.resolutions_list = ["144p", "240p (SD)", "360p (SD)", "480p (SD/DVD)", "720p (HD)", "1080p (Full HD)", "1440p (QHD/2k)", "2160p (UHD/4k)", "4320p (8k)", "best"]
         self.resolutions_list_values = [(256, 144), (426, 240), (640, 360), (854, 480), (1280, 720), (1920, 1080), (2560, 1440), (3840, 2160), (7680, 4320)]
-        self.yt_ext = ['mp4', 'webm', 'mkv', 'mov', 'flv']
-        self.yt_ext_audio = ['mp3', 'ogg', 'opus', 'webm', 'm4a', 'aac', 'flac', 'wav']
-        self.yt_codec = ['h264', 'h265', 'vp9', 'vp9.2', 'av01', 'vp8', 'h263', 'theora']
-        self.yt_codec_audio = ['opus', 'flac', 'alac', 'wav', 'aiff', 'vorbis', 'aac', 'mp4a', 'mp3', 'eac3', 'ac3', 'dts']
+        # self.yt_ext = ['mp4', 'webm', 'mkv', 'mov', 'flv']
+        # self.yt_ext_audio = ['mp3', 'ogg', 'opus', 'webm', 'm4a', 'aac', 'flac', 'wav']
+
+        self.yt_codec = ['vp9', 'av01', 'avc1', 'best']
+        self.yt_codec_audio = ['opus', 'mp4a', 'best']
+
+        # self.yt_ext = ['avi', 'flv', 'gif', 'mkv', 'mov', 'mp4', 'webm', 'aac', 'aiff', 'alac', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'opus', 'vorbis', 'wav']
+        self.yt_ext = ['avi', 'mkv', 'mp4', 'webm', 'mka']
+        self.yt_ext_audio = ['aac', 'alac', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'vorbis', 'wav']
+
         self.sub_ext_list = ['vtt', 'ttml', 'srv3', 'srv2', 'srv1', 'json3']
         self.sub_lang_list = list(lang_dict.values())
 
@@ -62,6 +68,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.button_spacing = 5
         self.spacing = 5
         self.st_spacing = 3
+        self.tab_spacing = 3
         #-----------------------------------------------
         self.sc_seed_loop_var = tkinter.IntVar(value=0)
         self.sc_size_loop_var = tkinter.IntVar(value=0)
@@ -113,7 +120,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         #-----------------------------------------------
         self.mi_ent1_var = tkinter.StringVar(value="")
         #-----------------------------------------------
-        self.yt_resolution_var = tkinter.StringVar(value="Best")
+        self.yt_resolution_var = tkinter.StringVar(value="best")
         self.yt_playlist_var = tkinter.IntVar(value=0)
         self.yt_ent1_var = tkinter.StringVar(value="")
         self.yt_ent2_var = tkinter.StringVar(value="")
@@ -124,8 +131,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_sub_auto_var = tkinter.IntVar(value=1)
         self.yt_video_ext_var = tkinter.StringVar(value="mp4")
         self.yt_audio_ext_var = tkinter.StringVar(value="mp3")
-        self.yt_video_codec_var = tkinter.StringVar(value="h264")
-        self.yt_audio_codec_var = tkinter.StringVar(value="opus")
+        self.yt_video_codec_var = tkinter.StringVar(value="best")
+        self.yt_audio_codec_var = tkinter.StringVar(value="best")
         self.yt_checkbox_video_var = tkinter.IntVar(value=1)
         self.yt_checkbox_audio_var = tkinter.IntVar(value=1)
 
@@ -575,7 +582,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # buttons
         self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
-        self.yt_sidebar_button_2.grid(row=3, column=0, padx=10, pady=5)
+        self.yt_sidebar_button_2.grid(row=3, column=0, padx=10, pady=(5, 0))
 
         # console
         self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10, family="Consolas"))
@@ -584,32 +591,29 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # tab view
         self.yt_tab_view = customtkinter.CTkTabview(self.frame6, width=100, height=10)
-        self.yt_tab_view.grid(row=4, column=0, padx=10, pady=10, ipady=10, columnspan=1, rowspan=15 , sticky="ewns")
+        self.yt_tab_view.grid(row=4, column=0, padx=10, pady=(0, 10), columnspan=1, rowspan=15 , sticky="ewns")
         self.yt_av = self.yt_tab_view.add("AudioVideo")
         self.yt_sub = self.yt_tab_view.add("Subtitles")
-
 
         # audio video tab
         self.yt_sidebar_button_3 = customtkinter.CTkButton(self.yt_av, command=self.yt_get_res_event, text="Get Resolutions")
         self.yt_sidebar_button_3.grid(row=0, column=0, padx=10, pady=5)
 
         self.yt_checkbox_video = customtkinter.CTkCheckBox(self.yt_av, text="Video", variable=self.yt_checkbox_video_var, command=self.yt_toggle_video)
-        self.yt_checkbox_video.grid(row=1, column=0, padx=10, pady=5)
+        self.yt_checkbox_video.grid(row=1, column=0, padx=0, pady=self.tab_spacing, sticky="w")
         self.yt_checkbox_audio = customtkinter.CTkCheckBox(self.yt_av, text="Audio", variable=self.yt_checkbox_audio_var, command=self.yt_toggle_audio)
-        self.yt_checkbox_audio.grid(row=5, column=0, padx=10, pady=5)
+        self.yt_checkbox_audio.grid(row=1, column=0, padx=10, pady=self.tab_spacing, sticky="e")
 
         self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.yt_av, values=self.resolutions_list, variable=self.yt_resolution_var)
-        self.yt_dropdown1.grid(row=2, column=0, padx=10, pady=5)
-        # self.yt_dropdown2 = customtkinter.CTkOptionMenu(self.yt_av, values=["Audio and Video", "Audio", "Video"], variable=self.yt_av_type_var)
-        # self.yt_dropdown2.grid(row=2, column=0, padx=10, pady=5)
+        self.yt_dropdown1.grid(row=2, column=0, padx=10, pady=self.tab_spacing)
         self.yt_dropdown5 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext, variable=self.yt_video_ext_var)
-        self.yt_dropdown5.grid(row=3, column=0, padx=10, pady=5)
+        self.yt_dropdown5.grid(row=3, column=0, padx=10, pady=self.tab_spacing)
         self.yt_dropdown6 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec, variable=self.yt_video_codec_var)
-        self.yt_dropdown6.grid(row=4, column=0, padx=10, pady=5)
+        self.yt_dropdown6.grid(row=4, column=0, padx=10, pady=self.tab_spacing)
         self.yt_dropdown7 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext_audio, variable=self.yt_audio_ext_var)
-        self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=5)
+        self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=self.tab_spacing)
         self.yt_dropdown8 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec_audio, variable=self.yt_audio_codec_var)
-        self.yt_dropdown8.grid(row=7, column=0, padx=10, pady=5)
+        self.yt_dropdown8.grid(row=7, column=0, padx=10, pady=self.tab_spacing)
 
         self.yt_ent3 = customtkinter.CTkEntry(self.yt_av, placeholder_text="Format code", width=10, textvariable=self.yt_ent3_var)
         self.yt_ent3.grid(row=8, column=0, padx=10, pady=self.spacing, sticky="ew")
@@ -642,7 +646,8 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         # just for testing --- delte after
         self.yt_ent1_var.set("https://www.youtube.com/watch?v=QH2-TGUlwu4")
-        self.yt_ent2_var.set("C:/Users/Admin/Desktop")
+        self.yt_ent2_var.set("C:/Users/Tomer27cz/Desktop/Files/CODING/Python Projects/Image Editors/downloads")
+        self.yt_checkbox_audio_var.set(0)
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -1458,7 +1463,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         filename = filedialog.askopenfilename(initialdir=self.initial_browser_dir, title=self.title_open)
         self.mi_ent1.delete(0, "end")
         self.mi_ent1_var.set(filename)
-        self.print_to_mi_console("Getting metadata info...")
         self.update_idletasks()
         self.update()
         self.mi_get_metadata_event()
@@ -1467,24 +1471,17 @@ class App(customtkinter.CTk, tkinter.Tk):
         path = self.mi_ent1_var.get()
         if not path: return self.print_to_mi_console("Please select a file.", error=True)
 
+        self.print_to_mi_console("Getting metadata info...\n")
+
         for ch in path:
             print(f"{ch} - {ord(ch)}")
 
-        info_dict = {}
-        text = ''
         command = f'{self.exif_tool_path} "{path}"'
 
         try:
-            process = subprocess.Popen(command, stdout=PIPE, stderr=STDOUT, universal_newlines=True)
-            for tag in process.stdout:
-                line = tag.strip().split(':')
-                info_dict[line[0].strip()] = line[-1].strip()
-
-            for k, v in info_dict.items():
-                text += f"{k} : {v}\n"
-
-            self.print_to_mi_console(text)
-            process.stdout.close()
+            for line in execute(command):
+                if line != "\n" and line != '\n\n':
+                    self.print_to_mi_console(line, clear=False)
         except Exception as e: return self.print_to_mi_console(f"Error getting metadata: {e}", error=True)
 
     # Youtube downloader -----------------------------------------------------------------------------------------------
@@ -1497,27 +1494,34 @@ class App(customtkinter.CTk, tkinter.Tk):
     def yt_get_res_event(self):
         ent1 = self.yt_ent1_var.get()
         playlist = self.yt_playlist_var.get()
+
         if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
-        self.print_to_yt_console("Getting video info...")
+
+        self.print_to_yt_console("Getting video info...\n")
         self.update_idletasks()
         self.update()
-        # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
+
         command = f"{self.yt_dlp_path} -F {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}"
+
         try:
-            for path in execute(command):
-                self.print_to_yt_console(path, error=False, clear=False)
+            for line in execute(command):
+                self.print_to_yt_console(line, error=False, clear=False)
         except Exception as e: return self.print_to_yt_console(f"Error getting video info: {e}", error=True, clear=False)
     def yt_get_sub_event(self):
         ent1 = self.yt_ent1_var.get()
         playlist = self.yt_playlist_var.get()
+
         if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
-        self.print_to_yt_console("Getting video info...")
+
+        self.print_to_yt_console("Getting video info...\n")
         self.update_idletasks()
         self.update()
+
         command = f"{self.yt_dlp_path} --list-subs {'--yes-playlist ' if playlist else '--no-playlist '}{ent1}"
+
         try:
-            for path in execute(command):
-                self.print_to_yt_console(path, error=False, clear=False)
+            for line in execute(command):
+                self.print_to_yt_console(line, error=False, clear=False)
         except Exception as e:return self.print_to_yt_console(f"Error getting video info: {e}", error=True, clear=False)
 
     def yt_toggle_video(self):
@@ -1553,7 +1557,11 @@ class App(customtkinter.CTk, tkinter.Tk):
         elif ch_video and not ch_audio: av = 'video_only'
         elif not ch_video and ch_audio: av = 'audio'
         else: return self.print_to_yt_console("Please select at least one option.", error=True)
-        res = self.resolutions_list_values[self.resolutions_list.index(resolution)][1] if resolution != "Best" else ''
+
+        v_codec = v_codec if v_codec != "best" else ''
+        a_codec = a_codec if a_codec != "best" else ''
+
+        res = self.resolutions_list_values[self.resolutions_list.index(resolution)][1] if resolution != "best" else ''
 
         if not ent1: return self.print_to_yt_console("Please enter a URL.", error=True)
         if not ent2: return self.print_to_yt_console("Please select a folder.", error=True)
@@ -1570,23 +1578,30 @@ class App(customtkinter.CTk, tkinter.Tk):
         if playlist: name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
         else: name = f"{av}-%(id)s (%(height)sp).%(ext)s"
 
-        bv = f"ext={v_ext}" + f'][vcodec={v_codec}'
-        ba = f"ext={a_ext}" + f'][acodec={a_codec}'
-        b = f"ext={v_ext}" + f'][vcodec={v_codec}' + f'][acodec={a_codec}'
+        dash_s = '-S "' + \
+                 (f"res:{res}" if res else '')+ \
+                 (',' if res and ch_video and v_codec else '') + \
+                 (f"vcodec:{v_codec}" if ch_video and v_codec else '') + \
+                 (',' if ch_video and v_codec and ch_audio and a_codec else '') + \
+                 (f"acodec:{a_codec}" if ch_audio and a_codec else '') +\
+                 '"'
+        dash_s = dash_s+' ' if dash_s != '-S ""' else ''
 
         if ent3: command = f"{self.yt_dlp_path} -f \"{ent3}\" {'--yes-playlist ' if playlist else '--no-playlist '}--ignore-config -o \"{ent2+name}\" {ent1}"
         else:
-            if av == "audio": command = f"{self.yt_dlp_path} -f ba[{ba}] -x --audio-format mp3 {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
-            elif av == "video_only": command = f"{self.yt_dlp_path} -f bv[{bv}]/bv {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
-            elif av == 'video': command = f"{self.yt_dlp_path} -f bv*[{bv}]+ba[{ba}]/b{b}]/bv*+ba/b {f'-S res:{res} ' if res else ''}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            if av == "audio":
+                command = f"{self.yt_dlp_path} {dash_s}-f ba --extract-audio --audio-format {a_ext} {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            elif av == "video_only":
+                command = f"{self.yt_dlp_path} {dash_s}-f bv --remux-video {v_ext} {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+            elif av == 'video':
+                command = f"{self.yt_dlp_path} {dash_s} --embed-subs --embed-thumbnail {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
             else: return self.print_to_yt_console("Error: Invalid AV option.", error=True)
 
         # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
 
         try:
-            for path in execute(command):
-                self.print_to_yt_console(path, error=False, clear=False)
-        except subprocess.CalledProcessError as e: return self.print_to_yt_console(f"Error downloading process: {e}", error=True, clear=False)
+            for line in execute(command):
+                self.print_to_yt_console(line, error=False, clear=False)
         except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True, clear=False)
 
         self.yt_start_button.configure(state="normal", text="Download")
@@ -1634,9 +1649,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: self.sc_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
-    def print_to_st_console(self, text, error=False):
+    def print_to_st_console(self, text, error=False, clear=True):
         self.st_console.configure(state="normal")
-        self.st_console.delete("1.0", "end")
+        if clear: self.st_console.delete("1.0", "end")
         self.st_console.insert(customtkinter.END, text)
         self.st_console.configure(state="disabled")
         self.st_console.see("end")
@@ -1644,9 +1659,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: self.st_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
-    def print_to_stt_console(self, text, error=False):
+    def print_to_stt_console(self, text, error=False, clear=True):
         self.stt_console.configure(state="normal")
-        self.stt_console.delete("1.0", "end")
+        if clear: self.stt_console.delete("1.0", "end")
         self.stt_console.insert(customtkinter.END, text)
         self.stt_console.configure(state="disabled")
         self.stt_console.see("end")
@@ -1655,9 +1670,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.stt_start_button.configure(state="normal", text="Run Text Steganographer")
         self.update_idletasks()
         self.update()
-    def print_to_tti_console(self, text, error=False):
+    def print_to_tti_console(self, text, error=False, clear=True):
         self.tti_console.configure(state="normal")
-        self.tti_console.delete("1.0", "end")
+        if clear: self.tti_console.delete("1.0", "end")
         self.tti_console.insert(customtkinter.END, text)
         self.tti_console.configure(state="disabled")
         self.tti_console.see("end")
@@ -1666,9 +1681,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_start_button.configure(state="normal", text="Run Generator")
         self.update_idletasks()
         self.update()
-    def print_to_iet_console(self, text, error=False):
+    def print_to_iet_console(self, text, error=False, clear=True):
         self.iet_console.configure(state="normal")
-        self.iet_console.delete("1.0", "end")
+        if clear: self.iet_console.delete("1.0", "end")
         self.iet_console.insert(customtkinter.END, text)
         self.iet_console.configure(state="disabled")
         self.iet_console.see("end")
@@ -1676,9 +1691,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: self.iet_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
-    def print_to_mi_console(self, text, error=False):
+    def print_to_mi_console(self, text, error=False, clear=True):
         self.mi_console.configure(state="normal")
-        self.mi_console.delete("1.0", "end")
+        if clear: self.mi_console.delete("1.0", "end")
         self.mi_console.insert(customtkinter.END, text)
         self.mi_console.configure(state="disabled")
         self.mi_console.see("end")
@@ -1688,18 +1703,6 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.update()
     def print_to_yt_console(self, text, error=False, clear=True):
         if clear: self.yt_console.delete("1.0", "end")
-        # if text.startswith("[download]"):
-        #     print("starts with [download]")
-        #     con_list = self.yt_console.get("1.0", "end").split('\n')
-        #     con_list_len = len(con_list)
-        #     print(con_list)
-        #     if con_list_len >= 3 and con_list[-3].startswith("[download]"):
-        #         print(f"con list -3: {con_list[-3]}")
-        #         print(f'con list len: {con_list_len}')
-        #         print(f"con list len -2: {con_list_len - 2}")
-        #         self.yt_console.delete(f"{con_list_len - 2}.0", "end")
-        #     self.yt_console.insert(customtkinter.END, "\n"+text)
-        # else:
         self.yt_console.insert(customtkinter.END, text)
         self.yt_console.see("end")
         if error:
@@ -1710,16 +1713,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         else: self.yt_console.configure(border_width=0)
         self.update_idletasks()
         self.update()
-    # def print_to_yt_console(self, text, error=False, clear=True):
-    #     self.yt_console.configure(state="normal")
-    #     if clear: self.yt_console.configure(text=text)
-    #     else: self.yt_console.configure(text=self.yt_console.cget("text") + text)
-    #     self.update_idletasks()
-    #     self.update()
 
-    def print_to_stt_textbox(self, text, output_to):
+    def print_to_stt_textbox(self, text, output_to, clear=True):
         if output_to == "TextBox":
-            self.stt_ent3.delete("0.0", "end")
+            if clear: self.stt_ent3.delete("0.0", "end")
             self.stt_ent3.insert(customtkinter.END, text)
             self.update_idletasks()
             self.update()
@@ -1727,9 +1724,9 @@ class App(customtkinter.CTk, tkinter.Tk):
             try:
                 with open(output_to, "w", encoding="utf-8") as f: f.write(text)
             except Exception as e: return self.print_to_stt_console(f"Error writing to file: {e}", error=True)
-    def print_to_tti_textbox(self, text, output_to):
+    def print_to_tti_textbox(self, text, output_to, clear=True):
         if output_to == "TextBox":
-            self.tti_ent4.delete("0.0", "end")
+            if clear: self.tti_ent4.delete("0.0", "end")
             self.tti_ent4.insert(customtkinter.END, text)
             self.update_idletasks()
             self.update()
@@ -1769,22 +1766,15 @@ def _calc_size(width, height):
 
 
 def execute(cmd):
-    try:
-        popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
-        for stdout_line in iter(popen.stdout.readline, ""):
-            yield stdout_line
-            print(stdout_line, end="")
-        popen.stdout.close()
-        return_code = popen.wait()
-    except subprocess.CalledProcessError as e:
-        print("called process error")
-        print(e.output)
-    print('zes', popen.wait())
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True, stderr=subprocess.PIPE)
+    for stdout_line in iter(popen.stdout.readline, ""):
+        yield stdout_line
+    error = popen.stderr.read()
+    yield "\n"+error+"\n"
+    popen.stdout.close()
+    popen.stderr.close()
+    return_code = popen.wait()
     if return_code:
-        print('----------------------------')
-        print('cmd: ', cmd)
-        print('return_code: ', return_code)
-        print('stdout: ', popen.stdout.readline())
         raise subprocess.CalledProcessError(return_code, cmd)
 
 
