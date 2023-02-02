@@ -68,7 +68,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.button_spacing = 5
         self.spacing = 5
         self.st_spacing = 3
-        self.tab_spacing = 3
+        self.tab_spacing = 2
         #-----------------------------------------------
         self.sc_seed_loop_var = tkinter.IntVar(value=0)
         self.sc_size_loop_var = tkinter.IntVar(value=0)
@@ -135,6 +135,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_audio_codec_var = tkinter.StringVar(value="best")
         self.yt_checkbox_video_var = tkinter.IntVar(value=1)
         self.yt_checkbox_audio_var = tkinter.IntVar(value=1)
+        self.yt_checkbox3_var = tkinter.IntVar(value=0)
+        self.yt_checkbox4_var = tkinter.IntVar(value=0)
+        self.yt_checkbox5_var = tkinter.IntVar(value=0)
 
 
         # create sidebar
@@ -611,7 +614,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_dropdown6 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec, variable=self.yt_video_codec_var)
         self.yt_dropdown6.grid(row=4, column=0, padx=10, pady=self.tab_spacing)
         self.yt_dropdown7 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext_audio, variable=self.yt_audio_ext_var)
-        self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=self.tab_spacing)
+        self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=(10, self.tab_spacing))
         self.yt_dropdown8 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec_audio, variable=self.yt_audio_codec_var)
         self.yt_dropdown8.grid(row=7, column=0, padx=10, pady=self.tab_spacing)
 
@@ -620,6 +623,12 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.yt_checkbox1 = customtkinter.CTkCheckBox(self.yt_av, text="Download playlist", variable=self.yt_playlist_var)
         self.yt_checkbox1.grid(row=9, column=0, padx=10, pady=self.spacing, sticky="w")
+        self.yt_checkbox3 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox3_var, text='')
+        self.yt_checkbox3.grid(row=0, column=0, padx=10, pady=self.spacing, sticky='w')
+        self.yt_checkbox4 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox4_var, text='')
+        self.yt_checkbox4.grid(row=0, column=0, padx=10, pady=self.spacing, sticky='w')
+        self.yt_checkbox5 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox5_var, text='')
+        self.yt_checkbox5.grid(row=0, column=0, padx=10, pady=self.spacing, sticky='w')
 
 
         # subtitles tab
@@ -1552,6 +1561,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         a_ext = self.yt_audio_ext_var.get()
         v_codec = self.yt_video_codec_var.get()
         a_codec = self.yt_audio_codec_var.get()
+        ch_meta = self.yt_checkbox3_var.get()
+        ch_sub = self.yt_checkbox4_var.get()
+        ch_thumb = self.yt_checkbox5_var.get()
 
         if ch_video and ch_audio: av = 'video'
         elif ch_video and not ch_audio: av = 'video_only'
@@ -1587,14 +1599,21 @@ class App(customtkinter.CTk, tkinter.Tk):
                  '"'
         dash_s = dash_s+' ' if dash_s != '-S ""' else ''
 
+        embed = ('--embed-subs' if ch_sub else '') + \
+                (' ' if ch_sub and ch_thumb else '') + \
+                ('--embed-thumbnail' if ch_thumb else '') + \
+                (' ' if ch_thumb and ch_meta else '') + \
+                ('--embed-metadata' if ch_meta else '')
+        embed = embed+' ' if embed != '' else ''
+
         if ent3: command = f"{self.yt_dlp_path} -f \"{ent3}\" {'--yes-playlist ' if playlist else '--no-playlist '}--ignore-config -o \"{ent2+name}\" {ent1}"
         else:
             if av == "audio":
                 command = f"{self.yt_dlp_path} {dash_s}-f ba --extract-audio --audio-format {a_ext} {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
             elif av == "video_only":
-                command = f"{self.yt_dlp_path} {dash_s}-f bv --remux-video {v_ext} {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+                command = f"{self.yt_dlp_path} {dash_s}-f bv --remux-video {v_ext} {embed}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
             elif av == 'video':
-                command = f"{self.yt_dlp_path} {dash_s} --embed-subs --embed-thumbnail {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+                command = f"{self.yt_dlp_path} {dash_s}{embed}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
             else: return self.print_to_yt_console("Error: Invalid AV option.", error=True)
 
         # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
