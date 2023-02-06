@@ -8,6 +8,7 @@ import customtkinter
 from os import mkdir
 from time import time
 import subprocess
+import markdown
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
@@ -33,11 +34,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.grid_columnconfigure((2, 3), weight=0) # NOQA
         self.grid_rowconfigure((0, 1, 2), weight=1) # NOQA
 
-        # configure misc
-
-        self.initial_browser_dir = 'Desktop'
+        # configure paths
         self.exif_tool_path = 'Features/Executable/exiftool.exe'
         self.yt_dlp_path = 'Features/Executable/yt-dlp.exe'
+        self.steganography_explanation = "Assets/html/SteganographyExplanation.html"
+        self.markdown = 'Assets/html/README.html'
+        self.about_html_text = open(self.markdown, 'r').read()
+
+        # configure misc
+        self.initial_browser_dir = 'Desktop'
         self.title_open = "Select image file"
 
         # lists
@@ -60,8 +65,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sub_lang_list = list(lang_dict.values())
 
         # icons
-        self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/folder-open-light.png"), dark_image=Image.open("Assets/folder-open-dark.png"))
-        self.info_marker_icon = customtkinter.CTkImage(light_image=Image.open("Assets/info-mark-light.png"), dark_image=Image.open("Assets/info-mark-dark.png"))
+        self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/icons/folder-open-light.png"), dark_image=Image.open("Assets/icons/folder-open-dark.png"))
+        self.info_marker_icon = customtkinter.CTkImage(light_image=Image.open("Assets/icons/info-mark-light.png"), dark_image=Image.open("Assets/icons/info-mark-dark.png"))
 
         # create variables
 
@@ -188,13 +193,16 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.frame69.grid(row=0, column=0, rowspan=4, sticky="nsew")
 
         # label
-        self.about_logo_label = customtkinter.CTkLabel(self.frame69, text="About", font=customtkinter.CTkFont(size=30, weight="bold"))
-        self.about_logo_label.grid(row=0, column=0, padx=10, pady=(20, 10))
+        # self.about_logo_label = customtkinter.CTkLabel(self.frame69, text="About", font=customtkinter.CTkFont(size=30, weight="bold"))
+        # self.about_logo_label.grid(row=0, column=0, padx=10, pady=(20, 10))
 
         # text
-        self.about_text = customtkinter.CTkLabel(self.frame69, width=100, height=100, font=customtkinter.CTkFont(size=12))
-        self.about_text.grid(row=1, column=0, padx=10, pady=20)
+        # self.about_text = customtkinter.CTkLabel(self.frame69, width=100, height=100, font=customtkinter.CTkFont(size=12))
+        # self.about_text.grid(row=1, column=0, padx=10, pady=20)
 
+        # html
+        self.about_html = HTMLScrolledText(self.frame69, html=self.about_html_text)
+        self.about_html.grid(row=0, column=0, padx=0, pady=00, sticky="ws")
 
         #-------------------------------------------- Image Scrambler --------------------------------------------------
 
@@ -602,10 +610,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_sidebar_button_3 = customtkinter.CTkButton(self.yt_av, command=self.yt_get_res_event, text="Get Resolutions")
         self.yt_sidebar_button_3.grid(row=0, column=0, padx=10, pady=5)
 
-        self.yt_checkbox_video = customtkinter.CTkCheckBox(self.yt_av, text="Video", variable=self.yt_checkbox_video_var, command=self.yt_toggle_video)
-        self.yt_checkbox_video.grid(row=1, column=0, padx=0, pady=self.tab_spacing, sticky="w")
-        self.yt_checkbox_audio = customtkinter.CTkCheckBox(self.yt_av, text="Audio", variable=self.yt_checkbox_audio_var, command=self.yt_toggle_audio)
-        self.yt_checkbox_audio.grid(row=1, column=0, padx=10, pady=self.tab_spacing, sticky="e")
+        self.yt_checkbox_video = customtkinter.CTkCheckBox(self.yt_av, text="Video", variable=self.yt_checkbox_video_var, command=self.yt_toggle_video, width=60)
+        self.yt_checkbox_video.grid(row=1, column=0, padx=10, pady=(self.tab_spacing, 10), sticky="w")
+        self.yt_checkbox_audio = customtkinter.CTkCheckBox(self.yt_av, text="Audio", variable=self.yt_checkbox_audio_var, command=self.yt_toggle_audio, width=60)
+        self.yt_checkbox_audio.grid(row=1, column=0, padx=10, pady=(self.tab_spacing, 10), sticky="e")
 
         self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.yt_av, values=self.resolutions_list, variable=self.yt_resolution_var)
         self.yt_dropdown1.grid(row=2, column=0, padx=10, pady=self.tab_spacing)
@@ -614,7 +622,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_dropdown6 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec, variable=self.yt_video_codec_var)
         self.yt_dropdown6.grid(row=4, column=0, padx=10, pady=self.tab_spacing)
         self.yt_dropdown7 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext_audio, variable=self.yt_audio_ext_var)
-        self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=(10, self.tab_spacing))
+        self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=self.tab_spacing)
         self.yt_dropdown8 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec_audio, variable=self.yt_audio_codec_var)
         self.yt_dropdown8.grid(row=7, column=0, padx=10, pady=self.tab_spacing)
 
@@ -623,12 +631,16 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.yt_checkbox1 = customtkinter.CTkCheckBox(self.yt_av, text="Download playlist", variable=self.yt_playlist_var)
         self.yt_checkbox1.grid(row=9, column=0, padx=10, pady=self.spacing, sticky="w")
-        self.yt_checkbox3 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox3_var, text='')
-        self.yt_checkbox3.grid(row=0, column=0, padx=10, pady=self.spacing, sticky='w')
-        self.yt_checkbox4 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox4_var, text='')
-        self.yt_checkbox4.grid(row=0, column=0, padx=10, pady=self.spacing, sticky='w')
-        self.yt_checkbox5 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox5_var, text='')
-        self.yt_checkbox5.grid(row=0, column=0, padx=10, pady=self.spacing, sticky='w')
+        self.yt_checkbox3 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox3_var, text='', width=10)
+        self.yt_checkbox3.grid(row=5, column=0, padx=10, pady=self.spacing, sticky="w")
+        self.yt_checkbox4 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox4_var, text='', width=10)
+        self.yt_checkbox4.grid(row=5, column=0, padx=(65,0), pady=self.spacing, sticky="w")
+        self.yt_checkbox5 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox5_var, text='', width=10)
+        self.yt_checkbox5.grid(row=5, column=0, padx=(120, 0), pady=self.spacing, sticky="w")
+
+        CreateToolTip(self.yt_checkbox3, "Embed metadata in video file", width=180, height=20)
+        CreateToolTip(self.yt_checkbox4, "Embed default subtitles in video file", width=220, height=20)
+        CreateToolTip(self.yt_checkbox5, "Embed thumbnail in video file", width=180, height=20)
 
 
         # subtitles tab
@@ -653,10 +665,10 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.yt_sub_start_button.grid(row=16, column=0, padx=10, pady=10, ipady=10, sticky="we")
 
 
-        # just for testing --- delte after
-        self.yt_ent1_var.set("https://www.youtube.com/watch?v=QH2-TGUlwu4")
-        self.yt_ent2_var.set("C:/Users/Tomer27cz/Desktop/Files/CODING/Python Projects/Image Editors/downloads")
-        self.yt_checkbox_audio_var.set(0)
+        # # just for testing --- delte after
+        # self.yt_ent1_var.set("https://www.youtube.com/watch?v=QH2-TGUlwu4")
+        # self.yt_ent2_var.set("C:/Users/Tomer27cz/Desktop/Files/CODING/Python Projects/Image Editors/downloads")
+        # self.yt_checkbox_audio_var.set(0)
 
         #---------------------------------------------------------------------------------------------------------------
 
@@ -951,7 +963,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         window = customtkinter.CTkToplevel(self)
         window.title("Steganography Explanation")
         window.geometry("1100x700")
-        with open("Assets/SteganographyExplanation.html", "r") as f:
+        with open(self.steganography_explanation, "r") as f:
             html_label = HTMLScrolledText(window, html=f.read(), )
         html_label.pack(fill="both", expand=True)
         html_label.fit_height()
@@ -1600,7 +1612,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         dash_s = dash_s+' ' if dash_s != '-S ""' else ''
 
         embed = ('--embed-subs' if ch_sub else '') + \
-                (' ' if ch_sub and ch_thumb else '') + \
+                (' ' if ch_sub and ch_thumb or ch_meta else '') + \
                 ('--embed-thumbnail' if ch_thumb else '') + \
                 (' ' if ch_thumb and ch_meta else '') + \
                 ('--embed-metadata' if ch_meta else '')
@@ -1611,9 +1623,9 @@ class App(customtkinter.CTk, tkinter.Tk):
             if av == "audio":
                 command = f"{self.yt_dlp_path} {dash_s}-f ba --extract-audio --audio-format {a_ext} {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
             elif av == "video_only":
-                command = f"{self.yt_dlp_path} {dash_s}-f bv --remux-video {v_ext} {embed}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+                command = f"{self.yt_dlp_path} {dash_s}{embed}-f bv --remux-video {v_ext} {embed}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
             elif av == 'video':
-                command = f"{self.yt_dlp_path} {dash_s}{embed}{'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
+                command = f"{self.yt_dlp_path} {dash_s}{embed}--remux-video {v_ext} {'--yes-playlist ' if playlist else '--no-playlist '}-o \"{ent2 + name}\" {ent1}"
             else: return self.print_to_yt_console("Error: Invalid AV option.", error=True)
 
         # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
