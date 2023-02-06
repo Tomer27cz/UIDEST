@@ -816,9 +816,12 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.print_to_sc_console(f"Seed loop: False | Size loop: False")
             self.print_to_sc_console("Folder: " + folder_path + "\n")
 
-            # start thread
-            output = new_scramble_algorithm(action_type, output_type, image_path, folder_path, f"{file_name}_({seed}_{size})", seed, size)
-            self.print_to_sc_console(output) # print output to console
+            # start
+            try:
+                operation_type = 1 if action_type == 'Encode' else 0
+                new_scramble_algorithm(operation_type=operation_type, output_type=output_type, image_path=image_path, folder_path=folder_path, output_name=f"{file_name}_({seed}_{size})", seed=seed, size=size)
+            except Exception as e:
+                self.print_to_sc_console(f"Error: {e}") # print output to console
 
             # configure start button
             self.sc_start_button.configure(state="normal")

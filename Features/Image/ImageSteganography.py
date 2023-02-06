@@ -599,75 +599,159 @@ class Steganography8:
 
 
 if __name__ == '__main__':
-    import time
+    # import time
+    #
+    # filename1 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP1.png"
+    # filename2 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP2.png"
+    # filename3 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP3.png"
+    # filename4 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP4.png"
+    # filename5 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP5.png"
+    # filename6 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP6.png"
+    # filename7 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP7.png"
+    # filename8 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP8.png"
+    # filename9 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\Steg.png"
+    #
+    # start = time.time()
+    # Steganography().merge([Image.open(filename1), Image.open(filename2)])
+    # print(f"Steg2 Time taken: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography3().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3)])
+    # print(f"Steg3 Time taken: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography4().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4)])
+    # print(f"Steg4 Time taken: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography5().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5)])
+    # print(f"Steg5 Time taken: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography6().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5), Image.open(filename6)])
+    # print(f"Steg6 Time taken: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography7().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5), Image.open(filename6), Image.open(filename7)])
+    # print(f"Steg7 Time taken: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography8().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5), Image.open(filename6), Image.open(filename7), Image.open(filename8)])
+    # print(f"Steg8 Time taken: {time.time() - start}")
+    #
+    #
+    #
+    # start = time.time()
+    # Steganography().unmerge(Image.open(filename9))
+    # print(f"Steg2 Decode time: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography3().unmerge(Image.open(filename9))
+    # print(f"Steg3 Decode time: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography4().unmerge(Image.open(filename9))
+    # print(f"Steg4 Decode time: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography5().unmerge(Image.open(filename9))
+    # print(f"Steg5 Decode time: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography6().unmerge(Image.open(filename9))
+    # print(f"Steg6 Decode time: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography7().unmerge(Image.open(filename9))
+    # print(f"Steg7 Decode time: {time.time() - start}")
+    #
+    # start = time.time()
+    # Steganography8().unmerge(Image.open(filename9))
+    # print(f"Steg8 Decode time: {time.time() - start}")
+    import argparse
 
-    filename1 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP1.png"
-    filename2 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP2.png"
-    filename3 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP3.png"
-    filename4 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP4.png"
-    filename5 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP5.png"
-    filename6 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP6.png"
-    filename7 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP7.png"
-    filename8 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\PP8.png"
-    filename9 = r"C:\Users\Tomer27cz\Desktop\Files\CODING\Python Projects\Image Editors\Steg.png"
 
-    start = time.time()
-    Steganography().merge([Image.open(filename1), Image.open(filename2)])
-    print(f"Steg2 Time taken: {time.time() - start}")
+    def image_number_type(x):
+        x = int(x)
+        if x < 2 or x > 8: raise argparse.ArgumentTypeError("Image number: Minimum = 2, Maximum = 8")
+        return x
 
-    start = time.time()
-    Steganography3().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3)])
-    print(f"Steg3 Time taken: {time.time() - start}")
+    parser = argparse.ArgumentParser(description='Steganography')
+    subparser = parser.add_subparsers(dest='command')
 
-    start = time.time()
-    Steganography4().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4)])
-    print(f"Steg4 Time taken: {time.time() - start}")
+    merge = subparser.add_parser('merge')
+    merge.add_argument("-b", "--bits", default=2, type=image_number_type, help="MIN-2_MAX-8")
+    merge.add_argument('--image1', help='image path')
+    merge.add_argument('--image2', help='image path')
+    merge.add_argument('--image3', help='image path')
+    merge.add_argument('--image4', help='image path')
+    merge.add_argument('--image5', help='image path')
+    merge.add_argument('--image6', help='image path')
+    merge.add_argument('--image7', help='image path')
+    merge.add_argument('--image8', help='image path')
+    merge.add_argument("-o", "--output-folder")
+    merge.add_argument("-f", "--format", default='PNG')
+    merge.add_argument("-n", "--file-name", default='SteganographyOutput')
 
-    start = time.time()
-    Steganography5().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5)])
-    print(f"Steg5 Time taken: {time.time() - start}")
+    unmerge = subparser.add_parser('unmerge')
+    unmerge.add_argument("-b", "--bits", default=2, type=image_number_type, help="MIN-2_MAX-8")
+    unmerge.add_argument('--image', help='image path')
+    unmerge.add_argument("-o", "--output-folder")
+    unmerge.add_argument("-f", "--format", default='PNG')
+    unmerge.add_argument("-n", "--file-name", default='SteganographyOutput')
 
-    start = time.time()
-    Steganography6().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5), Image.open(filename6)])
-    print(f"Steg6 Time taken: {time.time() - start}")
+    args = parser.parse_args()
+    config = vars(args)
 
-    start = time.time()
-    Steganography7().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5), Image.open(filename6), Image.open(filename7)])
-    print(f"Steg7 Time taken: {time.time() - start}")
+    print(config)
 
-    start = time.time()
-    Steganography8().merge([Image.open(filename1), Image.open(filename2), Image.open(filename3), Image.open(filename4), Image.open(filename5), Image.open(filename6), Image.open(filename7), Image.open(filename8)])
-    print(f"Steg8 Time taken: {time.time() - start}")
+    folder = config['output_folder']
+    if folder:
+        try:
+            if folder[-1] == '"': folder = folder[:-1]
+            if folder[-1] != "/" or folder[-1] != "\\":
+                if "\\" in folder: folder += "\\"
+                else: folder += "/"
+        except Exception as e:
+            print(f'Inputted folder is not a folder path: {e}')
+
+    if args.command == 'merge':
+        path =
+
+
+        im_list = []
+        for i in range(config['bits']):
+            exec(f"im_list.append(Image.open(config['image{i+1}']))")
+        n = config['bits'] if config['bits'] != 2 else ''
+
+        exec(f'output = Steganography{n}().merge({im_list})')
+        exec(f'output.save(path)')
+
+        #
+        #
+        # b = config['bits']
+        # im1, im2, im3, im4, im5, im6, im7, im8 = config['image1'], config['image2'], config['image3'], config['image4'], config['image5'], config['image6'], config['image7'], config['image8']
+        #
+        #
+        #
+        #
+        # img_present = False
+        # if b == 2 and im1 and im2:
+        #     img_present = True
+        #     output = Steganography().merge([Image.open(im1), Image.open(im2)])
+        # if b == 3 and im1 and im2 and im3: img_present = True
+        # if b == 4 and im1 and im2 and im3 and im4: img_present = True
+        # if b == 5 and im1 and im2 and im3 and im4 and im5: img_present = True
+        # if b == 6 and im1 and im2 and im3 and im4 and im5 and im6: img_present = True
+        # if b == 7 and im1 and im2 and im3 and im4 and im5 and im6 and im7: img_present = True
+        # if b == 8 and im1 and im2 and im3 and im4 and im5 and im6 and im7 and im8: img_present = True
+        #
+        # if not img_present: raise argparse.ArgumentTypeError("Make sure you have the same amount of declared images as 'bits'")
 
 
 
-    start = time.time()
-    Steganography().unmerge(Image.open(filename9))
-    print(f"Steg2 Decode time: {time.time() - start}")
 
-    start = time.time()
-    Steganography3().unmerge(Image.open(filename9))
-    print(f"Steg3 Decode time: {time.time() - start}")
 
-    start = time.time()
-    Steganography4().unmerge(Image.open(filename9))
-    print(f"Steg4 Decode time: {time.time() - start}")
-
-    start = time.time()
-    Steganography5().unmerge(Image.open(filename9))
-    print(f"Steg5 Decode time: {time.time() - start}")
-
-    start = time.time()
-    Steganography6().unmerge(Image.open(filename9))
-    print(f"Steg6 Decode time: {time.time() - start}")
-
-    start = time.time()
-    Steganography7().unmerge(Image.open(filename9))
-    print(f"Steg7 Decode time: {time.time() - start}")
-
-    start = time.time()
-    Steganography8().unmerge(Image.open(filename9))
-    print(f"Steg8 Decode time: {time.time() - start}")
 
 
 
