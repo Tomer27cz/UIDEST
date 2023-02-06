@@ -8,7 +8,6 @@ import customtkinter
 from os import mkdir
 from time import time
 import subprocess
-import markdown
 
 from Features.Image.ImageScramble import new_scramble_algorithm
 from Features.Image.ImageSteganography import Steganography, Steganography3, Steganography4, Steganography5, Steganography6, Steganography7, Steganography8
