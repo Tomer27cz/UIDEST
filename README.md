@@ -83,7 +83,7 @@ options:
 
 ##### Unmerge usage
 
-Ouput will be `{file name}_{index of image}`. 
+Ouput will be `{file name}_{index of image}`. It will output `BITS` amount of imgaes into `OUTPUT_FOLDER`. 
 
 ```
 usage: ImageSteganography.py unmerge [-h] [-b BITS] [--image IMAGE] [-o OUTPUT_FOLDER]
@@ -97,6 +97,34 @@ options:
   -f FORMAT, --format FORMAT
   -n FILE_NAME, --file-name FILE_NAME
 ```
+
+### Text To Image
+
+Framework from [Steganography (by kelvins)](https://github.com/kelvins/steganography). I modified the code to use text.
+
+First it looks though the text and identifies the most bits it has to use for each character. Then it uses that amount for each character. It puts the number of bits it will use at the start in an 8 bit intiger.
+
+#### Arguments
+
+##### Encode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
