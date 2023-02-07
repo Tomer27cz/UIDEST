@@ -108,6 +108,41 @@ First it looks though the text and identifies the most bits it has to use for ea
 
 ##### Encode
 
+This takes an input `.txt` file and an `image` file. Then outputs an image with the `FORMAT` format and `FILE_NAME` name.
+
+```
+usage: TextSteganography.py encode [-h] [-o OUTPUT_FOLDER] [-t] [-f FORMAT] [-n FILE_NAME] input-file image
+
+positional arguments:
+  input-file            input text file
+  image                 image path
+
+options:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -t, --transparent     use transparent pixels when using PNG
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME
+```
+
+##### Decode
+
+This takes an input `image`. Outputs text file with `FORMAT` format and `FILE_NAME` name.
+
+```
+usage: TextSteganography.py decode [-h] [-o OUTPUT_FOLDER] [-t] [-f FORMAT] [-n FILE_NAME] image
+
+positional arguments:
+  image                 image path
+
+options:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -t, --transparent     use transparent pixels when using PNG
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME
+```
+
 
 
 
