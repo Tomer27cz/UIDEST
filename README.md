@@ -114,7 +114,7 @@ This takes an input `.txt` file and an `image` file. Then outputs an image with 
 usage: TextSteganography.py encode [-h] [-o OUTPUT_FOLDER] [-t] [-f FORMAT] [-n FILE_NAME] input-file image
 
 positional arguments:
-  input-file            input text file
+  input_file            input text file
   image                 image path
 
 options:
@@ -143,7 +143,16 @@ options:
   -n FILE_NAME, --file-name FILE_NAME
 ```
 
+### Text To Image Generator
 
+This generates an image with `FORMAT` format and `file_name` name from the text in `input_file`. It selects the smallest `width` and `height` square that the text can fit into. 
+
+`mono` monochromatic - it uses all the rgb channels at once
+
+`transparent` - uses transparency and overrides the `FORMAT` to `PNG`
+
+```
+```
 
 
 
