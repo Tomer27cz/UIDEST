@@ -8,4 +8,198 @@
     body{background: #242424}
 </style>
 </head><body><h1>UIDEST</h1>
-<p>Custom Tkinter UI with all image/text/file utilities that i have built/found.</p></body>
+<p>Custom Tkinter UI with all image/text/file utilities that i have built/found.</p>
+<h2>Usage</h2>
+<p>Download the repository and install all the reqirements (open terminal in folder)
+<code>commandline
+pip install -r requirements.txt</code>
+Now you can simply open the <code>UIDEST UI.py</code> file. To launch the UI.</p>
+<h2>Features</h2>
+<p>All the fatures are located in <code>Features/...</code> and can be run separately. Commands for each can be found here.</p>
+<h3>Image Scramblerer</h3>
+<p>Divides the image into chunks of <code>tile</code> size. (the widht and hight should be divisible by the <code>tile</code> size)</p>
+<p>The <code>seed</code> entry is an input for <code>random.seed()</code> then <code>random.shuffle()</code> shuffels the tiles.</p>
+<h4>Command Usage</h4>
+<h5>Encode</h5>
+<p><code>commandline
+ImageScramble.py encode [-h] [-t TILE] [-s SEED] [-o OUTPUT_FOLDER] [-f FORMAT] [-n FILE_NAME] image</code></p>
+<p>``` commandline
+positional arguments:
+  image                 image path</p>
+<p>options:
+  -h, --help            show this help message and exit
+  -t TILE, --tile TILE  tile size (default: 10)
+  -s SEED, --seed SEED  seed (default: 0)
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+                        output folder (default: None)
+  -f FORMAT, --format FORMAT
+                        format (default: PNG)
+  -n FILE_NAME, --file-name FILE_NAME
+                        file name (default: scrambled_image)
+```</p>
+<h5>Decode</h5>
+<p><code>commandline
+ImageScramble.py decode [-h] [-t TILE] [-s SEED] [-o OUTPUT_FOLDER] [-f FORMAT] [-n FILE_NAME] image</code></p>
+<p>``` commandline
+positional arguments:
+  image                 image path</p>
+<p>options:
+  -h, --help            show this help message and exit
+  -t TILE, --tile TILE  tile size (default: 10)
+  -s SEED, --seed SEED  seed (default: 0)
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+                        output folder (default: None)
+  -f FORMAT, --format FORMAT
+                        format (default: PNG)
+  -n FILE_NAME, --file-name FILE_NAME
+                        file name (default: scrambled_image)
+```</p>
+<h3>Image To Image Steganography</h3>
+<p>Framework from <a href="https://github.com/kelvins/steganography">Steganography (by kelvins)</a>. I added support for <code>more images</code>, <code>better cli</code>, <code>optimization</code></p>
+<p>Examples of image combination with 8 bit pixel. Max is 8 images because a pixel is 8 bit. Each number represents bits dedicated to the image number.</p>
+<p><code>[1,1,1,1,2,2,2,2]</code> 2 images
+<code>[1,1,1,1,2,2,3,3]</code> 3 images
+<code>[1,1,2,2,3,3,4,4]</code> 4 images
+<code>[1,1,2,2,3,3,4,5]</code> 5 images
+<code>[1,1,2,2,3,4,5,6]</code> 6 images
+<code>[1,1,2,3,4,5,6,7]</code> 7 images
+<code>[1,2,3,4,5,6,7,8]</code> 8 images</p>
+<h5>Merge usage</h5>
+<p><code>commandline
+ImageSteganography.py merge [-h] [-b BITS] [--image1 IMAGE1] [--image2 IMAGE2]
+                            [--image3 IMAGE3] [--image4 IMAGE4] [--image5 IMAGE5]
+                            [--image6 IMAGE6] [--image7 IMAGE7] [--image8 IMAGE8]
+                            [-o OUTPUT_FOLDER] [-f FORMAT] [-n FILE_NAME]</code></p>
+<p><code>commandline
+options:
+  -h, --help            show this help message and exit
+  -b BITS, --bits BITS  MIN-2_MAX-8 (default: 2)
+  --image1 IMAGE1       image path
+  --image2 IMAGE2       image path
+  --image3 IMAGE3       image path
+  --image4 IMAGE4       image path
+  --image5 IMAGE5       image path
+  --image6 IMAGE6       image path
+  --image7 IMAGE7       image path
+  --image8 IMAGE8       image path
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME</code></p>
+<h5>Unmerge usage</h5>
+<p>Ouput will be <code>{file name}_{index of image}</code>. It will output <code>BITS</code> amount of imgaes into <code>OUTPUT_FOLDER</code>. </p>
+<p><code>commandline
+ImageSteganography.py unmerge [-h] [-b BITS] [--image IMAGE] [-o OUTPUT_FOLDER]
+                              [-f FORMAT] [-n FILE_NAME]</code></p>
+<p><code>commandline
+options:
+  -h, --help            show this help message and exit
+  -b BITS, --bits BITS  MIN-2_MAX-8 (default: 2)
+  --image IMAGE         image path
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME</code></p>
+<h3>Text To Image</h3>
+<p>Framework from <a href="https://github.com/kelvins/steganography">Steganography (by kelvins)</a>. I modified the code to use text.</p>
+<p>First it looks though the text and identifies the most bits it has to use for each character. Then it uses that amount for each character. It puts the number of bits it will use at the start in an 8 bit intiger.</p>
+<h4>Arguments</h4>
+<h5>Encode</h5>
+<p>This takes an input <code>.txt</code> file and an <code>image</code> file. Then outputs an image with the <code>FORMAT</code> format and <code>FILE_NAME</code> name.</p>
+<p><code>commandline
+TextSteganography.py encode [-h] [-o OUTPUT_FOLDER] [-t] [-f FORMAT] [-n FILE_NAME] input-file image</code></p>
+<p>``` commandline
+positional arguments:
+  input_file            input text file
+  image                 image path</p>
+<p>options:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -t, --transparent     use transparent pixels when using PNG
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME
+```</p>
+<h5>Decode</h5>
+<p>This takes an input <code>image</code>. Outputs text file with <code>FORMAT</code> format and <code>FILE_NAME</code> name.</p>
+<p><code>commandline
+TextSteganography.py decode [-h] [-o OUTPUT_FOLDER] [-t] [-f FORMAT] [-n FILE_NAME] image</code></p>
+<p>``` commandline
+positional arguments:
+  image                 image path</p>
+<p>options:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -t, --transparent     use transparent pixels when using PNG
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME
+```</p>
+<h3>Text To Image Generator</h3>
+<p>This generates an image with <code>FORMAT</code> format and <code>file_name</code> name from the text in <code>input_file</code>. It selects the smallest <code>width</code> and <code>height</code> square that the text can fit into. </p>
+<p><code>mono</code> monochromatic - it uses all the rgb channels at once (all channels are the same)</p>
+<p><code>transparent</code> - uses transparency and overrides the <code>FORMAT</code> to <code>PNG</code></p>
+<h4>Arguments</h4>
+<h5>Encode</h5>
+<p>Input should be a text file. The output will be an image of <code>FORMAT</code> format and <code>FILE_NAME</code> name.</p>
+<p><code>commandline
+TextToImage.py encode [-h] [-o OUTPUT_FOLDER] [-t] [-m] [-f FORMAT] [-n FILE_NAME] input_file</code></p>
+<p>``` commandline
+positional arguments:
+  input_file            input text file</p>
+<p>options:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -t, --transparent     use transparent pixels when using PNG (default: False)
+  -m, --mono            monochromatic (all rgb channels are the same) (default: False)
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME
+```</p>
+<h5>Decode</h5>
+<p>The input <code>image</code> should be an image generated by this script. The output will be a text file of <code>FORMAT</code> format and <code>FILE_NAME</code> name.</p>
+<p><code>commandline
+TextToImage.py decode [-h] [-o OUTPUT_FOLDER] [-t] [-m] [-f FORMAT] [-n FILE_NAME] image</code></p>
+<p>``` commandline
+positional arguments:
+  image                 image path</p>
+<p>options:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+  -t, --transparent     use transparent pixels when using PNG (default: False)
+  -m, --mono            monochromatic (all rgb channels are the same) (default: False)
+  -f FORMAT, --format FORMAT
+  -n FILE_NAME, --file-name FILE_NAME
+```</p>
+<h3>Image Extension Transformer</h3>
+<p>This takes an input <code>image</code> and outputs an image with <code>FORMAT</code> format.</p>
+<p>It is based on the <a href="https://pillow.readthedocs.io/en/stable/">Pillow</a> library. Because when you just rename the extension it doesn't change the file encoding / type.</p>
+<p>This doesn't have a <code>cli</code>. It is just a function you can add to your code.</p>
+<p>```python
+import PIL.Image as Image</p>
+<p>input_filename = "input.png"
+filename = "output"
+extension = "jpg"</p>
+<p>try: 
+    image = Image.open(input_filename)
+except Exception as e: 
+    print(f"Error opening image: {e}")</p>
+<p>try: 
+    image.save(filename, extension)
+except Exception as e: 
+    print(f"Error saving image: {e}")
+```</p>
+<h3>Get Metadata</h3>
+<p>This takes an input <code>file</code> and outputs the metadata. </p>
+<p>It is based on <a href="https://exiftool.org/">exiftool.exe</a>. It is a command line tool. It is not a python library.</p>
+<p>It is stored in <code>Features/Executable/exiftool.exe</code>. It has its own <code>cli</code> that you can find <a href="https://exiftool.org/#running">here</a>.</p>
+<h3>YouTube Downloader</h3>
+<p>This is just a user interface for the <code>cli</code> of <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp (fork of youtube-dl)</a>.</p>
+<p>This is more of a command constructor which shows you the command line. If you want a more easy to use interface you can use <a href="https://github.com/kannagi0303/yt-dlp-gui">yt-dlp-gui</a>.</p>
+<h2>Development</h2>
+<p>This software is still in development. I am still adding features and fixing bugs.</p>
+<p>I am a <strong>beginner</strong> programmer. This is my first project that I am <strong>publishing</strong>. I am still <strong>learning</strong>. I am open to suggestions and improvements.</p>
+<h3>To Do</h3>
+<ul>
+<li>[x] Add text to image</li>
+<li>[x] Add metadata extractor</li>
+<li>[x] Add youtube downloader gui for <code>yt-dlp</code></li>
+<li>[ ] Add text encoder <code>(rot13, caesar, hex, binary, base64, etc.)</code></li>
+<li>[ ] Add more features to the <code>gui</code></li>
+<li>[ ] Add more features to the <code>youtube downloader</code></li>
+</ul></body>
