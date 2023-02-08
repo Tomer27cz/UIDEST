@@ -676,10 +676,10 @@ if __name__ == '__main__':
         if x < 2 or x > 8: raise argparse.ArgumentTypeError("Image number: Minimum = 2, Maximum = 8")
         return x
 
-    parser = argparse.ArgumentParser(description='Steganography')
+    parser = argparse.ArgumentParser(description='Steganography', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     subparser = parser.add_subparsers(dest='command')
 
-    merge = subparser.add_parser('merge')
+    merge = subparser.add_parser('merge', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     merge.add_argument("-b", "--bits", default=2, type=image_number_type, help="MIN-2_MAX-8")
     merge.add_argument('--image1', help='image path')
     merge.add_argument('--image2', help='image path')
@@ -693,7 +693,7 @@ if __name__ == '__main__':
     merge.add_argument("-f", "--format", default='PNG')
     merge.add_argument("-n", "--file-name", default='SteganographyOutput')
 
-    unmerge = subparser.add_parser('unmerge')
+    unmerge = subparser.add_parser('unmerge', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     unmerge.add_argument("-b", "--bits", default=2, type=image_number_type, help="MIN-2_MAX-8")
     unmerge.add_argument('--image', help='image path')
     unmerge.add_argument("-o", "--output-folder")
@@ -715,10 +715,9 @@ if __name__ == '__main__':
         except Exception as e:
             print(f'Inputted folder is not a folder path: {e}')
 
+    path = f"{folder}{config['file_name']}.{config['format'].lower()}"
+
     if args.command == 'merge':
-        path =
-
-
         im_list = []
         for i in range(config['bits']):
             exec(f"im_list.append(Image.open(config['image{i+1}']))")
@@ -727,31 +726,9 @@ if __name__ == '__main__':
         exec(f'output = Steganography{n}().merge({im_list})')
         exec(f'output.save(path)')
 
-        #
-        #
-        # b = config['bits']
-        # im1, im2, im3, im4, im5, im6, im7, im8 = config['image1'], config['image2'], config['image3'], config['image4'], config['image5'], config['image6'], config['image7'], config['image8']
-        #
-        #
-        #
-        #
-        # img_present = False
-        # if b == 2 and im1 and im2:
-        #     img_present = True
-        #     output = Steganography().merge([Image.open(im1), Image.open(im2)])
-        # if b == 3 and im1 and im2 and im3: img_present = True
-        # if b == 4 and im1 and im2 and im3 and im4: img_present = True
-        # if b == 5 and im1 and im2 and im3 and im4 and im5: img_present = True
-        # if b == 6 and im1 and im2 and im3 and im4 and im5 and im6: img_present = True
-        # if b == 7 and im1 and im2 and im3 and im4 and im5 and im6 and im7: img_present = True
-        # if b == 8 and im1 and im2 and im3 and im4 and im5 and im6 and im7 and im8: img_present = True
-        #
-        # if not img_present: raise argparse.ArgumentTypeError("Make sure you have the same amount of declared images as 'bits'")
-
-
-
-
-
-
-
-
+    elif args.command == 'unmerge':
+        output = []
+        n = config['bits'] if config['bits'] != 2 else ''
+        exec(f'output = Steganography{n}().unmerge(Image.open(config["image"]))')
+        for index,image in enumerate(output):
+            image.save(f'{folder}{config["file_name"]}_{index}.{config["format"].lower()}')

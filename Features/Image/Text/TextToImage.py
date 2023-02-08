@@ -123,33 +123,58 @@ class TextToImageDynamic:
 
 
 if __name__ == "__main__":
+    #
+    # from bee_movie import bee_movie_script
+    #
+    # filename1 = "../../../../TextToImageOutput.png"
+    # filename11 = "../../../../TextToImageOutput.jpg"
+    # filename2 = "../../../../Dobry_den.txt"
+    #
+    # #txt = "Ahoj Světe"
+    # # with open(filename2, "r") as f:
+    # #     txt = f.read()
+    # txt = bee_movie_script*100
+    #
+    # print(len(txt))
+    #
+    # start = time.time()
+    # output, bits = TextToImageDynamic().encode(txt, mode="RGB")
+    # end = time.time()
+    # print(f"Encoded in {end - start} seconds. With {bits} bits.")
+    # output.save(filename1)
+    #
+    #
+    # start = time.time()
+    # output, bits = TextToImageDynamic().decode(Image.open(filename1), mode="RGB")
+    # end = time.time()
+    # print(f"Decoded in {end - start} seconds. With {bits} bits.")
+    #
+    # if output == txt:
+    #     print("Success!")
+    import argparse
 
-    from bee_movie import bee_movie_script
+    parser = argparse.ArgumentParser(description='TextToImageGenerator', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    subparser = parser.add_subparsers(dest='command')
 
-    filename1 = "../../../../TextToImageOutput.png"
-    filename11 = "../../../../TextToImageOutput.jpg"
-    filename2 = "../../../../Dobry_den.txt"
+    merge = subparser.add_parser('encode', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    merge.add_argument("input_file", help="input text file")
+    merge.add_argument("-o", "--output-folder")
+    merge.add_argument("-t", "--transparent", action='store_true', help="use transparent pixels when using PNG")
+    merge.add_argument("-m", "--mono", action='store_true', help='monochromatic (all rgb channels are the same)')
+    merge.add_argument("-f", "--format", default='PNG')
+    merge.add_argument("-n", "--file-name", default='TextSteganographyOutput')
 
-    #txt = "Ahoj Světe"
-    # with open(filename2, "r") as f:
-    #     txt = f.read()
-    txt = bee_movie_script*100
+    unmerge = subparser.add_parser('decode', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    unmerge.add_argument('image', help='image path')
+    unmerge.add_argument("-o", "--output-folder")
+    unmerge.add_argument("-t", "--transparent", action='store_true', help="use transparent pixels when using PNG")
+    unmerge.add_argument("-m", "--mono", action='store_true', help='monochromatic (all rgb channels are the same)')
+    unmerge.add_argument("-f", "--format", default='TXT')
+    unmerge.add_argument("-n", "--file-name", default='TextSteganographyOutput')
 
-    print(len(txt))
+    args = parser.parse_args()
+    config = vars(args)
 
-    start = time.time()
-    output, bits = TextToImageDynamic().encode(txt, mode="RGB")
-    end = time.time()
-    print(f"Encoded in {end - start} seconds. With {bits} bits.")
-    output.save(filename1)
-
-
-    start = time.time()
-    output, bits = TextToImageDynamic().decode(Image.open(filename1), mode="RGB")
-    end = time.time()
-    print(f"Decoded in {end - start} seconds. With {bits} bits.")
-
-    if output == txt:
-        print("Success!")
+    print(config)
 
 

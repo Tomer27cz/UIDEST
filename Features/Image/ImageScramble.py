@@ -40,23 +40,35 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="ImageScramble", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("src", help="Image path")
-    parser.add_argument("-t", "--tile", default=10, type=int, help="tile size")
-    parser.add_argument("-s", "--seed", default=0, type=int, help="seed")
-    parser.add_argument("-o", "--output-folder", help="output folder")
-    parser.add_argument("-f", "--format", help="format", default='PNG')
-    parser.add_argument("-n", "--file-name", help="file name", default='scrambled_image')
-    parser.add_argument("--encode", action="store_true", help="encode", default=False)
-    parser.add_argument("--decode", action="store_true", help="decode", default=False)
+    subparser = parser.add_subparsers(dest='command')
+
+    merge = subparser.add_parser('encode', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    merge.add_argument("image", help="image path")
+    merge.add_argument("-t", "--tile", default=10, type=int, help="tile size")
+    merge.add_argument("-s", "--seed", default=0, type=int, help="seed")
+    merge.add_argument("-o", "--output-folder", help="output folder")
+    merge.add_argument("-f", "--format", help="format", default='PNG')
+    merge.add_argument("-n", "--file-name", help="file name", default='scrambled_image')
+
+    unmerge = subparser.add_parser('decode', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    unmerge.add_argument("image", help="image path")
+    unmerge.add_argument("-t", "--tile", default=10, type=int, help="tile size")
+    unmerge.add_argument("-s", "--seed", default=0, type=int, help="seed")
+    unmerge.add_argument("-o", "--output-folder", help="output folder")
+    unmerge.add_argument("-f", "--format", help="format", default='PNG')
+    unmerge.add_argument("-n", "--file-name", help="file name", default='scrambled_image')
     args = parser.parse_args()
     config = vars(args)
-    # config = {'src': r"C:\Users\Admin\Desktop\merged_file.png", 'tile': 10, 'seed': 69, 'output_folder': r"C:\Users\Admin\Desktop", 'format': 'JPG', 'file_name': 'test_of_vli', 'encode': True, 'decode': False}
-    enc = config['encode']
-    dec = config['decode']
-    act = 1
-    if enc and not dec: act = 1
-    if not enc and dec: act = 0
-    if enc and dec: raise ValueError('Only one possible (encode or decode)')
+    print(config)
+
+    if args.command == 'encode':
+        operation_type = 1
+    elif args.command == 'decode':
+        operation_type = 0
+    else:
+        print('Invalid command (must be encode or decode)')
+        exit(1)
+
     folder = config['output_folder']
     if folder:
         try:
@@ -66,16 +78,7 @@ if __name__ == "__main__":
                 else: folder += "/"
         except Exception as e: print(f'Inputted folder is not a folder path: {e}')
 
-    print(f"""Running with arguments:
-     src -> {config['src']}
-     tile -> {config['tile']}
-     seed -> {config['seed']}
-     folder -> {folder}
-     format -> {config['format']}
-     name -> {config['file_name']}
-     type -> {'encode' if act == 1 else 'decode'}""")
-
     try:
-        new_scramble_algorithm(output_type=config['format'], image_path=config['src'], folder_path=folder, output_name=config['file_name'], seed=config['seed'], size=config['tile'], operation_type=act)
+        new_scramble_algorithm(output_type=config['format'], image_path=config['src'], folder_path=folder, output_name=config['file_name'], seed=config['seed'], size=config['tile'], operation_type=operation_type)
     except Exception as e:
         print(f'Error: \n{e}')
