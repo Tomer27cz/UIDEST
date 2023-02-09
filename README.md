@@ -278,6 +278,7 @@ I am a **beginner** programmer. This is my first project that I am **publishing*
 - [x] Add text to image
 - [x] Add metadata extractor
 - [x] Add youtube downloader gui for `yt-dlp`
+- [ ] Add file path drag and drop (when moving a file over the input file path entry)
 - [ ] Add text encoder `(rot13, caesar, hex, binary, base64, etc.)`
 - [ ] Add more features to the `gui`
 - [ ] Add more features to the `youtube downloader`
