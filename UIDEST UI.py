@@ -63,6 +63,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sub_ext_list = ['vtt', 'ttml', 'srv3', 'srv2', 'srv1', 'json3']
         self.sub_lang_list = list(lang_dict.values())
 
+        self.text_encryption_list = ["None", "AES", "RSA"]
+
         # icons
         self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/icons/folder-open-light.png"), dark_image=Image.open("Assets/icons/folder-open-dark.png"))
         self.info_marker_icon = customtkinter.CTkImage(light_image=Image.open("Assets/icons/info-mark-light.png"), dark_image=Image.open("Assets/icons/info-mark-dark.png"))
@@ -142,6 +144,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_checkbox3_var = tkinter.IntVar(value=0)
         self.yt_checkbox4_var = tkinter.IntVar(value=0)
         self.yt_checkbox5_var = tkinter.IntVar(value=0)
+        # -----------------------------------------------
+        self.te_dropdown1_var = tkinter.StringVar(value="uft8")
+        self.te_dropdown2_var = tkinter.StringVar(value="utf8")
 
 
         # create sidebar
@@ -165,6 +170,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.sidebar_button_6.grid(row=6, column=0, padx=10, pady=self.button_spacing)
         self.sidebar_button_7 = customtkinter.CTkButton(self.sidebar_frame, text="YT Downloader", command=self.sidebar_button_event_frame_6)
         self.sidebar_button_7.grid(row=7, column=0, padx=10, pady=self.button_spacing)
+        self.sidebar_button_8 = customtkinter.CTkButton(self.sidebar_frame, text="Text Encryption", command=self.sidebar_button_event_frame_7)
+        self.sidebar_button_8.grid(row=8, column=0, padx=10, pady=self.button_spacing)
 
 
         self.sidebar_button_about = customtkinter.CTkButton(self.sidebar_frame, text="About", command=self.sidebar_button_event_frame_about)
@@ -669,7 +676,22 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.yt_ent2_var.set("C:/Users/Tomer27cz/Desktop/Files/CODING/Python Projects/Image Editors/downloads")
         # self.yt_checkbox_audio_var.set(0)
 
-        #---------------------------------------------------------------------------------------------------------------
+        #-------------------------------------------------- Text Encryptor ---------------------------------------------
+
+        self.frame7 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
+        self.frame7.grid(row=0, column=1, rowspan=4, sticky="snew")
+        # self.frame7.grid_rowconfigure(5, weight=1)
+        self.frame7.grid_columnconfigure(2, weight=1)
+
+        self.te_dropdown1 = customtkinter.CTkOptionMenu(self.frame7, values=self.text_encryption_list, variable=self.te_dropdown1_var)
+        self.te_dropdown1.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        self.te_dropdown2 = customtkinter.CTkOptionMenu(self.frame7, values=self.text_encryption_list, variable=self.te_dropdown2_var)
+        self.te_dropdown2.grid(row=5, column=0, padx=10, pady=10, sticky="w")
+
+        self.te_console = customtkinter.CTkTextbox(self.frame7, width=50, height=20, font=customtkinter.CTkFont(size=10, family="Consolas"))
+        self.te_console.grid(row=0, column=1, padx=10, pady=10, columnspan=3, sticky="nsew")
+        self.te_console2 = customtkinter.CTkTextbox(self.frame7, width=50, height=20, font=customtkinter.CTkFont(size=10, family="Consolas"))
+        self.te_console2.grid(row=5, column=1, padx=10, pady=10, columnspan=3, sticky="nsew")
 
         # add frames to notebook
 
@@ -720,6 +742,7 @@ class App(customtkinter.CTk, tkinter.Tk):
     def sidebar_button_event_frame_4(self): self.my_notebook.select(self.frame4)
     def sidebar_button_event_frame_5(self): self.my_notebook.select(self.frame5)
     def sidebar_button_event_frame_6(self): self.my_notebook.select(self.frame6)
+    def sidebar_button_event_frame_7(self): self.my_notebook.select(self.frame7)
 
     def sidebar_button_event_frame_about(self): self.my_notebook.select(self.frame69)
 

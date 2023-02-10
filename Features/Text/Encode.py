@@ -40,3 +40,12 @@ def utf8_to_base64(s):
 
 def rot13(s):
     return rot_encode(s, 13)
+
+text = 'Hello, World!'
+ibrow = '🤨 hello'
+
+print('Original text: ' + text)
+print('Hex: ' + utf8_to_hex(text))
+print('Base64: ' + utf8_to_base64(text))
+print('utf-8: ')
+print(ibrow.encode('utf-8'))
