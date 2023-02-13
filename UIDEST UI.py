@@ -68,6 +68,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         # icons
         self.folder_button_icon = customtkinter.CTkImage(light_image=Image.open("Assets/icons/folder-open-light.png"), dark_image=Image.open("Assets/icons/folder-open-dark.png"))
         self.info_marker_icon = customtkinter.CTkImage(light_image=Image.open("Assets/icons/info-mark-light.png"), dark_image=Image.open("Assets/icons/info-mark-dark.png"))
+        self.copy_icon = customtkinter.CTkImage(light_image=Image.open('Assets/icons/copy-dark.png'), dark_image=Image.open('Assets/icons/copy-dark.png'))
 
         # create variables
 
@@ -600,15 +601,19 @@ class App(customtkinter.CTk, tkinter.Tk):
         # buttons
         self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
         self.yt_sidebar_button_2.grid(row=3, column=0, padx=10, pady=(5, 0))
+        self.yt_copy_button = customtkinter.CTkButton(self.frame6, image=self.copy_icon, width=10, command=self.to_clipboard)
+        self.yt_copy_button.grid(row=4, column=0, padx=10, pady=(0, 5), sticky='w', ipadx=2)
 
         # console
+        self.yt_command_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=15, family="Consolas"))
+        self.yt_command_console.grid(row=4, column=0, padx=(45, 10), pady=(0, 5), columnspan=3, sticky='we')
         self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10, family="Consolas"))
         #self.yt_console = customtkinter.CTkLabel(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10), anchor="nw", justify="left", text="")
-        self.yt_console.grid(row=4, column=1, columnspan=3, rowspan=6, sticky="ewsn", padx=10)
+        self.yt_console.grid(row=5, column=1, columnspan=3, rowspan=6, sticky="ewsn", padx=10)
 
         # tab view
         self.yt_tab_view = customtkinter.CTkTabview(self.frame6, width=100, height=10)
-        self.yt_tab_view.grid(row=4, column=0, padx=10, pady=(0, 10), columnspan=1, rowspan=15 , sticky="ewns")
+        self.yt_tab_view.grid(row=5, column=0, padx=10, pady=(0, 10), columnspan=1, rowspan=15 , sticky="ewns")
         self.yt_av = self.yt_tab_view.add("AudioVideo")
         self.yt_sub = self.yt_tab_view.add("Subtitles")
 
@@ -621,27 +626,27 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_checkbox_audio = customtkinter.CTkCheckBox(self.yt_av, text="Audio", variable=self.yt_checkbox_audio_var, command=self.yt_toggle_audio, width=60)
         self.yt_checkbox_audio.grid(row=1, column=0, padx=10, pady=(self.tab_spacing, 10), sticky="e")
 
-        self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.yt_av, values=self.resolutions_list, variable=self.yt_resolution_var)
+        self.yt_dropdown1 = customtkinter.CTkOptionMenu(self.yt_av, values=self.resolutions_list, variable=self.yt_resolution_var, command=self.yt_update_event)
         self.yt_dropdown1.grid(row=2, column=0, padx=10, pady=self.tab_spacing)
-        self.yt_dropdown5 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext, variable=self.yt_video_ext_var)
+        self.yt_dropdown5 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext, variable=self.yt_video_ext_var, command=self.yt_update_event)
         self.yt_dropdown5.grid(row=3, column=0, padx=10, pady=self.tab_spacing)
-        self.yt_dropdown6 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec, variable=self.yt_video_codec_var)
+        self.yt_dropdown6 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec, variable=self.yt_video_codec_var, command=self.yt_update_event)
         self.yt_dropdown6.grid(row=4, column=0, padx=10, pady=self.tab_spacing)
-        self.yt_dropdown7 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext_audio, variable=self.yt_audio_ext_var)
+        self.yt_dropdown7 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_ext_audio, variable=self.yt_audio_ext_var, command=self.yt_update_event)
         self.yt_dropdown7.grid(row=6, column=0, padx=10, pady=self.tab_spacing)
-        self.yt_dropdown8 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec_audio, variable=self.yt_audio_codec_var)
+        self.yt_dropdown8 = customtkinter.CTkOptionMenu(self.yt_av, values=self.yt_codec_audio, variable=self.yt_audio_codec_var, command=self.yt_update_event)
         self.yt_dropdown8.grid(row=7, column=0, padx=10, pady=self.tab_spacing)
 
         self.yt_ent3 = customtkinter.CTkEntry(self.yt_av, placeholder_text="Format code", width=10, textvariable=self.yt_ent3_var)
         self.yt_ent3.grid(row=8, column=0, padx=10, pady=self.spacing, sticky="ew")
 
-        self.yt_checkbox1 = customtkinter.CTkCheckBox(self.yt_av, text="Download playlist", variable=self.yt_playlist_var)
+        self.yt_checkbox1 = customtkinter.CTkCheckBox(self.yt_av, text="Download playlist", variable=self.yt_playlist_var, command=self.yt_update_event)
         self.yt_checkbox1.grid(row=9, column=0, padx=10, pady=self.spacing, sticky="w")
-        self.yt_checkbox3 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox3_var, text='', width=10)
+        self.yt_checkbox3 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox3_var, text='', width=10, command=self.yt_update_event)
         self.yt_checkbox3.grid(row=5, column=0, padx=10, pady=self.spacing, sticky="w")
-        self.yt_checkbox4 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox4_var, text='', width=10)
+        self.yt_checkbox4 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox4_var, text='', width=10, command=self.yt_update_event)
         self.yt_checkbox4.grid(row=5, column=0, padx=(65,0), pady=self.spacing, sticky="w")
-        self.yt_checkbox5 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox5_var, text='', width=10)
+        self.yt_checkbox5 = customtkinter.CTkCheckBox(self.yt_av, variable=self.yt_checkbox5_var, text='', width=10, command=self.yt_update_event)
         self.yt_checkbox5.grid(row=5, column=0, padx=(120, 0), pady=self.spacing, sticky="w")
 
         CreateToolTip(self.yt_checkbox3, "Embed metadata in video file", width=180, height=20)
@@ -702,6 +707,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.my_notebook.add(self.frame4, text="Tab 5")
         self.my_notebook.add(self.frame5, text="Tab 6")
         self.my_notebook.add(self.frame6, text="Tab 7")
+        self.my_notebook.add(self.frame7, text="Tab 8")
 
         self.my_notebook.add(self.frame69, text="Tab 69", )
 
@@ -1536,6 +1542,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         folder = filedialog.askdirectory(initialdir=self.initial_browser_dir, title=self.title_open)
         self.yt_ent2.delete(0, "end")
         self.yt_ent2_var.set(folder)
+        self.yt_update_event()
 
     def yt_get_res_event(self):
         ent1 = self.yt_ent1_var.get()
@@ -1574,10 +1581,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_dropdown1.configure(state="normal" if self.yt_checkbox_video.get() else "disabled")
         self.yt_dropdown5.configure(state="normal" if self.yt_checkbox_video.get() else "disabled")
         self.yt_dropdown6.configure(state="normal" if self.yt_checkbox_video.get() else "disabled")
+        self.yt_update_event()
 
     def yt_toggle_audio(self):
         self.yt_dropdown7.configure(state="normal" if self.yt_checkbox_audio.get() else "disabled")
         self.yt_dropdown8.configure(state="normal" if self.yt_checkbox_audio.get() else "disabled")
+        self.yt_update_event()
 
     def yt_start_button_event(self):
         tab = self.yt_tab_view.get()
@@ -1586,7 +1595,12 @@ class App(customtkinter.CTk, tkinter.Tk):
         elif tab == "Subtitles":
             self.yt_sub_event()
 
-    def yt_av_event(self):
+    def yt_update_event(self):
+        command = self.yt_av_event(download=False)
+        print(command)
+        self.print_to_yt_command_textbox('yt-dlp' + command[30:])
+
+    def yt_av_event(self, download=True):
         ent1 = self.yt_ent1_var.get()
         ent2 = self.yt_ent2_var.get()
         ent3 = self.yt_ent3_var.get()
@@ -1619,10 +1633,11 @@ class App(customtkinter.CTk, tkinter.Tk):
             if "\\" in ent2: ent2 += "\\"
             else: ent2 += "/"
 
-        self.yt_start_button.configure(state="disabled", text="Downloading...")
-        self.print_to_yt_console('', clear=True)
-        self.update_idletasks()
-        self.update()
+        if download:
+            self.yt_start_button.configure(state="disabled", text="Downloading...")
+            self.print_to_yt_console('', clear=True)
+            self.update_idletasks()
+            self.update()
 
         if playlist: name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
         else: name = f"{av}-%(id)s (%(height)sp).%(ext)s"
@@ -1654,15 +1669,18 @@ class App(customtkinter.CTk, tkinter.Tk):
             else: return self.print_to_yt_console("Error: Invalid AV option.", error=True)
 
         # url: https://www.youtube.com/watch?v=QH2-TGUlwu4
+        if not download:
+            return command
 
-        try:
-            for line in execute(command):
-                self.print_to_yt_console(line, error=False, clear=False)
-        except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True, clear=False)
+        if download:
+            try:
+                for line in execute(command):
+                    self.print_to_yt_console(line, error=False, clear=False)
+            except Exception as e: return self.print_to_yt_console(f"Error downloading: {e}", error=True, clear=False)
 
-        self.yt_start_button.configure(state="normal", text="Download")
-        self.update_idletasks()
-        self.update()
+            self.yt_start_button.configure(state="normal", text="Download")
+            self.update_idletasks()
+            self.update()
 
     def yt_sub_event(self):
         ent1 = self.yt_ent1_var.get()
@@ -1790,6 +1808,17 @@ class App(customtkinter.CTk, tkinter.Tk):
             try:
                 with open(output_to, "w", encoding="utf-8") as f: f.write(text)
             except Exception as e: return self.print_to_tti_console(f"Error writing to file: {e}", error=True)
+
+    def print_to_yt_command_textbox(self, text):
+        self.yt_command_console.configure(state='normal')
+        self.yt_command_console.delete('0.0', customtkinter.END)
+        self.yt_command_console.insert('0.0', text)
+        self.yt_command_console.configure(state='disabled')
+
+    def to_clipboard(self):
+        self.clipboard_clear()
+        self.clipboard_append(self.yt_command_console.get('0.0', customtkinter.END))
+        self.update()  # now it stays on the clipboard after the window is closed
 
 
 # Static Functions -----------------------------------------------------------------------------------------------------
