@@ -71,12 +71,12 @@ Framework from [Steganography (by kelvins)](https://github.com/kelvins/steganogr
 
 Examples of image combination with 8 bit pixel. Max is 8 images because a pixel is 8 bit. Each number represents bits dedicated to the image number.
 
-`[1,1,1,1,2,2,2,2]` 2 images
-`[1,1,1,1,2,2,3,3]` 3 images
-`[1,1,2,2,3,3,4,4]` 4 images
-`[1,1,2,2,3,3,4,5]` 5 images
-`[1,1,2,2,3,4,5,6]` 6 images
-`[1,1,2,3,4,5,6,7]` 7 images
+`[1,1,1,1,2,2,2,2]` 2 images `[1,1,1,1,2,2,3,3]` 3 images
+
+`[1,1,2,2,3,3,4,4]` 4 images `[1,1,2,2,3,3,4,5]` 5 images
+
+`[1,1,2,2,3,4,5,6]` 6 images `[1,1,2,3,4,5,6,7]` 7 images
+
 `[1,2,3,4,5,6,7,8]` 8 images
 
 ##### Merge usage
