@@ -71,8 +71,9 @@ Framework from [Steganography (by kelvins)](https://github.com/kelvins/steganogr
 
 Examples of image combination with 8 bit pixel. Max is 8 images because a pixel is 8 bit. Each number represents bits dedicated to the image number.
 
-![bits](Assets/markdown/bits dark.png#gh-dark-mode-only)
-![bits](Assets/markdown/bits light.png#gh-light-mode-only)
+![bits](Assets/bits dark.png#gh-dark-mode-only)
+
+![bits](Assets/bits light.png#gh-light-mode-only)
 
 ##### Merge usage
 
