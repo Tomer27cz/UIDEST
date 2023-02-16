@@ -133,6 +133,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_ent2_var = tkinter.StringVar(value="")
         self.yt_ent3_var = tkinter.StringVar(value="")
         self.yt_ent4_var = tkinter.StringVar(value="")
+        self.yt_ent5_var = tkinter.StringVar(value="")
         self.yt_sub_lang_var = tkinter.StringVar(value="English")
         self.yt_sub_ext_var = tkinter.StringVar(value="vtt")
         self.yt_sub_auto_var = tkinter.IntVar(value=1)
@@ -585,7 +586,7 @@ class App(customtkinter.CTk, tkinter.Tk):
 
         self.frame6 = customtkinter.CTkFrame(self, fg_color=("#ebebeb", "#242424"))
         self.frame6.grid(row=0, column=1, rowspan=4, sticky="snew")
-        self.frame6.grid_rowconfigure(9, weight=1)
+        self.frame6.grid_rowconfigure(8, weight=1)
         self.frame6.grid_columnconfigure(1, weight=1)
 
         # logo
@@ -597,6 +598,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_ent1.grid(row=2, column=0, padx=10, pady=self.spacing, ipady=5, columnspan=3 ,sticky="ew")
         self.yt_ent2 = customtkinter.CTkEntry(self.frame6, placeholder_text="Folder path", width=100, textvariable=self.yt_ent2_var)
         self.yt_ent2.grid(row=3, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
+        self.yt_ent5 = customtkinter.CTkEntry(self.frame6, placeholder_text="File Name", width=100, textvariable=self.yt_ent5_var)
+        self.yt_ent5.grid(row=9, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
@@ -609,7 +612,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_command_console.grid(row=4, column=0, padx=(45, 10), pady=(0, 5), columnspan=3, sticky='we')
         self.yt_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10, family="Consolas"))
         #self.yt_console = customtkinter.CTkLabel(self.frame6, width=100, height=10, font=customtkinter.CTkFont(size=10), anchor="nw", justify="left", text="")
-        self.yt_console.grid(row=5, column=1, columnspan=3, rowspan=6, sticky="ewsn", padx=10)
+        self.yt_console.grid(row=5, column=1, columnspan=3, rowspan=4, sticky="ewsn", padx=10)
 
         # tab view
         self.yt_tab_view = customtkinter.CTkTabview(self.frame6, width=100, height=10)
@@ -728,6 +731,8 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.tti_console.configure(state="disabled")
         self.tti_text_input_checkbox_event()
         self.tti_action_type_dropdown_event('Encode')
+        #------------------------------------ Youtube Download ---------------------------------------------------------
+        self.yt_ent5_var.set("%(title)s") # %(title)s
         #------------------------------------------ Other --------------------------------------------------------------
         self.appearance_mode_optionemenu.set("System")
         self.my_notebook.select(6)
@@ -1604,6 +1609,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         ent1 = self.yt_ent1_var.get()
         ent2 = self.yt_ent2_var.get()
         ent3 = self.yt_ent3_var.get()
+        ent5 = self.yt_ent5_var.get()
         resolution = self.yt_resolution_var.get()
         playlist = self.yt_playlist_var.get()
         ch_video = self.yt_checkbox_video.get()
@@ -1639,8 +1645,12 @@ class App(customtkinter.CTk, tkinter.Tk):
             self.update_idletasks()
             self.update()
 
-        if playlist: name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
-        else: name = f"{av}-%(id)s (%(height)sp).%(ext)s"
+        if playlist:
+            if ent5: name = f"%(playlist)s/{ent5}.%(ext)s"
+            else: name = f"%(playlist)s/{av}-%(id)s (%(height)sp)-%(playlist_index)s.%(ext)s"
+        else:
+            if ent5: name = f"{ent5}.%(ext)s"
+            else: name = f"{av}-%(id)s (%(height)sp).%(ext)s"
 
         dash_s = '-S "' + \
                  (f"res:{res}" if res else '')+ \
