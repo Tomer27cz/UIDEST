@@ -1,0 +1,129 @@
+<head>
+</head><body>
+<h1>OUTPUT TEMPLATE</h1>
+<p>When adding a new string:
+</p>
+<p>>>>>%(string)s
+</p>
+<p>So 'Nyan Cat [original]___QH2-TGUlwu4' becomes:
+</p>
+<p>>>>>%(title)s___%(id)s
+</p>
+<p><br>
+<br>The available fields are:
+<br>
+<br>id (string): Video identifier
+<br>title (string): Video title
+<br>fulltitle (string): Video title ignoring live timestamp and generic title
+<br>ext (string): Video filename extension
+<br>alt_title (string): A secondary title of the video
+<br>description (string): The description of the video
+<br>display_id (string): An alternative identifier for the video
+<br>uploader (string): Full name of the video uploader
+<br>license (string): License name the video is licensed under
+<br>creator (string): The creator of the video
+<br>timestamp (numeric): UNIX timestamp of the moment the video became available
+<br>upload_date (string): Video upload date in UTC (YYYYMMDD)
+<br>release_timestamp (numeric): UNIX timestamp of the moment the video was released
+<br>release_date (string): The date (YYYYMMDD) when the video was released in UTC
+<br>modified_timestamp (numeric): UNIX timestamp of the moment the video was last modified
+<br>modified_date (string): The date (YYYYMMDD) when the video was last modified in UTC
+<br>uploader_id (string): Nickname or id of the video uploader
+<br>channel (string): Full name of the channel the video is uploaded on
+<br>channel_id (string): Id of the channel
+<br>channel_follower_count (numeric): Number of followers of the channel
+<br>location (string): Physical location where the video was filmed
+<br>duration (numeric): Length of the video in seconds
+<br>duration_string (string): Length of the video (HH:mm:ss)
+<br>view_count (numeric): How many users have watched the video on the platform
+<br>concurrent_view_count (numeric): How many users are currently watching the video on the platform.
+<br>like_count (numeric): Number of positive ratings of the video
+<br>dislike_count (numeric): Number of negative ratings of the video
+<br>repost_count (numeric): Number of reposts of the video
+<br>average_rating (numeric): Average rating give by users, the scale used depends on the webpage
+<br>comment_count (numeric): Number of comments on the video (For some extractors, comments are only downloaded at the end, and so this field cannot be used)
+<br>age_limit (numeric): Age restriction for the video (years)
+<br>live_status (string): One of "not_live", "is_live", "is_upcoming", "was_live", "post_live" (was live, but VOD is not yet processed)
+<br>is_live (boolean): Whether this video is a live stream or a fixed-length video
+<br>was_live (boolean): Whether this video was originally a live stream
+<br>playable_in_embed (string): Whether this video is allowed to play in embedded players on other sites
+<br>availability (string): Whether the video is "private", "premium_only", "subscriber_only", "needs_auth", "unlisted" or "public"
+<br>start_time (numeric): Time in seconds where the reproduction should start, as specified in the URL
+<br>end_time (numeric): Time in seconds where the reproduction should end, as specified in the URL
+<br>extractor (string): Name of the extractor
+<br>extractor_key (string): Key name of the extractor
+<br>epoch (numeric): Unix epoch of when the information extraction was completed
+<br>autonumber (numeric): Number that will be increased with each download, starting at --autonumber-start
+<br>video_autonumber (numeric): Number that will be increased with each video
+<br>n_entries (numeric): Total number of extracted items in the playlist
+<br>playlist_id (string): Identifier of the playlist that contains the video
+<br>playlist_title (string): Name of the playlist that contains the video
+<br>playlist (string): playlist_id or playlist_title
+<br>playlist_count (numeric): Total number of items in the playlist. May not be known if entire playlist is not extracted
+<br>playlist_index (numeric): Index of the video in the playlist padded with leading zeros according the final index
+<br>playlist_autonumber (numeric): Position of the video in the playlist download queue padded with leading zeros according to the total length of the playlist
+<br>playlist_uploader (string): Full name of the playlist uploader
+<br>playlist_uploader_id (string): Nickname or id of the playlist uploader
+<br>webpage_url (string): A URL to the video webpage which if given to yt-dlp should allow to get the same result again
+<br>webpage_url_basename (string): The basename of the webpage URL
+<br>webpage_url_domain (string): The domain of the webpage URL
+<br>original_url (string): The URL given by the user (or same as webpage_url for playlist entries)
+<br>All the fields in Filtering Formats can also be used
+</p>
+<p>Available for the video that belongs to some logical chapter or section:
+</p>
+<p>chapter (string): Name or title of the chapter the video belongs to
+<br>chapter_number (numeric): Number of the chapter the video belongs to
+<br>chapter_id (string): Id of the chapter the video belongs to
+</p>
+<p>Available for the video that is an episode of some series or programme:
+</p>
+<p>series (string): Title of the series or programme the video episode belongs to
+<br>season (string): Title of the season the video episode belongs to
+<br>season_number (numeric): Number of the season the video episode belongs to
+<br>season_id (string): Id of the season the video episode belongs to
+<br>episode (string): Title of the video episode
+<br>episode_number (numeric): Number of the video episode within a season
+<br>episode_id (string): Id of the video episode
+</p>
+<p>Available for the media that is a track or a part of a music album:
+</p>
+<p>track (string): Title of the track
+<br>track_number (numeric): Number of the track within an album or a disc
+<br>track_id (string): Id of the track
+<br>artist (string): Artist(s) of the track
+<br>genre (string): Genre(s) of the track
+<br>album (string): Title of the album the track belongs to
+<br>album_type (string): Type of the album
+<br>album_artist (string): List of all artists appeared on the album
+<br>disc_number (numeric): Number of the disc or other physical medium the track belongs to
+<br>release_year (numeric): Year (YYYY) when the album was released
+</p>
+<p>Available only when using --download-sections and for chapter: prefix when using --split-chapters for videos with internal chapters:
+</p>
+<p>section_title (string): Title of the chapter
+<br>section_number (numeric): Number of the chapter within the file
+<br>section_start (numeric): Start time of the chapter in seconds
+<br>section_end (numeric): End time of the chapter in seconds
+</p>
+<p>Available only when used in --print:
+</p>
+<p>
+<br>urls (string): The URLs of all requested formats, one in each line
+<br>filename (string): Name of the video file. Note that the actual filename may differ
+<br>formats_table (table): The video format table as printed by --list-formats
+<br>thumbnails_table (table): The thumbnail format table as printed by --list-thumbnails
+<br>subtitles_table (table): The subtitle format table as printed by --list-subs
+<br>automatic_captions_table (table): The automatic subtitle format table as printed by --list-subs
+</p>
+<p>Available only in --sponsorblock-chapter-title:
+</p>
+<p>start_time (numeric): Start time of the chapter in seconds
+<br>end_time (numeric): End time of the chapter in seconds
+<br>categories (list): The SponsorBlock categories the chapter belongs to
+<br>category (string): The smallest SponsorBlock category the chapter belongs to
+<br>category_names (list): Friendly names of the categories
+<br>name (string): Friendly name of the smallest category
+<br>type (string): The SponsorBlock action type of the chapter
+<br></p>
+</body>

@@ -3,7 +3,7 @@ from PIL import Image
 from tkinter import ttk
 from tkinter import filedialog
 
-from tkhtmlview import HTMLScrolledText
+import tkhtmlview
 import customtkinter
 from os import mkdir
 from time import time
@@ -36,6 +36,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         # configure paths
         self.exif_tool_path = 'Features/Executable/exiftool.exe'
         self.yt_dlp_path = 'Features/Executable/yt-dlp.exe'
+        self.yt_dlp_syntax = 'Assets/html/yt_dlp_syntax.html'
         self.steganography_explanation = "Assets/html/SteganographyExplanation.html"
         self.markdown = 'Assets/html/README.html'
         self.about_html_text = open(self.markdown, 'r').read()
@@ -209,8 +210,9 @@ class App(customtkinter.CTk, tkinter.Tk):
         # self.about_text.grid(row=1, column=0, padx=10, pady=20)
 
         # html
-        self.about_html = HTMLScrolledText(self.frame69, html=self.about_html_text)
-        self.about_html.grid(row=0, column=0, padx=0, pady=00, sticky="ws")
+        self.about_html = tkhtmlview.HTMLText(self.frame69, html=tkhtmlview.RenderHTML(self.markdown))
+        self.about_html.pack(fill="both", expand=True)
+        self.about_html.fit_height()
 
         #-------------------------------------------- Image Scrambler --------------------------------------------------
 
@@ -599,13 +601,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_ent2 = customtkinter.CTkEntry(self.frame6, placeholder_text="Folder path", width=100, textvariable=self.yt_ent2_var)
         self.yt_ent2.grid(row=3, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
         self.yt_ent5 = customtkinter.CTkEntry(self.frame6, placeholder_text="File Name", width=100, textvariable=self.yt_ent5_var)
-        self.yt_ent5.grid(row=9, column=1, padx=10, pady=self.spacing, columnspan=3, sticky="ew")
+        self.yt_ent5.grid(row=9, column=1, padx=(10, 160), pady=self.spacing, columnspan=3, sticky="ew")
 
         # buttons
         self.yt_sidebar_button_2 = customtkinter.CTkButton(self.frame6, command=self.yt_open_folder, image=self.folder_button_icon, text="Open folder")
         self.yt_sidebar_button_2.grid(row=3, column=0, padx=10, pady=(5, 0))
         self.yt_copy_button = customtkinter.CTkButton(self.frame6, image=self.copy_icon, width=10, command=self.to_clipboard)
         self.yt_copy_button.grid(row=4, column=0, padx=10, pady=(0, 5), sticky='w', ipadx=2)
+        self.yt_show_syntax_button = customtkinter.CTkButton(self.frame6, command=self.yt_show_syntax, text="Show syntax")
+        self.yt_show_syntax_button.grid(row=9, column=1, padx=10, sticky='e')
 
         # console
         self.yt_command_console = customtkinter.CTkTextbox(self.frame6, width=100, height=10, state="disabled", font=customtkinter.CTkFont(size=15, family="Consolas"))
@@ -1000,7 +1004,7 @@ class App(customtkinter.CTk, tkinter.Tk):
         window.title("Steganography Explanation")
         window.geometry("1100x700")
         with open(self.steganography_explanation, "r") as f:
-            html_label = HTMLScrolledText(window, html=f.read(), )
+            html_label = tkhtmlview.HTMLScrolledText(window, html=f.read(), )
         html_label.pack(fill="both", expand=True)
         html_label.fit_height()
 
@@ -1548,6 +1552,15 @@ class App(customtkinter.CTk, tkinter.Tk):
         self.yt_ent2.delete(0, "end")
         self.yt_ent2_var.set(folder)
         self.yt_update_event()
+
+    def yt_show_syntax(self):
+        window = customtkinter.CTkToplevel(self)
+        window.title("yt-dlp filename syntax")
+        window.geometry("800x600")
+        with open(self.yt_dlp_syntax, "r", encoding='utf-8') as f:
+            html_label = tkhtmlview.HTMLScrolledText(window, html=f.read(), )
+        html_label.pack(fill="both", expand=True)
+        html_label.fit_height()
 
     def yt_get_res_event(self):
         ent1 = self.yt_ent1_var.get()
